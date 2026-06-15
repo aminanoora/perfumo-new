@@ -1,0 +1,44 @@
+<header class="topbar">
+
+  <!-- LEFT -->
+  <div class="topbar-left">
+
+    <div class="avatar">
+
+      <% if (user && user.avatar) { %>
+        <img src="<%= user.avatar %>" alt="profile">
+      <% } else { %>
+        <div class="avatar-fallback">
+          <i class="fa-solid fa-user"></i>
+        </div>
+      <% } %>
+
+    </div>
+
+    <div class="user-info">
+      <span class="username">
+        <%= user && user.name ? user.name : "Admin" %>
+      </span>
+    </div>
+
+    <i class="fa-solid fa-chevron-down dropdown-icon"></i>
+
+  </div>
+
+  <!-- CENTER SEARCH -->
+  <div class="topbar-search">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="Quick search">
+  </div>
+
+  <!-- RIGHT -->
+  <div class="topbar-right">
+
+    <div class="notification">
+      <i class="fa-solid fa-bell"></i>
+      <span class="dot"></span>
+    </div>
+
+  </div>
+
+</header>

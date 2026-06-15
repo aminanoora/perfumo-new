@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile | Perfumo</title>
+
+    <link rel="stylesheet" href="/user/css/profile.css">
+
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+ <link rel="stylesheet" href="/user/css/headers.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+</head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<body>
+
+<%- include('../partials/header') %>
+
+<section class="profile-section">
+
+    <div class="profile-container">
+
+        <div class="sidebar">
+
+            <div class="user-box">
+
+                <div class="user-avatar">
+                    <%= user.firstName.charAt(0) %>
+                </div>
+
+                <div class="user-info">
+                    <h3>
+                        <%= user.firstName %> <%= user.lastName %>
+                    </h3>
+                </div>
+
+            </div>
+
+            <div class="sidebar-menu">
+
+                <a href="/orders">
+                    <i class="fa-regular fa-box"></i>
+                    My Orders
+                </a>
+
+                <a href="/wishlist">
+                    <i class="fa-regular fa-heart"></i>
+                    Wishlist
+                </a>
+
+                <a href="/profile/address">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Addresses
+                </a>
+
+                <a href="/coupons">
+                    <i class="fa-solid fa-ticket"></i>
+                    Coupons
+                </a>
+
+                <a href="/wallet">
+                    <i class="fa-solid fa-wallet"></i>
+                    My Wallet
+                </a>
+
+                <a href="/refer">
+                    <i class="fa-solid fa-gift"></i>
+                    Refer & Earn
+                </a>
+
+                <a href="/profile" class="active">
+                    <i class="fa-regular fa-user"></i>
+                    Profile Settings
+                </a>
+
+            </div>
+
+            <a href="/logout" class="logout-btn">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                Logout
+            </a>
+
+        </div>
+
+        <div class="profile-content">
+
+            <div class="profile-card">
+
+                <div class="profile-heading">
+
+                    <h2>Personal Details</h2>
+
+                    <p>
+                        Update your account details and contact information
+                    </p>
+
+                </div>
+
+               <form id="profile-form">
+
+    <div class="input-group">
+
+        <label>FIRST NAME</label>
+
+        <input
+        type="text"
+        name="firstName"
+        id="firstName"
+        value="<%= user.firstName %>">
+
+    </div>
+
+    <div class="input-group">
+
+        <label>LAST NAME</label>
+
+        <input
+        type="text"
+        name="lastName"
+        id="lastName"
+        value="<%= user.lastName %>">
+
+    </div>
+
+    <div class="input-group">
+
+        <label>EMAIL ADDRESS</label>
+
+        <input
+        type="email"
+        name="email"
+        id="email"
+        value="<%= user.email %>">
+
+    </div>
+
+    <button type="submit" class="save-btn">
+        Save Changes
+    </button>
+
+</form>
+
+                <a href="/profile/editpassword" class="password-link">
+                    Edit Password?
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<footer class="profile-footer">
+
+    <div class="footer-logo">
+        PERFUMO
+    </div>
+
+    <div class="footer-links">
+
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/products">Products</a>
+        <a href="/pages">Pages</a>
+
+    </div>
+
+    <p>
+        Copyright © 2025 PERFUMO . All Rights Reserved.
+    </p>
+
+</footer>
+<script>
+   const form =
+document.getElementById('profile-form');
+
+form.addEventListener('submit', async(e)=>{
+
+    e.preventDefault();
+
+    const firstName =
+    document.getElementById('firstName').value;
+
+    const lastName =
+    document.getElementById('lastName').value;
+
+    const email =
+    document.getElementById('email').value;
+
+    try{
+
+        const response =
+        await fetch('/profile/update',{
+
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json'
+            },
+
+            body:JSON.stringify({
+                firstName,
+                lastName,
+                email
+            })
+        });
+
+        const data =
+        await response.json();
+
+        if(!data.success){
+
+            Swal.fire({
+                icon:'error',
+                title:'Error',
+                text:data.message
+            });
+
+            return;
+        }
+
+        Swal.fire({
+            icon:'success',
+            title:'Success',
+            text:data.message,
+            timer:2000,
+            showConfirmButton:false
+        });
+
+        if(data.requiresOTP){
+
+            setTimeout(()=>{
+
+                window.location.href =
+                '/profile/verifyemail';
+
+            },2000);
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+        Swal.fire({
+            icon:'error',
+            title:'Error',
+            text:'Something went wrong'
+        });
+    }
+
+});
+
+</script>
+<script src="/user/js/block-check.js"></script>
+
+</body>
+</html>

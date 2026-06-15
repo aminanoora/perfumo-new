@@ -1,0 +1,67 @@
+<header class="header">
+
+    <div class="logo">
+        <a href="/">PERFUMO</a>
+    </div>
+
+    <nav class="nav-links">
+
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/collections">Collections</a>
+        <a href="/explore">Explore</a>
+
+    </nav>
+
+    <div class="header-icons">
+
+        <a href="/search" class="icon-link">
+            <i class="fas fa-search"></i>
+        </a>
+
+        <% if(user && user.email){ %>
+
+            <div class="profile-dropdown">
+
+    <button class="profile-btn" id="profileToggle">
+        <i class="fas fa-user"></i>
+    </button>
+
+    <div class="dropdown-content" id="profileMenu">
+
+        <a href="/profile">My Profile</a>
+
+        <a href="/orders">My Orders</a>
+
+        <a href="/logout">Logout</a>
+
+    </div>
+
+</div>
+            <a href="/wishlist" class="icon-link">
+                <i class="fas fa-heart"></i>
+            </a>
+
+            <a href="/cart" class="icon-link">
+                <i class="fas fa-shopping-bag"></i>
+            </a>
+
+        <% } else { %>
+
+            <div class="auth-buttons">
+
+                <a href="/signin" class="signin-btn">
+                    Sign In
+                </a>
+
+                <a href="/signup" class="signup-btn">
+                    Sign Up
+                </a>
+
+            </div>
+
+        <% } %>
+
+    </div>
+
+</header>

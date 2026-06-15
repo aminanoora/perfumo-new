@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Saved Addresses</title>
+
+    <link
+        rel="stylesheet"
+        href="/user/css/address.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="/user/css/headers.css">
+
+</head>
+
+<body>
+
+    <%- include('../partials/header') %>
+
+    <section class="address-section">
+
+        <div class="address-header">
+
+            <div>
+
+                <h1>
+                    Saved Addresses
+                </h1>
+
+                <p>
+                    Manage your saved delivery addresses
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="address-grid">
+
+            <% if(addresses.length > 0){ %>
+
+                <% addresses.forEach(address => { %>
+
+                    <div class="address-card">
+
+                        <div class="card-top">
+
+                            <h3>
+                                <%= address.firstName %>
+                                <%= address.lastName %>
+                            </h3>
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                        </div>
+
+                        <div class="address-details">
+
+                            <p>
+                                <%= address.streetAddress %>
+                            </p>
+
+                            <p>
+                                <%= address.city %>,
+                                <%= address.state %>
+                                -
+                                <%= address.pincode %>
+                            </p>
+
+                            <p>
+                                <%= address.country %>
+                            </p>
+
+                            <p>
+                                Phone:
+                                <%= address.phoneNumber %>
+                            </p>
+
+                        </div>
+
+                        <div class="card-actions">
+
+                            <a
+                                href="/address/edit-address/<%= address._id %>"
+                                class="edit-btn">
+
+                                <i class="fa-regular fa-pen-to-square"></i>
+
+                                Edit
+
+                            </a>
+
+                            <button
+                                class="delete-btn"
+                                onclick="deleteAddress('<%= address._id %>')">
+
+                                <i class="fa-regular fa-trash-can"></i>
+
+                                Delete
+
+                            </button>
+
+                        </div>
+                        
+
+
+                    </div>
+                    <div class="empty-address">
+
+                    <div class="empty-icon">
+
+                        <i class="fa-solid fa-plus"></i>
+
+                    </div>
+
+                   
+
+                    <a
+                        href="/address/add-address"
+                        class="add-address-btn">
+
+                        Add New Address
+
+                    </a>
+
+                </div>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <div class="empty-address">
+
+                    <div class="empty-icon">
+
+                        <i class="fa-solid fa-plus"></i>
+
+                    </div>
+
+                    <p>
+                        No saved addresses found
+                    </p>
+
+                    <a
+                        href="/address/add-address"
+                        class="add-address-btn">
+
+                        Add New Address
+
+                    </a>
+
+                </div>
+
+            <% } %>
+
+        </div>
+
+    </section>
+
+    <footer class="footer">
+
+        <div class="footer-top">
+
+            <div class="footer-logo">
+                PERFUMO
+            </div>
+
+            <div class="footer-links">
+
+                <a href="/">Home</a>
+
+                <a href="/shop">Shop</a>
+
+                <a href="/products">Products</a>
+
+                <a href="/pages">Pages</a>
+
+            </div>
+
+        </div>
+
+        <p class="copyright">
+            Copyright © 2022 PERFUMO. All Rights Reserved.
+        </p>
+
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+
+        async function deleteAddress(id) {
+
+            const result =
+                await Swal.fire({
+
+                    title: 'Delete Address?',
+
+                    text: 'This action cannot be undone',
+
+                    icon: 'warning',
+
+                    showCancelButton: true,
+
+                    confirmButtonColor: '#000',
+
+                    cancelButtonColor: '#d33',
+
+                    confirmButtonText: 'Delete'
+
+                });
+
+            if (!result.isConfirmed) return;
+
+            try {
+
+                const response =
+                    await fetch(`/address/delete/${id}`, {
+
+                        method: 'DELETE'
+
+                    });
+
+                const data =
+                    await response.json();
+
+                if (data.success) {
+
+                    Swal.fire({
+
+                        icon: 'success',
+
+                        title: 'Deleted',
+
+                        text: data.message,
+
+                        timer: 1500,
+
+                        showConfirmButton: false
+
+                    });
+
+                    setTimeout(() => {
+
+                        location.reload();
+
+                    }, 1500);
+
+                } else {
+
+                    Swal.fire({
+
+                        icon: 'error',
+
+                        title: 'Error',
+
+                        text: data.message
+
+                    });
+                }
+
+            } catch (error) {
+
+                console.log(error);
+
+                Swal.fire({
+
+                    icon: 'error',
+
+                    title: 'Error',
+
+                    text: 'Something went wrong'
+
+                });
+            }
+        }
+
+    </script>
+
+    <script src="/user/js/block-check.js"></script>
+
+</body>
+
+</html>

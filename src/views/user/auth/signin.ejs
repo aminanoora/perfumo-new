@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfumo Signup</title>
+
+    <link rel="stylesheet" href="/user/css/signin.css">
+    <link    rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+</head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/user/js/block-check.js"></script>
+<script src="https://google.com" async defer></script>
+<body>
+
+<section class="signup-section">
+
+    <div class="signup-container">
+
+        <!-- LEFT IMAGE -->
+        <div class="signup-image">
+
+            <img src="/user/images/e8ba27fa85b6bf897ee5d80d4dad5a22.jpg" alt="Perfume">
+
+        </div>
+
+        <div class="signup-content">
+
+            <h1 class="logo">PERFUMO</h1>
+
+            <h2>Create Account</h2>
+
+           <div class="social-buttons">
+
+  <button class="social-btn">
+
+    <i class="fa-brands fa-google"></i>
+     <a href="/auth/google" class="google-btn">
+    <span>Sign up with Google</span>
+    </a>
+
+  </button>
+
+
+  <button class="social-btn">
+
+    <i class="fa-solid fa-envelope"></i>
+
+    <span>Sign up with Email</span>
+
+  </button>
+
+</div>
+
+            <div class="divider">
+                <span></span>
+                <p>OR</p>
+                <span></span>
+            </div>
+
+           
+            <form class="signup-form" id="signin-form">
+
+    <div class="form-grid">
+
+        <div class="input-group">
+            <input 
+                type="email"
+                id="email"
+                placeholder="Email Address"
+             
+            >
+        </div>
+
+        <div class="input-group">
+            <input 
+                type="password"
+                id="password"
+                placeholder="Password"
+              
+            >
+            <i class="fa-regular fa-eye toggle-password"></i>
+        </div>
+
+    </div>
+
+    <button type="submit" class="create-btn">
+        Sign In
+    </button>
+
+</form>
+
+         <button class="register-button"> <a href="/signup">Register now</a></button>
+               <a class='forgot-password' href="/forgot-password">Forgot password?</a>
+            
+
+            <p class="terms">
+                PERFUMO Terms & Conditions
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+const form = document.getElementById('signin-form');
+
+form.addEventListener('submit', async (e) => {
+
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+
+    const password = document.getElementById('password').value;
+
+    try {
+
+        const response = await fetch('/signin', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+               credentials: 'same-origin',
+
+            body: JSON.stringify({
+                email,
+                password
+            })
+        });
+
+        const data = await response.json();
+
+        if(!email||!password){
+            Swal.fire({
+                icon:"warning",
+                title:"Emty fields",
+                text:"Email and password are required"
+            })
+        }
+
+        else if (!data.success) {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: data.message
+            });
+
+        } else {
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: data.message,
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1500);
+        }
+
+    } catch (error) {
+
+        console.log(error);
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong'
+        });
+    }
+
+});
+const toggleBtns =
+document.querySelectorAll('.toggle-password');
+
+toggleBtns.forEach((btn) => {
+
+    btn.addEventListener('click', () => {
+
+        const input =
+        btn.previousElementSibling;
+
+        if(input.type === 'password'){
+
+            input.type = 'text';
+
+            btn.classList.remove('fa-eye');
+
+            btn.classList.add('fa-eye-slash');
+
+        } else {
+
+            input.type = 'password';
+
+            btn.classList.remove('fa-eye-slash');
+
+            btn.classList.add('fa-eye');
+        }
+    });
+});
+
+ const params =
+    new URLSearchParams(window.location.search);
+
+    if (params.get('message') === 'blocked') {
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Account Blocked',
+            text: 'Your account has been blocked by admin'
+        });
+    }
+</script>
+</body>
+</html>

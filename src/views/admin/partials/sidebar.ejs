@@ -1,0 +1,59 @@
+<% const current = typeof active !== "undefined" ? active : ""; %>
+
+<aside class="sidebar">
+  <div class="sidebar-card">
+
+    <div class="sidebar-menu">
+
+      <a class="menu-item <%= current === 'dashboard' ? 'active' : '' %>" href="/admin/dashboard">
+        <i class="fa-solid fa-gauge"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a class="menu-item <%= current === 'users' ? 'active' : '' %>" href="/admin/users">
+        <i class="fa-solid fa-users"></i>
+        <span>Users</span>
+      </a>
+
+      <a class="menu-item <%= current === 'products' ? 'active' : '' %>" href="/admin/products">
+        <i class="fa-solid fa-box"></i>
+        <span>Product</span>
+      </a>
+
+      <a class="menu-item <%= current === 'banners' ? 'active' : '' %>" href="/admin/banners">
+        <i class="fa-solid fa-image"></i>
+        <span>Banners</span>
+      </a>
+
+      <a class="menu-item <%= current === 'coupons' ? 'active' : '' %>" href="/admin/coupons">
+        <i class="fa-solid fa-tags"></i>
+        <span>Coupon</span>
+      </a>
+
+      <a class="menu-item <%= current === 'orders' ? 'active' : '' %>" href="/admin/orders">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span>Orders</span>
+      </a>
+
+      <a class="menu-item <%= current === 'category' ? 'active' : '' %>" href="/admin/category">
+        <i class="fa-solid fa-list"></i>
+        <span>Category</span>
+      </a>
+
+      <a class="menu-item <%= current === 'analytics' ? 'active' : '' %>" href="/admin/analytics">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Analytics</span>
+      </a>
+
+      <!-- logout pinned -->
+      <a class="menu-item logout" href="/admin/logout" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+      </a>
+
+    </div>
+
+  </div>
+</aside>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/admin/js/admin-global.js"></script>

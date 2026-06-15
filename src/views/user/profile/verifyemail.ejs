@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+    <title>Verify Email</title>
+
+    <link
+    rel="stylesheet"
+    href="/user/css/verifyemail.css">
+
+    <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Volkhov:wght@700&display=swap"
+    rel="stylesheet">
+
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+</head>
+<body>
+
+<section class="otp-section">
+
+    <div class="otp-container">
+
+        <div class="otp-image">
+
+            <img
+            src="/user/images/e8ba27fa85b6bf897ee5d80d4dad5a22.jpg"
+            alt="Perfume">
+
+        </div>
+
+        <div class="otp-content">
+
+            <h1 class="logo">
+                PERFUMO
+            </h1>
+
+            <div class="otp-box">
+
+                <h2>
+                    Verify OTP
+                </h2>
+
+                <p class="otp-text">
+                    Enter the verification code sent to your email
+                </p>
+
+                <form
+                id="otpForm">
+
+                    <div class="otp-inputs">
+
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+
+                    </div>
+
+                    <div class="timer">
+
+                        <i class="fa-regular fa-clock"></i>
+
+                        <span id="countdown">
+                            01:00
+                        </span>
+
+                    </div>
+
+                    <p class="resend-text">
+
+                        Didn’t receive the code?
+
+                        <a href="#" id="resendBtn">
+                            Resend code
+                        </a>
+
+                    </p>
+
+                    <button
+                    type="submit"
+                    class="verify-btn">
+
+                        VERIFY
+
+                    </button>
+
+                </form>
+
+                <a
+                href="/profile"
+                class="back-link">
+
+                    ← Back to Profile
+
+                </a>
+
+            </div>
+
+            <p class="terms">
+                PERFUMO Terms & Conditions
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+const inputs =
+document.querySelectorAll('.otp-input');
+
+inputs.forEach((input, index) => {
+
+    input.addEventListener('input', (e) => {
+
+        e.target.value =
+        e.target.value.replace(/[^0-9]/g, '');
+
+        if(e.target.value.length === 1){
+
+            if(index < inputs.length - 1){
+
+                inputs[index + 1].focus();
+            }
+        }
+    });
+
+    input.addEventListener('keydown', (e) => {
+
+        if(
+            e.key === 'Backspace'
+            &&
+            input.value === ''
+            &&
+            index > 0
+        ){
+
+            inputs[index - 1].focus();
+        }
+    });
+});
+
+let time = 60;
+
+const countdown =
+document.getElementById('countdown');
+
+const resendBtn =
+document.getElementById('resendBtn');
+
+resendBtn.style.pointerEvents = 'none';
+resendBtn.style.opacity = '0.5';
+
+const timer = setInterval(() => {
+
+    let minutes =
+    Math.floor(time / 60);
+
+    let seconds =
+    time % 60;
+
+    seconds =
+    seconds < 10
+    ? '0' + seconds
+    : seconds;
+
+    countdown.innerText =
+    `${minutes}:${seconds}`;
+
+    if(time <= 0){
+
+        clearInterval(timer);
+
+        countdown.innerText =
+        "Expired";
+
+        resendBtn.style.pointerEvents =
+        'auto';
+
+        resendBtn.style.opacity =
+        '1';
+    }
+
+    time--;
+
+}, 1000);
+
+document
+.getElementById('otpForm')
+.addEventListener('submit', async (e) => {
+
+    e.preventDefault();
+
+    let otp = '';
+
+    inputs.forEach((input) => {
+        otp += input.value;
+    });
+
+    try{
+
+        const response =
+        await fetch('/profile/verifyemail', {
+
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json'
+            },
+
+            body:JSON.stringify({ otp })
+        });
+
+        const text =
+        await response.text();
+
+        console.log(text);
+
+        const data =
+        JSON.parse(text);
+
+        if(data.success){
+
+            Swal.fire({
+                icon:'success',
+                title:'Success',
+                text:data.message,
+                timer:1500,
+                showConfirmButton:false
+            });
+
+            setTimeout(() => {
+
+                window.location.href =
+                '/profile';
+
+            }, 1500);
+
+        }else{
+
+            Swal.fire({
+                icon:'error',
+                title:'Oops...',
+                text:data.message
+            });
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+        Swal.fire({
+            icon:'error',
+            title:'Error',
+            text:'Something went wrong'
+        });
+    }
+});
+
+resendBtn
+.addEventListener('click', async (e) => {
+
+    e.preventDefault();
+
+    try{
+
+        const response =
+        await fetch('/profile/resend-otp', {
+
+            method:'POST'
+        });
+
+        const data =
+        await response.json();
+
+        if(data.success){
+
+            Swal.fire({
+                icon:'success',
+                title:'OTP Sent',
+                text:data.message
+            });
+
+            time = 60;
+
+            resendBtn.style.pointerEvents =
+            'none';
+
+            resendBtn.style.opacity =
+            '0.5';
+
+            const newTimer =
+            setInterval(updateTimer, 1000);
+
+        }else{
+
+            Swal.fire({
+                icon:'error',
+                title:'Error',
+                text:data.message
+            });
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+        Swal.fire({
+            icon:'error',
+            title:'Error',
+            text:'Something went wrong'
+        });
+    }
+});
+
+</script>
+<script src="/user/js/block-check.js"></script>
+
+</body>
+</html>

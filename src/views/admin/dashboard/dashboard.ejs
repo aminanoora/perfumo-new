@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Admin Dashboard | PERFUMO
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/admin/css/dashboard.css">
+
+        <link
+        rel="stylesheet"
+        href="/admin/css/admin.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+ <%- include('../partials/header') %>
+    <div class="dashboard-container">
+
+      <%- include('../partials/sidebar') %>
+
+
+        <div class="main-content">
+
+         
+
+
+            <section class="dashboard-content">
+
+                <div class="dashboard-title">
+
+                    <h1>
+                        Dashboard Overview
+                    </h1>
+
+                    <p>
+                        Welcome back Admin
+                    </p>
+
+                </div>
+
+
+              
+
+                <div class="dashboard-cards">
+
+                    <div class="dashboard-card">
+
+                        <div class="card-icon sales">
+
+                            <i class="fa-solid fa-dollar-sign"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Total Sales
+                            </h3>
+
+                            <h2>
+                                ₹1,24,500
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-card">
+
+                        <div class="card-icon orders">
+
+                            <i class="fa-solid fa-cart-shopping"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Orders
+                            </h3>
+
+                            <h2>
+                                325
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-card">
+
+                        <div class="card-icon users">
+
+                            <i class="fa-solid fa-users"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Users
+                            </h3>
+
+                            <h2>
+                                1,240
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-card">
+
+                        <div class="card-icon products">
+
+                            <i class="fa-solid fa-box"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Products
+                            </h3>
+
+                            <h2>
+                                86
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                
+
+                <div class="recent-orders">
+
+                    <div class="table-header">
+
+                        <h2>
+                            Recent Orders
+                        </h2>
+
+                    </div>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Order ID
+                                </th>
+
+                                <th>
+                                    Customer
+                                </th>
+
+                                <th>
+                                    Amount
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>#1025</td>
+
+                                <td>Amina</td>
+
+                                <td>₹4,500</td>
+
+                                <td>
+                                    <span class="status completed">
+                                        Completed
+                                    </span>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <td>#1026</td>
+
+                                <td>Rahul</td>
+
+                                <td>₹2,200</td>
+
+                                <td>
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

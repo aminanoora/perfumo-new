@@ -1,0 +1,259 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    background:#f5f6fa;
+}
+
+.dashboard-container{
+
+    display:flex;
+
+    min-height:100vh;
+}
+
+
+
+
+.main-content{
+
+    flex:1;
+
+    padding:30px;
+}
+
+
+
+
+.dashboard-title{
+
+    margin-bottom:30px;
+}
+
+.dashboard-title h1{
+
+    font-size:32px;
+
+    font-weight:600;
+
+    color:#111;
+}
+
+.dashboard-title p{
+
+    color:#777;
+
+    margin-top:6px;
+}
+
+
+
+
+.dashboard-cards{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+    margin-bottom:40px;
+}
+
+.dashboard-card{
+
+    background:#fff;
+
+    padding:25px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    box-shadow:
+    0 5px 20px rgba(0,0,0,0.05);
+}
+
+.card-icon{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:22px;
+
+    color:#fff;
+}
+
+.sales{
+
+    background:#111;
+}
+
+.orders{
+
+    background:#4f46e5;
+}
+
+.users{
+
+    background:#16a34a;
+}
+
+.products{
+
+    background:#dc2626;
+}
+
+.dashboard-card h3{
+
+    font-size:15px;
+
+    color:#777;
+
+    margin-bottom:5px;
+}
+
+.dashboard-card h2{
+
+    font-size:28px;
+
+    font-weight:600;
+
+    color:#111;
+}
+
+
+.recent-orders{
+
+    background:#fff;
+
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:
+    0 5px 20px rgba(0,0,0,0.05);
+
+    overflow-x:auto;
+}
+
+.table-header{
+
+    margin-bottom:20px;
+}
+
+.table-header h2{
+
+    font-size:22px;
+
+    color:#111;
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+}
+
+thead{
+
+    background:#f8f8f8;
+}
+
+th{
+
+    text-align:left;
+
+    padding:15px;
+
+    font-size:14px;
+
+    color:#555;
+}
+
+td{
+
+    padding:15px;
+
+    border-bottom:
+    1px solid #eee;
+
+    font-size:14px;
+}
+
+.status{
+
+    padding:6px 14px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+    font-weight:500;
+}
+
+.completed{
+
+    background:#dcfce7;
+
+    color:#15803d;
+}
+
+.pending{
+
+    background:#fef3c7;
+
+    color:#b45309;
+}
+
+
+
+
+@media(max-width:768px){
+
+    .main-content{
+
+        padding:20px;
+    }
+
+    .dashboard-title h1{
+
+        font-size:24px;
+    }
+
+    .dashboard-card{
+
+        padding:18px;
+    }
+
+    .dashboard-card h2{
+
+        font-size:22px;
+    }
+
+    table{
+
+        min-width:600px;
+    }
+}

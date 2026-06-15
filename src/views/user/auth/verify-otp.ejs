@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify OTP</title>
+
+  <link rel="stylesheet" href="/user/css/verify-otp.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<body>
+
+<section class="otp-section">
+
+  <div class="otp-container">
+
+  
+    <div class="otp-image">
+
+      <img
+        src="/user/images/e8ba27fa85b6bf897ee5d80d4dad5a22.jpg"
+        alt="Perfume"
+      >
+
+    </div>
+
+  
+    <div class="otp-content">
+
+      <h1 class="logo">
+        PERFUMO
+      </h1>
+
+      
+      <div class="otp-card">
+
+        <h2>Verify OTP</h2>
+
+        <p class="otp-text">
+          We've sent a code to your email
+        </p>
+
+        <form action="/verify-otp" method="POST">
+
+          <div class="otp-inputs">
+             <input type="hidden" name="otp" id="finalOtp"> 
+
+            <input type="text"  maxlength="1" required>
+            <input type="text" maxlength="1" required>
+            <input type="text"  maxlength="1" required>
+            <input type="text"  maxlength="1" required>
+            <input type="text" maxlength="1" required>
+            <input type="text"  maxlength="1" required>
+
+          </div>
+
+          <div class="timer">
+
+            <i class="fa-regular fa-clock"></i>
+
+            <span id="countdown">00:59</span>
+
+          </div>
+
+          <p class="resend-text">
+
+  Didn't receive the code?
+
+  <a href="#" id="resendOtp" class="disabled">
+    Resend code
+  </a>
+
+</p>
+          <button type="submit" class="verify-btn">
+            VERIFY
+          </button>
+
+        </form>
+
+        <a href="/signin" class="back-login">
+
+          <i class="fa-solid fa-arrow-left"></i>
+
+          Back to Login
+
+        </a>
+
+      </div>
+
+      <p class="terms">
+        PERFUMO Terms & Conditions
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<script>
+
+const inputs =
+document.querySelectorAll(
+'.otp-inputs input[type="text"]'
+);
+
+inputs.forEach((input, index) => {
+
+    input.addEventListener('input', (e) => {
+
+        if(e.target.value.length === 1){
+
+            if(inputs[index + 1]){
+                inputs[index + 1].focus();
+            }
+        }
+    });
+
+});
+
+let time = 59;
+
+const countdown =
+document.getElementById('countdown');
+
+const resendBtn =
+document.getElementById('resendOtp');
+
+let timer;
+
+function startTimer() {
+
+    clearInterval(timer);
+
+    time = 59;
+
+    resendBtn.classList.add('disabled');
+
+    countdown.innerText = "00:59";
+
+    timer = setInterval(() => {
+
+        if(time > 0){
+
+            time--;
+
+            countdown.innerText =
+            `00:${time < 10 ? '0' + time : time}`;
+
+        } else {
+
+            clearInterval(timer);
+
+            countdown.innerText = "00:00";
+
+            resendBtn.classList.remove('disabled');
+        }
+
+    }, 1000);
+}
+
+startTimer();
+
+const otpForm =
+document.querySelector('form');
+
+otpForm.addEventListener('submit',
+
+async (e) => {
+
+    e.preventDefault();
+
+    let otpValue = '';
+
+    inputs.forEach(input => {
+
+        otpValue += input.value;
+    });
+
+    try {
+
+        const response =
+        await fetch('/verify-otp', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({
+                otp: otpValue
+            })
+        });
+
+        const data =
+        await response.json();
+
+        if(data.success){
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Account Verified',
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+            setTimeout(() => {
+
+                window.location.href = data.next;
+
+            }, 1500);
+
+        } else {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Verification Failed',
+                text: data.message
+            });
+        }
+
+    } catch (error) {
+
+        console.log(error);
+    }
+});
+
+resendBtn.addEventListener('click',
+
+async (e) => {
+
+    e.preventDefault();
+
+    if(
+        !resendBtn.classList.contains('disabled')
+    ){
+
+        try {
+
+            const response =
+            await fetch('/resend-otp', {
+
+                method: 'POST'
+            });
+
+            const data =
+            await response.json();
+
+            if(data.success){
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'New OTP Sent',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                inputs.forEach(input => {
+                    input.value = '';
+                });
+
+                inputs[0].focus();
+
+                startTimer();
+
+            } else {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Something Went Wrong',
+                    text: data.message
+                });
+            }
+
+        } catch (error) {
+
+            console.log(error);
+        }
+    }
+});
+
+
+
+</script>
+
+</body>
+</html>
