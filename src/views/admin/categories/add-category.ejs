@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Add Category</title>
+
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/add-category.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<%- include('../partials/header') %>
+
+<div class="page">
+
+<%- include('../partials/sidebar') %>
+
+<main class="content">
+
+<div class="page-header">
+
+    <div>
+        <h2>Add Category</h2>
+        <p>Create a new perfume category</p>
+    </div>
+
+</div>
+
+
+<div class="form-card">
+
+<form
+id="categoryForm"
+action="/admin/categories/add"
+method="POST"
+enctype="multipart/form-data">
+
+<div class="form-grid">
+
+<div class="form-group">
+
+<label>Category Name</label>
+
+<input
+type="text"
+name="name"
+id="name"
+placeholder="Enter category name"
+>
+<small class="error" id="nameError"></small>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Slug</label>
+
+<input
+type="text"
+name="slug"
+id="slug"
+placeholder="example : woody"
+>
+<small class="error" id="slugError"></small>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Parent Category</label>
+
+<select name="parentCategory">
+
+<option value="">None (Main Category)</option>
+
+<% if(parentCategories){ %>
+
+<% parentCategories.forEach(category=>{ %>
+
+<option value="<%= category._id %>">
+
+<%= category.name %>
+
+</option>
+
+<% }) %>
+
+<% } %>
+
+</select>
+
+</div>
+
+
+<div class="form-group full-width">
+
+<label>Description</label>
+
+<textarea
+name="description"
+rows="5"
+id="description"
+placeholder="Enter category description"></textarea>
+
+<small class="error" id="descriptionError"></small>
+
+</div>
+
+
+<div class="form-group full-width">
+
+<label>Category Image</label>
+
+<input
+type="file"
+name="image"
+accept="image/*">
+
+</div>
+
+</div>
+
+
+<div class="button-group">
+
+<a
+href="/admin/categories"
+class="cancel-btn">
+
+Cancel
+
+</a>
+
+<button
+type="submit"
+class="save-btn">
+
+
+
+Save Category
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</main>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<% if(message){ %>
+
+<script>
+
+Swal.fire({
+    icon: "error",
+    title: "Error",
+    text: "<%= message.text %>",
+    confirmButtonText: "OK"
+});
+
+</script>
+
+<% } %>
+
+<script src="/admin/js/add-categories.js"></script>
+</body>
+
+</html>

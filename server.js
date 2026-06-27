@@ -17,7 +17,7 @@ import adminRoutes from './src/routes/admin/adminRoutes.js';
 import userdetailsRoutes from './src/routes/admin/userdetailsRoutes.js';
 import passport from './src/config/passport.js';
 import googleAuthRoutes from './src/routes/user/googleAuthRoutes.js';
-
+import categoryRoutes from   "./src/routes/admin/categoryRoutes.js"
 
 const app = express();
 
@@ -49,7 +49,10 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET || 'secretkey',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 30 * 60 * 1000
+    }
   })
 );
 
@@ -84,6 +87,7 @@ app.use('/admin', adminRoutes);
 app.use("/admin", userRoutes);
 
 app.use('/admin',userdetailsRoutes);
+app.use('/admin',categoryRoutes);
 
 app.use((req, res, next) => {
 

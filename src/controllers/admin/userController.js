@@ -187,6 +187,12 @@ export const addUser = async (req, res) => {
       });
 
     }
+    if(phone.length!==10||!phone){
+      return res.json({
+        success:false,
+        message:'Phone number should be 10 digits'
+      })
+    }
 
     const hashedPassword =
       await bcrypt.hash(password, 10);

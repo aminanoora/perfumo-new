@@ -399,7 +399,6 @@ export const addAddress = async (req, res) => {
             country,
             isDefault
         } = req.body;
-
         if (
             !phone ||
             !streetAddress ||
@@ -434,7 +433,6 @@ if (defaultValue) {
         { $set: { isDefault: false } }
     );
 }
-
 const newAddress = new Address({
 
     userId: user._id,

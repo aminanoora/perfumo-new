@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Categories</title>
+
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/categories.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+ <%- include('../partials/header') %>   
+
+ 
+
+<div class="page">
+
+  <%- include('../partials/sidebar') %>
+<main class="content">
+
+
+<div class="category-topbar">
+
+    <div class="page-title">
+
+        <h2>Category</h2>
+
+        <p>Manage perfume categories</p>
+
+    </div>
+
+    <a href="/admin/categories/add" class="add-category-btn">
+
+        <i class="fa-solid fa-plus"></i>
+
+        Add Category
+
+    </a>
+
+</div>
+
+
+<div class="toolbar">
+
+<form action="/admin/categories" method="GET" id="searchForm">
+
+<div class="search-box">
+
+    <button type="submit" class="search-btn">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+
+
+    
+    <input
+        type="text"
+        name="search"
+        id="searchInput"
+        placeholder="Search category..."
+        value="<%= search || '' %>">
+
+    <% if(search){ %>
+        <button
+            type="button"
+            id="clearSearch"
+            class="clear-btn">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    <% } %>
+
+
+
+<input type="hidden" name="sort" value="<%= sort %>">
+</div>
+</form>
+
+<select
+id="sortSelect"
+onchange="location=this.value">
+
+<option
+value="/admin/categories?sort=desc"
+<%= sort === 'desc' ? 'selected' : '' %>>
+
+Latest First
+
+</option>
+
+<option
+value="/admin/categories?sort=asc"
+<%= sort === 'asc' ? 'selected' : '' %>>
+
+Oldest First
+
+</option>
+
+</select>
+
+</div>
+
+
+
+<div class="table-wrapper">
+
+<table class="category-table">
+
+<thead>
+
+<tr>
+
+<th>Category</th>
+
+
+
+<th>Products</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<% categories.forEach(category=>{ %>
+
+<tr>
+
+<td>
+
+<div class="category-cell">
+
+
+<h4><%= category.name %></h4>
+
+
+
+</div>
+
+</div>
+
+</td>
+
+
+
+<td>
+
+<%= category.productCount %>
+
+</td>
+
+<td>
+
+<% if(category.isListed){ %>
+
+<span class="status active">
+
+Listed
+
+</span>
+
+<% }else{ %>
+
+<span class="status blocked">
+
+Hidden
+
+</span>
+
+<% } %>
+
+</td>
+
+<td>
+
+<div class="actions">
+
+<button
+class="dots">
+
+<i class="fa-solid fa-ellipsis-vertical"></i>
+
+</button>
+
+<div class="dropdown">
+
+<a href="/admin/categories/<%= category._id %>">
+
+View Details
+
+</a>
+
+
+
+</div>
+
+</div>
+
+</td>
+
+</tr>
+
+<% }) %>
+
+</tbody>
+
+</table>
+
+
+
+<div class="pagination-wrapper">
+
+<div class="pagination">
+
+<nav aria-label="Category pagination">
+  <ul class="pagination justify-content-center">
+
+    <% for(let i = 1; i <= totalPages; i++) { %>
+
+      <li class="page-item <%= page === i ? 'active' : '' %>">
+
+        <a
+          class="page-link"
+          href="/admin/categories?page=<%= i %>&search=<%= search %>&sort=<%= sort %>"
+        >
+          <%= i %>
+        </a>
+
+      </li>
+
+    <% } %>
+
+  </ul>
+</nav>
+
+</div>
+
+</div>
+</main>
+
+</div>
+</div>
+
+<script src="/admin/js/categories.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if(message){ %>
+
+<script>
+
+Swal.fire({
+    icon: "<%= message.type %>",
+    title: "<%= message.type === 'success' ? 'Success' : 'Error' %>",
+    text: "<%= message.text %>",
+    confirmButtonText: "OK"
+});
+
+</script>
+
+<% } %>
+</body>
+</html>
