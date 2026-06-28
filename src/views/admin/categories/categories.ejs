@@ -198,11 +198,13 @@ class="dots">
 
 <div class="dropdown">
 
-<a href="/admin/categories/<%= category._id %>">
-
-View Details
-
+<a
+    href="/admin/categories/<%= category._id.toString() %>"
+    onclick="console.log(this.href)">
+    View Details
 </a>
+
+<p><%= category._id.toString() %></p>
 
 
 

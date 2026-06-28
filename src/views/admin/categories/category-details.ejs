@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Category Details</title>
+
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/category-details.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<%- include('../partials/header') %>
+
+<div class="page">
+
+<%- include('../partials/sidebar') %>
+
+<main class="content">
+
+
+
+<div class="page-header">
+
+    <div>
+
+        <h2>Category Details</h2>
+
+        <p>View and manage category information</p>
+
+    </div>
+
+    <div class="header-actions">
+
+        <a
+            href="/admin/categories/edit/<%= category._id %>"
+            class="btn edit-btn">
+
+            <i class="fa-solid fa-pen"></i>
+
+            Edit
+
+        </a>
+
+        <% if(category.isListed){ %>
+
+        <a
+            href="/admin/categories/unlist/<%= category._id %>"
+            class="btn warning-btn">
+
+            <i class="fa-solid fa-eye-slash"></i>
+
+            Unlist
+
+        </a>
+
+        <% } else { %>
+
+        <a
+            href="/admin/categories/list/<%= category._id %>"
+            class="btn success-btn">
+
+            <i class="fa-solid fa-eye"></i>
+
+            List
+
+        </a>
+
+        <% } %>
+
+        <button
+            class="btn delete-btn"
+            onclick="deleteCategory('<%= category._id %>')">
+
+            <i class="fa-solid fa-trash"></i>
+
+            Delete
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<div class="category-card">
+
+<div class="category-image">
+
+<% if(category.image){ %>
+
+<img
+src="<%= category.image %>"
+alt="Category">
+
+<% }else{ %>
+
+<div class="image-placeholder">
+
+<i class="fa-solid fa-spray-can-sparkles"></i>
+
+</div>
+
+<% } %>
+
+</div>
+
+
+<div class="category-info">
+
+<div class="info-row">
+
+<label>Name</label>
+
+<span><%= category.name %></span>
+
+</div>
+
+
+<div class="info-row">
+
+<label>Slug</label>
+
+<span><%= category.slug %></span>
+
+</div>
+
+
+<div class="info-row">
+
+<label>Parent Category</label>
+
+<span>
+
+<%= category.parentCategory ? category.parentCategory.name : "Top Level Category" %>
+
+</span>
+
+</div>
+
+
+<div class="info-row">
+
+<label>Status</label>
+
+<% if(category.isListed){ %>
+
+<span class="status listed">
+
+Listed
+
+</span>
+
+<% }else{ %>
+
+<span class="status unlisted">
+
+Unlisted
+
+</span>
+
+<% } %>
+
+</div>
+
+
+<div class="info-row description">
+
+<label>Description</label>
+
+<p>
+
+<%= category.description || "No description available." %>
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="products-card">
+
+<div class="table-header">
+
+<div>
+
+<h3>
+
+Products Under
+
+"<%= category.name %>"
+
+</h3>
+
+<p>
+
+<%= totalProducts %> Products
+
+</p>
+
+</div>
+
+<form method="GET" action="/admin/categories/<%= category._id %>">
+<div class="search-box">
+
+    <button type="submit" class="search-btn">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+
+    <input
+        type="text"
+        id="searchInput"
+        name="search"
+        placeholder="Search product..."
+        value="<%= search %>">
+
+    <% if(search){ %>
+    <button
+        type="button"
+        id="clearSearch"
+        class="clear-btn">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+    <% } %>
+
+</div>
+
+</form>
+</div>
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Image</th>
+
+<th>Product Name</th>
+
+<th>Brand</th>
+
+<th>Stock</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<% if(products.length){ %>
+
+<% products.forEach(product=>{ %>
+
+<tr>
+
+<td>
+
+<img
+class="product-image"
+src="<%= product.images && product.images.length ? product.images[0] : '/admin/images/no-image.png' %>">
+
+</td>
+
+<td>
+
+<%= product.name %>
+
+</td>
+
+<td>
+
+<%= product.brand %>
+
+</td>
+
+<td>
+
+<%= product.stock %>
+
+</td>
+
+<td>
+
+<% if(product.isListed){ %>
+
+<span class="status listed">
+
+Listed
+
+</span>
+
+<% }else{ %>
+
+<span class="status unlisted">
+
+Hidden
+
+</span>
+
+<% } %>
+
+</td>
+
+</tr>
+
+<% }) %>
+
+<% }else{ %>
+
+<tr>
+
+<td colspan="5" class="empty">
+
+No Products Found
+
+</td>
+
+</tr>
+
+<% } %>
+
+</tbody>
+
+</table>
+
+</div>
+
+
+
+<div class="pagination-wrapper">
+
+<nav>
+
+<ul class="pagination">
+
+<% for(let i=1;i<=totalPages;i++){ %>
+
+<li class="<%= page===i ? 'active':'' %>">
+
+<a href="/admin/categories/<%= category._id %>?page=<%= i %>&search=<%= search %>">
+
+<%= i %>
+
+</a>
+
+</li>
+
+<% } %>
+
+</ul>
+
+</nav>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+function deleteCategory(id){
+
+Swal.fire({
+
+title:"Delete Category?",
+
+text:"This will soft delete the category.",
+
+icon:"warning",
+
+showCancelButton:true,
+
+confirmButtonColor:"#d33",
+
+confirmButtonText:"Delete"
+
+}).then(result=>{
+
+if(result.isConfirmed){
+
+fetch("/admin/categories/delete/"+id,{
+
+method:"POST"
+
+})
+.then(res=>res.json())
+.then(data=>{
+
+Swal.fire({
+
+icon:"success",
+
+title:"Deleted",
+
+text:data.message
+
+}).then(()=>{
+
+window.location="/admin/categories";
+
+});
+
+});
+
+}
+
+});
+
+}
+const searchInput = document.getElementById("searchInput");
+
+const clearBtn = document.getElementById("clearSearch");
+
+if (clearBtn) {
+
+    clearBtn.addEventListener("click", () => {
+
+        searchInput.value = "";
+
+        window.location = "/admin/categories/<%= category._id %>";
+
+    });
+
+}
+
+</script>
+
+</body>
+
+</html>

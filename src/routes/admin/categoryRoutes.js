@@ -49,6 +49,7 @@ router.get(
 router.post(
     "/categories/edit/:id",
     adminAuth,
+     uploadCategory.single("image"),
     updateCategory
 );
 

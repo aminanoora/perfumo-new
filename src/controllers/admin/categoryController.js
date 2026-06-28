@@ -1,6 +1,6 @@
 import Category from "../../models/Category.js";
 import Product from "../../models/Product.js";
-
+import mongoose from "mongoose";
 
 
 export const getCategoriesPage = async (req, res) => {
@@ -14,7 +14,7 @@ export const getCategoriesPage = async (req, res) => {
         const search = req.query.search?.trim() || "";
         const sort = req.query.sort || "desc";
 
-        const query = {};
+        const query = { isDeleted: false};
 
         if (search) {
             query.name = {
@@ -79,7 +79,8 @@ export const loadAddCategory = async (req, res) => {
     try {
 
         const parentCategories = await Category.find({
-            parentCategory: null
+            parentCategory: null,
+              isDeleted: false
         });
         
         const message = req.session.message;
@@ -164,164 +165,234 @@ export const addCategory = async (req, res) => {
 
 
 export const loadEditCategory = async (req, res) => {
-
     try {
 
-        const category =
-            await Category.findById(req.params.id);
+        const category = await Category.findById(req.params.id);
 
-        if (!category) {
+        const parentCategories = await Category.find({
+            isDeleted: false,
+            _id: { $ne: req.params.id }
+        });
 
-            return res.redirect("/admin/categories");
+        const message = req.session.message;
+        req.session.message = null;
 
-        }
+        res.render("admin/categories/edit-category", {
+            category,
+            parentCategories,
+            active: "category",
+            message
+        });
 
-        res.render(
-
-            "admin/categories/edit-category",
-
-            { category }
-            
-        );
-
-    } catch (error) {
-
-        console.log(error);
-
+    } catch (err) {
+        console.log(err);
         res.redirect("/admin/categories");
-
     }
-
 };
 
 
 
 
 export const updateCategory = async (req, res) => {
-
     try {
 
-        const {
+        const { name, slug, parentCategory, description } = req.body;
 
-            name,
+        const categoryId = req.params.id;
 
-            description
+        const removeImage = req.body.removeImage;
 
-        } = req.body;
+      
+        const category = await Category.findById(categoryId);
 
-        await Category.findByIdAndUpdate(
+        if (!category) {
 
-            req.params.id,
+            req.session.message = {
+                type: "error",
+                text: "Category not found."
+            };
 
-            {
+            return res.redirect("/admin/categories");
+        }
 
-                name,
+       
+        const existingName = await Category.findOne({
+            name: name,
+            _id: { $ne: categoryId },
+            isDeleted: false
+        });
 
-                description
+        if (existingName) {
 
-            }
+            req.session.message = {
+                type: "warning",
+                text: "Category name already exists."
+            };
 
-        );
+            return res.redirect(`/admin/categories/edit/${categoryId}`);
+        }
 
-        res.json({
+       
+        const existingSlug = await Category.findOne({
+            slug: slug,
+            _id: { $ne: categoryId },
+            isDeleted: false
+        });
 
-            success: true,
+        if (existingSlug) {
 
-            message: "Category updated"
+            req.session.message = {
+                type: "warning",
+                text: "Slug already exists."
+            };
+
+            return res.redirect(`/admin/categories/edit/${categoryId}`);
+        }
+
+       let image = category.image;
+
+if(removeImage === "true"){
+    image = "";
+}
+
+if(req.file){
+    image = "/admin/uploads/categories/" + req.file.filename;
+} 
+    
+        await Category.findByIdAndUpdate(categoryId, {
+
+            name: name,
+            slug: slug,
+            parentCategory: parentCategory || null,
+            description,
+            image
 
         });
+
+        const updated = await Category.findById(categoryId);
+
+
+        req.session.message = {
+            type: "success",
+            text: "Category updated successfully."
+        };
+
+        return res.redirect(`/admin/categories/edit/${categoryId}`);
 
     } catch (error) {
 
         console.log(error);
 
-        res.json({
+        req.session.message = {
+            type: "error",
+            text: "Unable to update category."
+        };
 
-            success: false,
-
-            message: "Server Error"
-
-        });
-
+        return res.redirect(`/admin/categories/edit/${req.params.id}`);
     }
-
 };
-
-
 
 
 export const categoryDetails = async (req, res) => {
-
     try {
 
-        const category =
-            await Category.findById(req.params.id);
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
 
-        const products =
-            await Product.find({
+        const search = req.query.search?.trim() || "";
 
-                category: req.params.id
+        const category = await Category.findById(req.params.id)
+            .populate("parentCategory");
 
-            });
+        if (!category || category.isDeleted) {
 
-        const brands =
-            await Product.distinct(
+            req.session.message = {
+                type: "error",
+                text: "Category not found."
+            };
 
-                "brand",
+            return res.redirect("/admin/categories");
+        }
 
-                {
+        const query = {
+            category: category._id
+        };
 
-                    category: req.params.id
+        if (search) {
+            query.name = {
+                $regex: search,
+                $options: "i"
+            };
+        }
 
-                }
+        const totalProducts = await Product.countDocuments(query);
 
-            );
+        const products = await Product.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
 
-        res.render(
+        const totalBrands = (
+            await Product.distinct("brand", {
+                category: category._id
+            })
+        ).length;
 
-            "admin/categories/category-details",
+        const message = req.session.message;
+        req.session.message = null;
 
-            {
-
-                category,
-
-                products,
-
-                brands,
-                 active: "categories"
-
-            }
-
-        );
+        res.render("admin/categories/category-details", {
+            category,
+            products,
+            totalProducts,
+            totalBrands,
+            page,
+            totalPages: Math.ceil(totalProducts / limit),
+            search,
+            message,
+            active: "category"
+        });
 
     } catch (error) {
 
         console.log(error);
 
+        req.session.message = {
+            type: "error",
+            text: "Unable to load category."
+        };
+
         res.redirect("/admin/categories");
-
     }
-
 };
-
-
 
 
 export const listCategory = async (req, res) => {
 
     try {
 
-        await Category.findByIdAndUpdate(
+        const category = await Category.findById(req.params.id);
 
-            req.params.id,
+        if (!category) {
 
-            {
+            req.session.message = {
+                type: "error",
+                text: "Category not found."
+            };
 
-                isListed: true
+            return res.redirect("/admin/categories");
 
-            }
+        }
 
-        );
+        category.isListed = true;
+
+        await category.save();
+
+        req.session.message = {
+            type: "success",
+            text: "Category listed successfully."
+        };
 
         res.redirect("/admin/categories");
 
@@ -329,12 +400,16 @@ export const listCategory = async (req, res) => {
 
         console.log(error);
 
+        req.session.message = {
+            type: "error",
+            text: "Unable to list category."
+        };
+
         res.redirect("/admin/categories");
 
     }
 
 };
-
 
 
 
@@ -342,23 +417,38 @@ export const unlistCategory = async (req, res) => {
 
     try {
 
-        await Category.findByIdAndUpdate(
+        const category = await Category.findById(req.params.id);
 
-            req.params.id,
+        if (!category) {
 
-            {
+            req.session.message = {
+                type: "error",
+                text: "Category not found."
+            };
 
-                isListed: false
+            return res.redirect("/admin/categories");
 
-            }
+        }
 
-        );
+        category.isListed = false;
+
+        await category.save();
+
+        req.session.message = {
+            type: "success",
+            text: "Category hidden successfully."
+        };
 
         res.redirect("/admin/categories");
 
     } catch (error) {
 
         console.log(error);
+
+        req.session.message = {
+            type: "error",
+            text: "Unable to hide category."
+        };
 
         res.redirect("/admin/categories");
 
@@ -367,42 +457,48 @@ export const unlistCategory = async (req, res) => {
 };
 
 
-
 export const deleteCategory = async (req, res) => {
 
     try {
 
+        const categoryId = req.params.id;
+
+        const productExists = await Product.exists({
+            category: categoryId
+        });
+
+        if (productExists) {
+
+             return res.json({
+            success: false,
+            message: "Cannot delete category because products exist under it."
+             });
+            return res.redirect(`/admin/categories/${categoryId}`);
+        }
+
         await Category.findByIdAndUpdate(
-
-            req.params.id,
-
+            categoryId,
             {
-
-                isDeleted: true
-
+                isDeleted: true,
+                isListed: false
             }
-
         );
 
-        res.json({
-
-            success: true,
-
-            message: "Category deleted"
-
+        return res.json({
+        success: true,
+        message: "Category deleted successfully."
         });
+
+        res.redirect("/admin/categories");
 
     } catch (error) {
 
         console.log(error);
-
-        res.json({
-
-            success: false,
-
-            message: "Server Error"
-
-        });
+return res.json({
+    success: false,
+    message: "Something went wrong."
+});
+        res.redirect("/admin/categories");
 
     }
 

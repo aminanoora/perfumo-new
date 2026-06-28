@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Category</title>
+
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/add-category.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+
+<body>
+
+<%- include('../partials/header') %>
+
+<div class="page">
+
+<%- include('../partials/sidebar') %>
+
+<main class="content">
+
+<div class="page-header">
+
+    <div>
+
+        <h2>Edit Category</h2>
+
+        <p>Update category details</p>
+
+    </div>
+
+</div>
+
+<div class="form-card">
+
+<form
+    id="categoryForm"
+    action="/admin/categories/edit/<%= category._id %>"
+    method="POST"
+    enctype="multipart/form-data">
+
+<div class="form-grid">
+
+<div class="form-group">
+
+<label>Category Name</label>
+
+<input
+    type="text"
+    id="name"
+    name="name"
+    value="<%= category.name %>">
+
+<small class="error" id="nameError"></small>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Slug</label>
+
+<input
+    type="text"
+    id="slug"
+    name="slug"
+    value="<%= category.slug %>">
+
+<small class="error" id="slugError"></small>
+
+</div>
+
+
+<div class="form-group">
+
+<label>Parent Category</label>
+
+<select name="parentCategory">
+
+    <option value="">None (Main Category)</option>
+
+   <% parentCategories.forEach(parent => { %>
+
+    <% if(String(parent._id) !== String(category._id)){ %>
+
+        <% const selected =
+    category.parentCategory &&
+    String(category.parentCategory) === String(parent._id);
+%>
+
+        <option
+            value="<%= parent._id %>"
+            <%= selected ? "selected" : "" %>>
+            <%= parent.name %>
+        </option>
+
+    <% } %>
+
+<% }) %>
+
+</select>
+
+</div>
+
+
+<div class="form-group full-width">
+
+<label>Description</label>
+
+<textarea
+id="description"
+name="description"
+rows="5"><%= category.description %></textarea>
+
+<small class="error" id="descriptionError"></small>
+
+</div>
+
+
+<div class="form-group full-width">
+
+    <label>Current Image</label>
+
+    <div class="image-box">
+
+        <% if(category.image){ %>
+
+           <img
+class="category-preview"
+id="previewImage"
+src="<%= category.image %>"
+alt="Category Image">
+        <% } else { %>
+
+            <img
+class="category-preview"
+id="previewImage"
+src="/admin/images/no-image.png"
+alt="No Image">
+
+        <% } %>
+
+    </div>
+
+    <div class="image-actions">
+
+        <label class="change-image">
+
+            <i class="fa-solid fa-camera"></i>
+
+            Change Image
+
+            <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                hidden>
+
+        </label>
+
+        <button
+            type="button"
+            class="remove-image-btn"
+            id="removeImage">
+
+            <i class="fa-solid fa-trash"></i>
+
+            Remove Image
+
+        </button>
+
+    </div>
+
+    <input
+        type="hidden"
+        name="removeImage"
+        id="removeImageInput"
+        value="false">
+
+</div>
+
+</div>
+
+<div class="button-group">
+
+<a
+href="/admin/categories"
+class="cancel-btn">
+
+Cancel
+
+</a>
+
+<button
+type="submit"
+class="save-btn">
+
+Update Category
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="/admin/js/edit-category.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if(typeof message !== "undefined" && message){ %>
+
+<script>
+
+Swal.fire({
+
+    icon:"<%= message.type %>",
+
+    title:
+        "<%= message.type==='success'
+            ? 'Success'
+            : message.type==='warning'
+            ? 'Warning'
+            : 'Error' %>",
+
+    text:"<%= message.text %>",
+
+    confirmButtonColor:
+        "<%= message.type==='success'
+            ? '#2d7ff9'
+            : message.type==='warning'
+            ? '#f59e0b'
+            : '#dc2626' %>"
+
+});
+
+</script>
+
+<% } %>
+
+</body>
+
+</html>
