@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Brands</title>
+
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/brands.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+<%- include('../partials/header') %>
+
+<div class="page">
+
+<%- include('../partials/sidebar') %>
+
+<main class="content">
+
+<div class="brand-topbar">
+
+    <div class="page-title">
+
+        <h2>Brands</h2>
+
+        <p>Manage perfume brands</p>
+
+    </div>
+
+    <a
+        href="/admin/brand/add"
+        class="add-brand-btn">
+
+        <i class="fa-solid fa-plus"></i>
+
+        Add Brand
+
+    </a>
+
+</div>
+
+
+
+<div class="toolbar">
+
+<form
+    action="/admin/brand"
+    method="GET"
+    id="searchForm">
+
+<div class="search-box">
+
+    <button
+        type="submit"
+        class="search-btn">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+    </button>
+
+    <input
+        type="text"
+        id="searchInput"
+        name="search"
+        placeholder="Search brand..."
+        value="<%= search || '' %>">
+
+    <% if(search){ %>
+
+    <button
+        type="button"
+        id="clearSearch"
+        class="clear-btn">
+
+        <i class="fa-solid fa-xmark"></i>
+
+    </button>
+
+    <% } %>
+
+  <input type="hidden" name="sort" value="<%= sort %>">
+  <input type="hidden" name="status" value="<%= status %>">
+
+</div>
+
+</form>
+
+
+
+<select id="sortSelect" onchange="location=this.value">
+
+    <option
+        value="/admin/brand?sort=desc&status=<%= status || '' %>&search=<%= search %>"
+        <%= sort === "desc" ? "selected" : "" %>>
+        Latest First
+    </option>
+
+    <option
+        value="/admin/brand?sort=asc&status=<%= status || '' %>&search=<%= search %>"
+        <%= sort === "asc" ? "selected" : "" %>>
+        Oldest First
+    </option>
+
+    <option
+        value="/admin/brand?sort=<%= sort %>&status=listed&search=<%= search %>"
+        <%= status === "listed" ? "selected" : "" %>>
+        Listed Brands
+    </option>
+
+    <option
+        value="/admin/brand?sort=<%= sort %>&status=unlisted&search=<%= search %>"
+        <%= status === "unlisted" ? "selected" : "" %>>
+        Unlisted Brands
+    </option>
+
+    <option
+        value="/admin/brand?sort=<%= sort %>&status=&search=<%= search %>"
+        <%= !status ? "selected" : "" %>>
+        All Brands
+    </option>
+
+</select>
+</div>
+
+
+
+<div class="table-wrapper">
+
+<table class="brand-table">
+
+<thead>
+
+<tr>
+
+<th>Brand</th>
+
+<th>Products</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<% if(brands.length){ %>
+
+<% brands.forEach(brand=>{ %>
+
+<tr>
+
+<td>
+
+<div class="brand-cell">
+
+<h4>
+
+<%= brand.name %>
+
+</h4>
+
+</div>
+
+</td>
+
+<td>
+
+<%= brand.productCount %>
+
+</td>
+
+<td>
+
+<% if(brand.isListed){ %>
+
+<span class="status active">
+
+Listed
+
+</span>
+
+<% }else{ %>
+
+<span class="status blocked">
+
+Hidden
+
+</span>
+
+<% } %>
+
+</td>
+
+<td>
+
+<div class="actions">
+
+<button class="dots">
+
+<i class="fa-solid fa-ellipsis-vertical"></i>
+
+</button>
+
+<div class="dropdown">
+
+<a href="/admin/brand/<%= brand._id %>">
+
+View Details
+
+</a>
+
+</div>
+
+</div>
+
+</td>
+
+</tr>
+
+<% }) %>
+
+<% }else{ %>
+
+<tr>
+
+<td
+    colspan="4"
+    class="empty">
+
+No Brands Found
+
+</td>
+
+</tr>
+
+<% } %>
+
+</tbody>
+
+</table>
+
+
+
+
+
+<div class="pagination-wrapper">
+
+<div class="pagination">
+
+<nav aria-label="Category pagination">
+
+<ul class="pagination">
+
+<% for(let i=1;i<=totalPages;i++){ %>
+
+<li class="<%= page===i ? 'active' : '' %>">
+
+<a
+    href="/admin/brand?page=<%= i %>&search=<%= search %>&sort=<%= sort %>&status=<%= status %>">
+    <%= i %>
+</a>
+
+</li>
+
+<% } %>
+
+</ul>
+
+</nav>
+
+</div>
+
+</div>
+</div>
+</main>
+
+</div>
+
+<script src="/admin/js/brands.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if(message){ %>
+
+<script>
+
+Swal.fire({
+
+icon:"<%= message.type %>",
+
+title:"<%= message.type==='success' ? 'Success' : 'Error' %>",
+
+text:"<%= message.text %>",
+
+confirmButtonText:"OK"
+
+});
+
+</script>
+
+<% } %>
+
+</body>
+
+</html>

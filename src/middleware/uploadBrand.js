@@ -2,8 +2,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-const uploadPath = "src/public/admin/uploads/categories";
-
+const uploadPath = "src/public/admin/uploads/brands";
 
 if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
@@ -12,18 +11,18 @@ if (!fs.existsSync(uploadPath)) {
 const storage = multer.diskStorage({
 
     destination: (req, file, cb) => {
-
         cb(null, uploadPath);
-
     },
 
     filename: (req, file, cb) => {
 
         const uniqueName =
-            Date.now() + path.extname(file.originalname);
+            Date.now() +
+            "-" +
+            Math.round(Math.random() * 1e9) +
+            path.extname(file.originalname);
 
         cb(null, uniqueName);
-
     }
 
 });
@@ -32,38 +31,30 @@ const fileFilter = (req, file, cb) => {
 
     const allowedTypes = /jpg|jpeg|png|webp/;
 
-    const extension =
-        allowedTypes.test(
-            path.extname(file.originalname).toLowerCase()
-        );
+    const ext = allowedTypes.test(
+        path.extname(file.originalname).toLowerCase()
+    );
 
-    const mimeType =
-        allowedTypes.test(file.mimetype);
+    const mime = allowedTypes.test(file.mimetype);
 
-    if (extension && mimeType) {
-
+    if (ext && mime) {
         cb(null, true);
-
     } else {
-
-        cb(new Error("Only JPG, PNG and WEBP images are allowed"));
-
+        cb(new Error("Only JPG, JPEG, PNG and WEBP images are allowed."));
     }
 
 };
 
-const uploadCategory = multer({
+const uploadBrand = multer({
 
     storage,
 
     fileFilter,
 
     limits: {
-
         fileSize: 2 * 1024 * 1024
-
     }
 
 });
 
-export default uploadCategory;
+export default uploadBrand;

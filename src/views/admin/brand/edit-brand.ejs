@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Edit Brand</title>
+
+<link rel="stylesheet" href="/admin/css/admin.css">
+<link rel="stylesheet" href="/admin/css/edit-brand.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<%- include("../partials/header") %>
+
+<div class="page">
+
+<%- include("../partials/sidebar") %>
+
+<main class="content">
+
+<div class="page-header">
+
+<div>
+
+<h2>Edit Brand</h2>
+
+<p>Update perfume brand information</p>
+
+</div>
+
+</div>
+
+<div class="form-card">
+
+<form
+
+id="brandForm"
+
+action="/admin/brand/edit/<%= brand._id %>"
+
+method="POST"
+
+enctype="multipart/form-data">
+
+<div class="form-layout">
+
+<div class="left-section">
+
+<div class="form-group">
+
+<label>Brand Name</label>
+
+<input
+
+type="text"
+
+id="name"
+
+name="name"
+
+value="<%= brand.name %>"
+
+autocomplete="off">
+
+<small class="error" id="nameError"></small>
+
+</div>
+
+<div class="form-group">
+
+<label>Slug</label>
+
+<input
+
+type="text"
+
+id="slug"
+
+name="slug"
+
+value="<%= brand.slug %>"
+
+autocomplete="off">
+
+<small class="error" id="slugError"></small>
+
+</div>
+
+<div class="form-group">
+
+<label>Description</label>
+
+<textarea
+
+id="description"
+
+name="description"
+
+rows="6"><%= brand.description %></textarea>
+
+<small class="error" id="descriptionError"></small>
+
+</div>
+
+</div>
+
+<div class="right-section">
+
+<h3>Brand Logo</h3>
+
+<div class="logo-upload">
+
+<input
+
+type="file"
+
+id="logo"
+
+name="logo"
+
+accept="image/*"
+
+hidden>
+
+<div
+
+class="upload-box"
+
+id="uploadBox">
+
+<div
+
+class="upload-preview"
+
+id="previewContainer">
+
+<% if(brand.logo){ %>
+
+<img
+
+id="previewImage"
+
+src="<%= brand.logo %>"
+
+class="show-image">
+
+<div
+
+class="upload-placeholder"
+
+id="placeholder"
+
+style="display:none;">
+
+<i class="fa-solid fa-cloud-arrow-up"></i>
+
+<h4>Upload Brand Logo</h4>
+
+<p>PNG, JPG or WEBP</p>
+
+<button
+
+type="button"
+
+id="browseBtn"
+
+class="browse-btn">
+
+Browse Files
+
+</button>
+
+</div>
+
+<% } else { %>
+
+<img
+
+id="previewImage"
+
+src=""
+
+class="hide-image">
+
+<div
+
+class="upload-placeholder"
+
+id="placeholder">
+
+<i class="fa-solid fa-cloud-arrow-up"></i>
+
+<h4>Upload Brand Logo</h4>
+
+<p>PNG, JPG or WEBP</p>
+
+<button
+
+type="button"
+
+id="browseBtn"
+
+class="browse-btn">
+
+Browse Files
+
+</button>
+
+</div>
+
+<% } %>
+
+</div>
+
+</div>
+
+<small
+
+class="error"
+
+id="logoError"></small>
+
+</div>
+
+<div
+
+class="logo-actions"
+
+id="logoActions"
+
+<% if(!brand.logo){ %>
+
+style="display:none;"
+
+<% } %>>
+
+<button
+
+type="button"
+
+class="change-logo"
+
+id="changeLogo">
+
+<i class="fa-solid fa-rotate"></i>
+
+Change Logo
+
+</button>
+
+<button
+
+type="button"
+
+class="remove-logo"
+
+id="removeLogo">
+
+<i class="fa-solid fa-trash"></i>
+
+Remove Logo
+
+</button>
+
+<input
+
+type="hidden"
+
+name="removeLogo"
+
+id="removeLogoInput"
+
+value="false">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="button-group">
+
+<a
+
+href="/admin/brand"
+
+class="cancel-btn">
+
+Cancel
+
+</a>
+
+<button
+
+type="submit"
+
+class="save-btn">
+
+Update Brand
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="/admin/js/edit-brand.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if(typeof message !== "undefined" && message){ %>
+
+<script>
+
+Swal.fire({
+
+icon: "<%= message.type %>",
+
+title:
+"<%= message.type === 'success'
+? 'Success'
+: message.type === 'warning'
+? 'Warning'
+: 'Error' %>",
+
+text: "<%= message.text %>",
+
+confirmButtonColor:
+"<%= message.type === 'success'
+? '#2563eb'
+: message.type === 'warning'
+? '#f59e0b'
+: '#dc2626' %>"
+
+}).then(() => {
+
+<% if(message.type === "success"){ %>
+
+window.location.href="/admin/brand";
+
+<% } %>
+
+});
+
+</script>
+
+<% } %>
+
+</body>
+
+</html>

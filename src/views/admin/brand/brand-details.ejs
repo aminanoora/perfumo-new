@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Brand Details</title>
+
+<link rel="stylesheet" href="/admin/css/admin.css">
+<link rel="stylesheet" href="/admin/css/brand-details.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<%- include('../partials/header') %>
+
+<div class="page">
+
+<%- include('../partials/sidebar') %>
+
+<main class="content">
+
+<div class="page-header">
+
+<div>
+
+<h2>Brand Details</h2>
+
+<p>Manage Brand Information</p>
+
+</div>
+
+<div class="header-actions">
+
+<a
+href="/admin/brand/edit/<%= brand._id %>"
+class="edit-btn">
+
+<i class="fa-solid fa-pen"></i>
+
+Edit
+
+</a>
+
+<% if(brand.isListed){ %>
+
+<a
+href="/admin/brand/unlist/<%= brand._id %>"
+class="hide-btn">
+
+<i class="fa-solid fa-eye-slash"></i>
+
+Unlist
+
+</a>
+
+<% }else{ %>
+
+<a
+href="/admin/brand/list/<%= brand._id %>"
+class="show-btn">
+
+<i class="fa-solid fa-eye"></i>
+
+List
+
+</a>
+
+<% } %>
+
+<button
+class="delete-btn"
+onclick="deleteBrand('<%= brand._id %>')">
+
+<i class="fa-solid fa-trash"></i>
+
+Delete
+
+</button>
+
+</div>
+
+</div>
+
+<div class="details-card">
+
+<div class="brand-image">
+
+    <% if(brand.logo){ %>
+
+        <img src="<%= brand.logo %>" alt="<%= brand.name %>">
+
+    <% }else{ %>
+
+       <div class="image-placeholder">
+
+<i class="fa-solid fa-spray-can-sparkles"></i>
+
+</div>
+
+    <% } %>
+
+</div>
+
+<div class="brand-info">
+
+<div class="detail-group">
+
+<label>Name</label>
+
+<p><%= brand.name %></p>
+
+</div>
+
+<div class="detail-group">
+
+<label>Slug</label>
+
+<p><%= brand.slug %></p>
+
+</div>
+
+<div class="detail-group">
+
+<label>Status</label>
+
+<p>
+
+<% if(brand.isListed){ %>
+
+<span class="status active">
+
+Listed
+
+</span>
+
+<% }else{ %>
+
+<span class="status blocked">
+
+Hidden
+
+</span>
+
+<% } %>
+
+</p>
+
+</div>
+
+<div class="detail-group full">
+
+<label>Description</label>
+
+<p>
+
+<%= brand.description || "No description available." %>
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="toolbar">
+
+<div class="pro">
+
+    <h3>
+
+        Products Under
+
+        "<%= brand.name %>"
+
+    </h3>
+
+    <p>
+
+        <%= totalProducts %> Products
+
+    </p>
+
+</div>
+
+<form
+action="/admin/brand/<%= brand._id %>"
+method="GET"
+id="searchForm">
+
+<div class="search-box">
+
+<button
+type="submit"
+class="search-btn">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+</button>
+
+<input
+type="text"
+name="search"
+id="searchInput"
+placeholder="Search product..."
+value="<%= search || '' %>">
+
+<% if(search){ %>
+
+<button
+type="button"
+id="clearSearch"
+class="clear-btn">
+
+<i class="fa-solid fa-xmark"></i>
+
+</button>
+
+<% } %>
+
+</div>
+
+</form>
+
+</div>
+
+
+
+<div class="table-wrapper">
+
+<table class="product-table">
+
+<thead>
+
+<tr>
+
+<th>Product</th>
+
+<th>Stock</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<% if(products.length){ %>
+
+<% products.forEach(product=>{ %>
+
+<tr>
+
+<td>
+
+<%= product.name %>
+
+</td>
+
+<td>
+
+<%= product.stock %>
+
+</td>
+
+<td>
+
+<% if(product.isListed){ %>
+
+<span class="status active">
+
+Listed
+
+</span>
+
+<% }else{ %>
+
+<span class="status blocked">
+
+Hidden
+
+</span>
+
+<% } %>
+
+</td>
+
+</tr>
+
+<% }) %>
+
+<% }else{ %>
+
+<tr>
+
+<td colspan="3" class="empty">
+
+No Products Found
+
+</td>
+
+</tr>
+
+<% } %>
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="pagination-wrapper">
+
+<div class="pagination">
+
+<nav>
+
+<ul class="pagination">
+
+<% for(let i=1;i<=totalPages;i++){ %>
+
+<li class="<%= page===i ? 'active' : '' %>">
+
+<a
+href="/admin/brand/<%= brand._id %>?page=<%= i %>&search=<%= search %>">
+
+<%= i %>
+
+</a>
+
+</li>
+
+<% } %>
+
+</ul>
+
+</nav>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<script src="/admin/js/brand-details.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if(message){ %>
+
+<script>
+
+Swal.fire({
+
+icon:"<%= message.type %>",
+
+title:"<%= message.type==='success' ? 'Success' : 'Error' %>",
+
+text:"<%= message.text %>",
+
+confirmButtonColor:"#2d7ff9"
+
+});
+
+</script>
+
+<% } %>
+
+</body>
+
+</html>

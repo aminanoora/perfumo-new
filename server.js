@@ -18,6 +18,7 @@ import userdetailsRoutes from './src/routes/admin/userdetailsRoutes.js';
 import passport from './src/config/passport.js';
 import googleAuthRoutes from './src/routes/user/googleAuthRoutes.js';
 import categoryRoutes from   "./src/routes/admin/categoryRoutes.js"
+import brandRoutes from "./src/routes/admin/brandRoutes.js";
 
 const app = express();
 
@@ -88,6 +89,8 @@ app.use("/admin", userRoutes);
 
 app.use('/admin',userdetailsRoutes);
 app.use('/admin',categoryRoutes);
+
+app.use("/admin", brandRoutes);
 
 app.use((req, res, next) => {
 
