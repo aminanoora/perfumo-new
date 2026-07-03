@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shopping Cart | PERFUMO</title>
+
+    <link rel="stylesheet" href="/user/css/cart.css">
+    <link rel="stylesheet" href="/user/css/headers.css">
+    <link rel="stylesheet" href="/user/css/footer.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body>
+
+    <%- include("../partials/header") %>
+
+    <section class="cart-page">
+
+        <div class="container">
+
+            <div class="cart-header">
+
+                <h1>Shopping Cart</h1>
+
+                <div class="breadcrumb">
+
+                    <a href="/">Home</a>
+
+                    <span>/</span>
+
+                    <span>Shopping Cart</span>
+
+                </div>
+
+            </div>
+
+            <% if(cart && cart.items.length>0){ %>
+
+            <div class="cart-table">
+
+                <div class="cart-table-head">
+
+                    <div class="product-column">
+                        Product
+                    </div>
+
+                    <div class="price-column">
+                        Price
+                    </div>
+
+                    <div class="quantity-column">
+                        Quantity
+                    </div>
+
+                    <div class="total-column">
+                        Total
+                    </div>
+
+                </div>
+
+                <div class="cart-body">
+
+                    <% cart.items.forEach(item=>{ %>
+
+                    <div class="cart-row">
+
+                        <div class="product-column">
+
+                            <div class="product-card">
+
+                               <a href="/shop/product-details/<%= item.variant.product._id %>">
+
+                                    <img
+                                        src="/admin/uploads/products/<%= item.variant.images[0] %>"
+                                        alt="<%= item.variant.product.name%>">
+
+                                </a>
+
+                                <div class="product-info">
+
+                                    <h3>
+
+                                        <%=  item.variant.product.name%>
+
+                                    </h3>
+
+                                    <p>
+
+                                        <%= item.variant.size %> ml |
+                                        <%= item.variant.concentration %>
+
+                                    </p>
+
+                                    <% if(item.variant.stock===0){ %>
+
+                                    <span class="stock-badge out-stock">
+
+                                        Out of Stock
+
+                                    </span>
+
+                                    <% }else if(item.variant.stock<5){ %>
+
+                                    <span class="stock-badge low-stock">
+
+                                        Only <%= item.variant.stock %> Left
+
+                                    </span>
+
+                                    <% }else{ %>
+
+                                    <span class="stock-badge in-stock">
+
+                                        In Stock
+
+                                    </span>
+
+                                    <% } %>
+
+                                    <% if(item.variant.product.isDeleted || !item.variant.product.isListed){ %>
+
+                                    <span class="stock-badge blocked">
+
+                                        Product Unavailable
+
+                                    </span>
+
+                                    <% } %>
+
+                                    <button
+                                        class="remove-item"
+                                        data-id="<%= item._id %>">
+
+                                        Remove
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="price-column">
+
+                            <% if(item.variant.salePrice>0){ %>
+
+                            ₹<%= item.variant.salePrice.toLocaleString() %>
+
+                            <% }else{ %>
+
+                            ₹<%= item.variant.price.toLocaleString() %>
+
+                            <% } %>
+
+                        </div>
+
+                        <div class="quantity-column">
+
+                            <% if(item.variant.stock>0 &&item.variant.product.isListed && !item.variant.product.isDeleted){ %>
+
+                            <div class="quantity-box">
+
+                                <button
+                                    class="qty-minus"
+                                    data-id="<%= item._id %>">
+
+                                    -
+
+                                </button>
+
+                                <input
+                                    type="text"
+                                    value="<%= item.quantity %>"
+                                    readonly>
+
+                                <button
+                                    class="qty-plus"
+                                    data-id="<%= item._id %>">
+
+                                    +
+
+                                </button>
+
+                            </div>
+
+                            <% }else{ %>
+
+                            <button
+                                class="disabled-btn"
+                                disabled>
+
+                                Unavailable
+
+                            </button>
+
+                            <% } %>
+
+                        </div>
+
+                        <div class="total-column">
+
+                            <% const price=item.variant.salePrice>0 ? item.variant.salePrice : item.variant.price %>
+
+                            ₹<%= (price*item.quantity).toLocaleString() %>
+
+                        </div>
+
+                    </div>
+
+                    <% }) %>
+
+                </div>
+
+                                </div>
+
+                <div class="cart-bottom">
+
+                    <div class="gift-wrap">
+
+                        <label>
+
+                            <input
+                                type="checkbox"
+                                id="giftWrap"
+                                <%= cart.giftWrap ? "checked" : "" %>>
+
+                            <span></span>
+
+                            Gift Wrap (+ ₹30)
+
+                        </label>
+
+                    </div>
+
+                    <div class="cart-summary">
+
+                        <div class="summary-row">
+
+                            <span>
+
+                                Items
+
+                            </span>
+
+                            <span>
+
+                                <%= cart.items.length %>
+
+                            </span>
+
+                        </div>
+
+                        <div class="summary-row">
+
+                            <span>
+
+                                Subtotal
+
+                            </span>
+
+                            <span>
+
+                                ₹<%= subtotal.toLocaleString() %>
+
+                            </span>
+
+                        </div>
+
+                        <div class="summary-row">
+
+                            <span>
+
+                                Shipping
+
+                            </span>
+
+                            <span>
+
+                                <%= shipping===0 ? "Free" : "₹"+shipping.toLocaleString() %>
+
+                            </span>
+
+                        </div>
+
+                        <div class="summary-row">
+
+                            <span>
+
+                                Gift Wrap
+
+                            </span>
+
+                            <span>
+
+                                ₹<%= giftWrapAmount.toLocaleString() %>
+
+                            </span>
+
+                        </div>
+
+                        <% if(discount>0){ %>
+
+                        <div class="summary-row discount">
+
+                            <span>
+
+                                Discount
+
+                            </span>
+
+                            <span>
+
+                                - ₹<%= discount.toLocaleString() %>
+
+                            </span>
+
+                        </div>
+
+                        <% } %>
+
+                        <div class="summary-total">
+
+                            <span>
+
+                                Total
+
+                            </span>
+
+                            <span>
+
+                                ₹<%= grandTotal.toLocaleString() %>
+
+                            </span>
+
+                        </div>
+
+                        <% if(hasUnavailableProducts){ %>
+
+                        <button
+                            class="checkout-btn disabled"
+                            disabled>
+
+                            Remove unavailable products to Checkout
+
+                        </button>
+
+                        <% }else{ %>
+
+                        <a
+                            href="/checkout"
+                            class="checkout-btn">
+
+                            Proceed to Checkout
+
+                        </a>
+
+                        <% } %>
+
+                        <a
+                            href="/shop"
+                            class="continue-shopping">
+
+                            Continue Shopping
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <% }else{ %>
+
+            <div class="empty-cart">
+
+                <img
+                    src="/user/images/empty-cart.svg"
+                    alt="Empty Cart">
+
+                <h2>
+
+                    Your cart is empty
+
+                </h2>
+
+                <p>
+
+                    Looks like you haven't added any perfumes yet.
+
+                </p>
+
+                <a
+                    href="/shop"
+                    class="shop-btn">
+
+                    Shop Now
+
+                </a>
+
+            </div>
+
+            <% } %>
+
+        </div>
+
+    </section>
+
+    <%- include("../partials/footer") %>
+
+    <script>
+
+        const flash = "<%= typeof message !== 'undefined' ? message : '' %>";
+        const type = "<%= typeof messageType !== 'undefined' ? messageType : '' %>";
+
+        if (flash) {
+
+            Swal.fire({
+
+                icon: type || "success",
+
+                title: flash,
+
+                timer: 1800,
+
+                showConfirmButton: false
+
+            });
+
+        }
+
+    </script>
+
+    <script src="/user/js/cart.js"></script>
+
+</body>
+
+</html>

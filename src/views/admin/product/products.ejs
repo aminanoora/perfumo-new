@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Products</title>
+
+<link rel="stylesheet" href="/admin/css/admin.css">
+<link rel="stylesheet" href="/admin/css/products.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<%- include('../partials/header') %>
+
+<div class="page">
+
+<%- include('../partials/sidebar') %>
+
+<main class="content">
+
+<div class="page-header">
+
+<div>
+
+<h2>Products</h2>
+
+<p>Manage perfume products</p>
+
+</div>
+
+<div>
+
+<a href="/admin/product/add-product" class="add-btn">
+
+<i class="fa-solid fa-plus"></i>
+
+Add Product
+
+</a>
+
+</div>
+
+</div>
+
+<div class="toolbar">
+
+<form
+action="/admin/product"
+method="GET"
+id="searchForm">
+
+<div class="search-box">
+
+<button
+type="submit"
+class="search-btn">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+</button>
+
+<input
+type="text"
+name="search"
+id="searchInput"
+placeholder="Search product..."
+value="<%= search || '' %>">
+
+<% if(search){ %>
+
+<button
+type="button"
+class="clear-btn"
+id="clearSearch">
+
+<i class="fa-solid fa-xmark"></i>
+
+</button>
+
+<% } %>
+
+<input
+type="hidden"
+name="sort"
+value="<%= sort %>">
+
+</div>
+
+</form>
+
+<div class="toolbar-right">
+
+<select
+id="sortSelect"
+class="sort-select"
+onchange="location=this.value">
+
+<option
+value="/admin/product?sort=desc&status=<%= status %>&search=<%= search %>"
+<%= sort==="desc" ? "selected" : "" %>>
+
+Newest First
+
+</option>
+
+<option
+value="/admin/product?sort=asc&status=<%= status %>&search=<%= search %>"
+<%= sort==="asc" ? "selected" : "" %>>
+
+Oldest First
+
+</option>
+
+<option
+value="/admin/product?status=listed&sort=<%= sort %>&search=<%= search %>"
+<%= status==="listed" ? "selected" : "" %>>
+
+Listed
+
+</option>
+
+<option
+value="/admin/product?status=unlisted&sort=<%= sort %>&search=<%= search %>"
+<%= status==="unlisted" ? "selected" : "" %>>
+
+Unlisted
+
+</option>
+
+<option
+value="/admin/product?status=outofstock&sort=<%= sort %>&search=<%= search %>"
+<%= status==="outofstock" ? "selected" : "" %>>
+
+Out of Stock
+
+</option>
+
+<option
+value="/admin/product?status=&sort=<%= sort %>&search=<%= search %>"
+<%= status==="" ? "selected" : "" %>>
+
+All Products
+
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="table-card">
+
+<table class="product-table">
+
+<thead>
+
+<tr>
+
+
+
+<th>Product</th>
+
+<th>Brand</th>
+
+
+<th>Price</th>
+
+<th>Stock</th>
+
+<th>Variants</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<% if(products.length){ %>
+
+<% products.forEach(product=>{ %>
+
+<tr>
+
+
+
+<td>
+
+<div class="product-name">
+
+<%= product.name %>
+
+</div>
+
+</td>
+
+<td>
+
+<%= product.brand.name %>
+
+</td>
+
+
+
+<td>
+
+<% if(product.variantCount > 0){ %>
+
+₹ <%= product.startingPrice.toLocaleString() %>
+
+<% } else { %>
+
+--
+
+<% } %>
+
+</td>
+
+<td>
+
+<% if(product.variantCount === 0){ %>
+
+<span class="stock-badge out">
+
+No Variants
+
+</span>
+
+<% } else if(product.totalStock === 0){ %>
+
+<span class="stock-badge out">
+
+Out of Stock
+
+</span>
+
+<% } else if(product.totalStock <= 10){ %>
+
+<span class="stock-badge low">
+
+<%= product.totalStock %> Left
+
+</span>
+
+<% } else { %>
+
+<span class="stock-badge available">
+
+<%= product.totalStock %> 
+
+</span>
+
+<% } %>
+
+</td>
+<td>
+
+<%= product.variantCount %>
+
+</td>
+
+<td>
+
+<% if(product.isListed){ %>
+
+<span class="status active">
+
+Listed
+
+</span>
+
+<% }else{ %>
+
+<span class="status blocked">
+
+Hidden
+
+</span>
+
+<% } %>
+
+</td>
+
+<td>
+
+<div class="action-menu">
+
+<button
+type="button"
+class="action-btn">
+
+<i class="fa-solid fa-ellipsis-vertical"></i>
+
+</button>
+
+<div class="action-dropdown">
+
+<a href="/admin/product/<%= product._id %>/details">
+
+
+
+View Details
+
+</a>
+
+
+</div>
+
+</div>
+
+</td>
+
+</tr>
+
+<% }) %>
+
+<% } else { %>
+
+<tr>
+
+<td colspan="8" class="empty">
+
+No Products Found
+
+</td>
+
+</tr>
+
+<% } %>
+
+</tbody>
+
+</table>
+
+</div>
+
+
+
+<div class="pagination-wrapper">
+
+<nav>
+
+<ul class="pagination">
+
+<% if(page>1){ %>
+
+<li>
+
+<a href="/admin/product?page=<%= page-1 %>&search=<%= search %>&sort=<%= sort %>&status=<%= status %>">
+
+<i class="fa-solid fa-angle-left"></i>
+
+</a>
+
+</li>
+
+<% } %>
+
+
+
+<% for(let i=1;i<=totalPages;i++){ %>
+
+<li class="<%= page===i ? 'active' : '' %>">
+
+<a href="/admin/product?page=<%= i %>&search=<%= search %>&sort=<%= sort %>&status=<%= status %>">
+
+<%= i %>
+
+</a>
+
+</li>
+
+<% } %>
+
+
+
+<% if(page<totalPages){ %>
+
+<li>
+
+<a href="/admin/product?page=<%= page+1 %>&search=<%= search %>&sort=<%= sort %>&status=<%= status %>">
+<i class="fa-solid fa-angle-right"></i>
+
+</a>
+
+</li>
+
+<% } %>
+
+</ul>
+
+</nav>
+
+</div>
+
+</main>
+
+</div>
+
+
+
+<script src="/admin/js/products.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+const message = <%- JSON.stringify(message || null) %>;
+
+if (message) {
+
+    Swal.fire({
+        icon: message.type,
+        title: message.text,
+        confirmButtonColor: "#096DB9"
+    });
+
+}
+</script>
+
+</body>
+
+</html>

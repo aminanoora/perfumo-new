@@ -38,27 +38,34 @@ const productSchema = new mongoose.Schema({
     }],
 
     occasion: [{
-        type: String
+        type: String,
+        enum:[
+            "Daily wear",
+            'Date night',
+            'formal/office',
+            'Summer/Beach',
+             'Night Out'
+        ]
+    
     }],
+    featuredType: {
+    type: String,
+    enum: [
+        "bestseller",
+        "hidden",
+        "budget",
+        "limited",
+        "trending",
+        "newarrival"
+    ]
+},
 
-    images: {
+   isDeleted: {
+    type: Boolean,
+    default: false
+},
 
-        type: [String],
-
-        validate: {
-
-            validator: function(images) {
-
-                return images.length >= 3;
-
-            },
-
-            message: "Minimum 3 images required."
-
-        }
-
-    },
-
+    
     isListed: {
         type: Boolean,
         default: true

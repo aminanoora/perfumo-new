@@ -15,18 +15,81 @@ import {
 } from '../../controllers/user/authController.js';
 import userLoggedin from '../../middleware/userLoggedin.js';
 import noCache from '../../middleware/noCache.js';
-
+import Category from "../../models/Category.js";
+import Product from "../../models/Product.js";
 
 const router = express.Router();
 
 
-router.get('/', noCache,(req, res) => {
+router.get("/", async (req, res) => {
+    try {
 
-    console.log(req.session.user);
+        const categories = await Category.find({
+            isDeleted: false,
+            isListed: true
+        });
 
-    res.render('user/home/home', {
-        user: req.session.user
-    });
+         const featured = req.query.featured || "";
+
+          const featuredProducts = await Product.aggregate([
+
+        {
+            $match: {
+                isDeleted: false,
+                isListed: true,
+                featuredType: featured
+            }
+        },
+
+        {
+            $lookup: {
+                from: "brands",
+                localField: "brand",
+                foreignField: "_id",
+                as: "brand"
+            }
+        },
+
+        {
+            $unwind: "$brand"
+        },
+
+        {
+            $lookup: {
+                from: "variants",
+                localField: "_id",
+                foreignField: "product",
+                as: "variants"
+            }
+        },
+
+        {
+            $unwind: "$variants"
+        },
+
+        {
+            $match: {
+                "variants.isDeleted": false
+            }
+        },
+
+        {
+            $limit: 3
+        }
+
+    ]);
+
+        res.render("user/home/home", {
+            user: req.session.user,
+            categories,
+            featured,
+            featuredProducts
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.redirect("/");
+    }
 });
 router.get('/signup',userLoggedin,noCache, loadSignup);
 

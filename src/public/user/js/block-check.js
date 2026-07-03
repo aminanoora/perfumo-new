@@ -1,6 +1,8 @@
-console.log("block check running");
-
-const interval = setInterval(async () => {
+if(!window.isLoggedIn) 
+{
+    console.log("Guest user");
+}else{
+  const interval = setInterval(async () => {
 
   try {
 
@@ -33,3 +35,5 @@ const interval = setInterval(async () => {
   }
 
 }, 3000);
+}
+

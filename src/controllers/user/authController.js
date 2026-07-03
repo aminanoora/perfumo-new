@@ -211,6 +211,9 @@ export const signin = async (req, res) => {
 
     try {
 
+
+        console.log("Query:", req.query);
+console.log("ReturnTo:", req.session.returnTo);
         const { email, password } = req.body;
 
         const user = await User.findOne({ email });
@@ -247,6 +250,14 @@ export const signin = async (req, res) => {
             lastName: user.lastName,
             email: user.email
         };
+      const redirectUrl =
+    req.query.redirect ||
+    req.session.returnTo ||
+    "/";
+    console.log("Redirect URL:", redirectUrl);
+
+    delete req.session.returnTo;
+
             console.log(req.session.user);
         return req.session.save((err) => {
 
@@ -262,7 +273,8 @@ export const signin = async (req, res) => {
 
             return res.json({
                 success: true,
-                next: '/'
+                 message: "Login successful",
+                next: redirectUrl
             });
         });
 

@@ -5,6 +5,7 @@ const userAuth = async (req, res, next) => {
     try {
 
         if (!req.session.user) {
+             req.session.returnTo = req.originalUrl;
 
             return res.redirect('/signin');
         }
@@ -15,6 +16,8 @@ const userAuth = async (req, res, next) => {
 
         if (!user) {
 
+             req.session.returnTo = req.originalUrl;
+             
             req.session.destroy();
 
             return res.redirect('/signin');

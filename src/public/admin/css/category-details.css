@@ -8,7 +8,7 @@
 .content{
     flex:1;
     padding:30px;
-    background:#f7f8fc;
+     background: #f1f1f1;
     min-height:100vh;
 }
 
@@ -312,8 +312,6 @@ td{
     background:#2d7ff9;
     color:#fff;
 }
-
-/* Responsive */
 
 @media(max-width:992px){
 

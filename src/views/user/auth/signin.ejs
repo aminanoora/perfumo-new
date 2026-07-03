@@ -110,7 +110,17 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 <script>
 
+const params = new URLSearchParams(window.location.search);
+const redirect = params.get("redirect");
+
 const form = document.getElementById('signin-form');
+const googleBtn = document.getElementById("googleBtn");
+
+if (redirect) {
+    googleBtn.href =
+        "/auth/google?redirect=" +
+        encodeURIComponent(redirect);
+}
 
 form.addEventListener('submit', async (e) => {
 
@@ -122,20 +132,20 @@ form.addEventListener('submit', async (e) => {
 
     try {
 
-        const response = await fetch('/signin', {
-
-            method: 'POST',
-
-            headers: {
-                'Content-Type': 'application/json'
-            },
-               credentials: 'same-origin',
-
-            body: JSON.stringify({
-                email,
-                password
-            })
-        });
+       const response = await fetch(
+    "/signin" + (redirect ? "?redirect=" + encodeURIComponent(redirect) : ""),
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({
+            email,
+            password
+        })
+    }
+);
 
         const data = await response.json();
 
@@ -166,7 +176,7 @@ form.addEventListener('submit', async (e) => {
             });
 
             setTimeout(() => {
-                window.location.href = '/';
+               window.location.href = data.next;
             }, 1500);
         }
 
@@ -211,10 +221,10 @@ toggleBtns.forEach((btn) => {
     });
 });
 
- const params =
+ const queryParams=
     new URLSearchParams(window.location.search);
 
-    if (params.get('message') === 'blocked') {
+    if (queryParams.get('message') === 'blocked') {
 
         Swal.fire({
             icon: 'error',

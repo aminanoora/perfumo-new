@@ -15,7 +15,7 @@ rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 />
   <link rel="stylesheet" href="/user/css/style.css">
-  
+   <link rel="stylesheet" href="/user/css/footer.css">
   <link rel="stylesheet" href="/user/css/headers.css">
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -80,18 +80,42 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   <section class="collections">
 
     <div class="collection-card">
-      <img src="/user/images/823fb45a2cf534ec378d1ff253cc2421.jpg">
-      <h2>FOR HER</h2>
+      <% categories.forEach(category => { %>
+
+    <% if(category.name === "Women"){ %>
+        <a href="/shop?category=<%= category._id %>">
+           <img src="/user/images/823fb45a2cf534ec378d1ff253cc2421.jpg">
+<h2> FOR HER</h2>
+        </a>
+    <% } %>
+
+<% }) %>
     </div>
 
     <div class="collection-card">
-      <img src="/user/images/WhatsApp Image 2026-04-16 at 1.50.42 PM.jpeg">
-      <h2>FOR HIM</h2>
+    <% categories.forEach(category => { %>
+
+    <% if(category.name === "Men"){ %>
+        <a href="/shop?category=<%= category._id %>">
+           <img src="/user/images/WhatsApp Image 2026-04-16 at 1.50.42 PM.jpeg">
+<h2> FOR HIM</h2>
+        </a>
+    <% } %>
+
+<% }) %>
     </div>
 
     <div class="collection-card">
-      <img src="/user/images/59fad13fd53b096f13e3e9e48e245587.jpg">
-      <h2>UNISEX</h2>
+     <% categories.forEach(category => { %>
+
+    <% if(category.name === "Unisex"){ %>
+        <a href="/shop?category=<%= category._id %>">
+            <img src="/user/images/59fad13fd53b096f13e3e9e48e245587.jpg">
+<h2> FOR UNISEX</h2>
+        </a>
+    <% } %>
+
+<% }) %>
     </div>
 
   </section>
@@ -100,7 +124,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   
   <section class="best-sellers">
 
-    <h2>Best Sellers</h2>
+   <h2>
+
+<%=
+featured==="hidden" ? "Hidden Gems" :
+
+featured==="budget" ? "Budget Picks" :
+
+featured==="limited" ? "Limited Edition" :
+
+featured==="trending" ? "Trending" :
+
+"Best Sellers"
+
+%>
+
+</h2>
 
     <p>
       No elegance is possible without perfume.
@@ -109,73 +148,159 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
     <div class="categories">
 
-      <button>Hidden Gems</button>
-      <button class="active">Best Sellers</button>
-      <button>Budget Picks</button>
-      <button>Limited Edition</button>
-      <button>Trending</button>
+<a href="/?featured=hidden">
+<button class="<%= featured==='hidden' ? 'active' : '' %>">
+Hidden Gems
+</button>
+</a>
 
-    </div>
+<a href="/?featured=bestseller">
+<button class="<%= featured==='bestseller' ? 'active' : '' %>">
+Best Sellers
+</button>
+</a>
 
-    <div class="products">
+<a href="/?featured=budget">
+<button class="<%= featured==='budget' ? 'active' : '' %>">
+Budget Picks
+</button>
+</a>
 
-      <div class="product-card">
+<a href="/?featured=limited">
+<button class="<%= featured==='limited' ? 'active' : '' %>">
+Limited Edition
+</button>
+</a>
 
-        <img src="/user/images/unnamed.png">
+<a href="/?featured=trending">
+<button class="<%= featured==='trending' ? 'active' : '' %>">
+Trending
+</button>
+</a>
 
-        <h3>Dior Sauvage Eau De Toilette</h3>
+</div>
 
-        <div class="reviews">
-          ★★★★★
-        </div>
+   <div class="products">
 
-        <div class="price-row">
-          <span class="price">Rs. 14,500</span>
-          <span class="stock">Almost Sold Out</span>
-        </div>
+<% if(featuredProducts.length){ %>
 
-      </div>
+<% featuredProducts.forEach(product=>{ %>
 
+<div class="product-card">
 
-      <div class="product-card">
+<div class="product-image">
 
-        <img src="/user/images/unnamed (1).png">
+<a href="/shop/product-details/<%= product._id %>">
 
-        <h3>Tom Ford Ombre Leather</h3>
+<img
+src="/admin/uploads/products/<%= product.variants.images[0] %>"
+alt="<%= product.name %>">
 
-        <div class="reviews">
-          ★★★★★
-        </div>
+</a>
 
-        <div class="price-row">
-          <span class="price">Rs. 11,560</span>
-          <span class="stock">Almost Sold Out</span>
-        </div>
+<button
+class="wishlist-btn"
+data-product="<%= product._id %>">
 
-      </div>
+<i class="fa-regular fa-heart"></i>
 
+</button>
 
-      <div class="product-card">
+</div>
 
-        <img src="/user/images/aee9ad6536c23d6d8e94d7fd7d2b399d.jpg">
+<div class="product-content">
 
-        <h3>Bella Vita Luxury 
-Long Lasting Unisex Perfume Gift</h3>
+<p class="product-brand">
 
-        <div class="reviews">
-          ★★★★★
-        </div>
+<%= product.brand.name %>
 
-        <div class="price-row">
-          <span class="price">Rs. 18,200</span>
-          <span class="stock">Almost Sold Out</span>
-        </div>
+</p>
 
-      </div>
+<div class="product-title">
 
-    </div>
+<h3 class="product-name">
+
+<%= product.name %>
+
+</h3>
+
+<span class="product-size">
+
+<%= product.variants.size %> ml
+
+</span>
+
+</div>
+
+<div class="product-rating">
+
+<span class="stars">
+
+★★★★★
+
+</span>
+
+</div>
+
+<div class="price-section">
+
+<% if(product.variants.salePrice>0){ %>
+
+<span class="sale-price">
+
+₹<%= product.variants.salePrice %>
+
+</span>
+
+<span class="original-price">
+
+₹<%= product.variants.price %>
+
+</span>
+
+<% }else{ %>
+
+<span class="sale-price">
+
+₹<%= product.variants.price %>
+
+</span>
+
+<% } %>
+
+</div>
+
+<button
+class="cart-btn"
+data-variant="<%= product.variants._id %>">
+
+Add to Cart
+
+</button>
+
+</div>
+
+</div>
+
+<% }) %>
+
+<% }else{ %>
+
+<p>No products found.</p>
+
+<% } %>
+
+</div>
     <div class = view >
-      <button class = view-text>View More</button>
+      <a href="/shop?featured=<%= featured %>">
+
+<button class="view-text">
+
+View More
+
+</button>
+
+</a>
     </div>
 
   </section>
@@ -255,33 +380,58 @@ Long Lasting Unisex Perfume Gift</h3>
     <div class="notes-container">
 
         <div class="note-card">
-            <img src="/user/images/images.jpg" alt="Wood">
-            <p>Wood</p>
+           <a href="/shop?note=Wood" class="note-card">
+
+ <img src="/user/images/images.jpg" alt="Wood">
+<p>Wood</p>
+
+</a>
         </div>
 
         <div class="note-card">
-            <img src="/user/images/pink-flowers-transparent-background_84443-15455.avif" alt="Floral">
-            <p>Floral</p>
+          <a href="/shop?note=Floral" class="note-card">
+
+ <img src="/user/images/pink-flowers-transparent-background_84443-15455.avif" alt="Floral">
+<p>Floral</p>
+
+</a>
         </div>
 
         <div class="note-card">
-            <img src="/user/images/citrus-fruit-11563346485lykf4kcwyq.png" alt="Citrus">
-            <p>Citrus</p>
+            <a href="/shop?note=Citrus" class="note-card">
+
+ <img src="/user/images/citrus-fruit-11563346485lykf4kcwyq.png" alt="Citrus">
+<p>Citrus</p>
+
+</a>
         </div>
 
         <div class="note-card">
-            <img src="/user/images/pngtree-vanilla-flowers-png-image_14026580.png" alt="Vanilla">
-            <p>Vanilla</p>
+            <a href="/shop?note=Vanilla" class="note-card">
+
+ <img src="/user/images/pngtree-vanilla-flowers-png-image_14026580.png" alt="Vanilla">
+<p>Vanilla</p>
+
+</a>
         </div>
 
         <div class="note-card">
-            <img src="/user/images/4381751143714aomtdgiephvivpdtivjbhwt1ocydrmxeudfmaueufqbb1uixii9916smga5ohkoas0oinvn82kbol1ocwuioipd6434nazpnzgzd.webp" alt="Lavender">
-            <p>Lavender</p>
+            
+          <a href="/shop?note=Lavender" class="note-card">
+
+<img src="/user/images/4381751143714aomtdgiephvivpdtivjbhwt1ocydrmxeudfmaueufqbb1uixii9916smga5ohkoas0oinvn82kbol1ocwuioipd6434nazpnzgzd.webp" alt="Lavender">
+<p>Lavender</p>
+
+</a>
         </div>
 
         <div class="note-card">
-            <img src="/user/images/pngtree-3d-the-best-amber-perfume-oil-stone-on-transparent-background-png-image_13086646.png" alt="Amber">
-            <p>Amber</p>
+           <a href="/shop?note=Amber" class="note-card">
+
+<img src="/user/images/pngtree-3d-the-best-amber-perfume-oil-stone-on-transparent-background-png-image_13086646.png" alt="Amber">
+<p>Amber</p>
+
+</a>
         </div>
 
     </div>
@@ -332,91 +482,15 @@ Long Lasting Unisex Perfume Gift</h3>
 
 
   
- <footer class="footer">
 
-  
-    <div class="footer-top">
 
-        <div class="footer-brand">
-            <h2>Perfumo</h2>
 
-            <p>
-                Discover authentic fragrances curated for every mood and moment.
-            </p>
-        </div>
 
-        <div class="footer-links-container">
 
-            
-            <div class="footer-column">
-                <h3>Shop</h3>
+<%- include('../partials/footer') %>
 
-                <a href="#">All Products</a>
-                <a href="#">For Him</a>
-                <a href="#">For Her</a>
-                <a href="#">Unisex</a>
-                <a href="#">New Arrivals</a>
-                <a href="#">Best Sellers</a>
-            </div>
 
-            
-            <div class="footer-column">
-                <h3>Explore</h3>
 
-                <a href="#">Shop by Notes</a>
-                <a href="#">Shop by Occasion</a>
-                <a href="#">Gift Sets</a>
-                <a href="#">Offers / Deals</a>
-            </div>
-
-            
-            <div class="footer-column">
-                <h3>Customer Service</h3>
-
-                <a href="#">Contact Us</a>
-                <a href="#">Order Tracking</a>
-                <a href="#">Shipping Policy</a>
-                <a href="#">Returns & Refunds</a>
-                <a href="#">FAQs</a>
-            </div>
-
-          
-            <div class="footer-column">
-                <h3>Account</h3>
-
-                <a href="#">Login</a>
-                <a href="#">Sign Up</a>
-                <a href="#">Wishlist</a>
-                <a href="#">My Orders</a>
-            </div>
-
-        </div>
-
-    </div>
-
-    
-    <div class="footer-bottom">
-
-       
-
-        <div class="footer-bottom-links">
-
-            <a href="#">Support Center</a>
-            <a href="#">Invoicing</a>
-            <a href="#">Contract</a>
-            <a href="#">Careers</a>
-            <a href="#">Blog</a>
-            <a href="#">FAQs</a>
-
-        </div>
-
-        <p class="copyright">
-            Copyright © 2025 Xpro . All Rights Reserved.
-        </p>
-
-    </div>
-
-</footer>
 <script>
 
 const profileToggle =

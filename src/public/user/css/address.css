@@ -10,7 +10,6 @@ body{
     color:#484848;
 }
 
-/* HEADER */
 
 .header{
     width:100%;
@@ -69,7 +68,7 @@ body{
     justify-content:center;
 }
 
-/* ADDRESS SECTION */
+
 
 .address-section{
     width:100%;
@@ -202,7 +201,7 @@ body{
     font-size:30px;
 }
 
-/* FOOTER */
+
 
 .footer{
     border-top:1px solid #eee;
@@ -238,7 +237,6 @@ body{
     font-size:13px;
 }
 
-/* RESPONSIVE */
 
 @media(max-width:992px){
 

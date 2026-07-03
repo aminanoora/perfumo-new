@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title><%= product.name %> | PERFUMO</title>
+
+    <link rel="stylesheet"
+          href="/user/css/product-details.css">
+
+              <link rel="stylesheet"
+          href="/user/css/headers.css">
+
+              <link rel="stylesheet"
+          href="/user/css/footer.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+</head>
+
+<body>
+
+<%- include("../partials/header") %>
+
+<section class="product-details-section">
+
+    <div class="container">
+
+        <nav class="breadcrumb">
+
+            <a href="/">Home</a>
+
+            <span>/</span>
+
+            <a href="/shop">Shop</a>
+
+            <span>/</span>
+
+            <a href="/shop?category=<%= product.category._id %>">
+                <%= product.category.name %>
+            </a>
+
+            <span>/</span>
+
+            <span><%= product.name %></span>
+
+        </nav>
+
+        <% if(!product.isListed || product.isDeleted){ %>
+
+            <script>
+                window.location.href="/shop";
+            </script>
+
+        <% } %>
+
+        <div class="product-wrapper">
+
+            <div class="gallery-section">
+
+                <div class="thumbnail-list">
+
+                    <% selectedVariant.images.forEach((image,index)=>{ %>
+
+                        <div class="thumbnail <%= index===0 ? 'active' : '' %>">
+
+                           <img
+    src="/admin/uploads/products/<%= image %>"
+    class="thumb-image"
+    data-image="/admin/uploads/products/<%= image %>">
+
+                        </div>
+
+                    <% }) %>
+
+                </div>
+
+                <div class="main-image-wrapper">
+
+                    <% if(selectedVariant.stock <=0){ %>
+
+                        <div class="sold-overlay">
+
+                            SOLD OUT
+
+                        </div>
+
+                    <% } %>
+
+                    <img
+                        src="/admin/uploads/products/<%= selectedVariant.images[0] %>"
+                        id="mainProductImage"
+                        alt="<%= product.name %>">
+
+                </div>
+
+            </div>
+
+            <div class="product-information">
+
+                <p class="brand-name">
+
+                    <%= product.brand.name %>
+
+                </p>
+
+                <div class="title-row">
+
+                    <h1>
+
+                        <%= product.name %>
+
+                    </h1>
+
+                    <button
+                        id="wishlistBtn"
+                        class="wishlist-btn">
+
+                        <i class="fa-regular fa-heart"></i>
+
+                    </button>
+
+                </div>
+
+                <div class="rating-row">
+
+                    <div class="stars">
+
+                        <% for(let i=1;i<=5;i++){ %>
+
+                            <% if(i<=Math.round(averageRating)){ %>
+
+                                <i class="fas fa-star"></i>
+
+                            <% }else{ %>
+
+                                <i class="far fa-star"></i>
+
+                            <% } %>
+
+                        <% } %>
+
+                    </div>
+
+                    <span>
+
+                        <%= averageRating.toFixed(1) %>
+
+                    </span>
+
+                    <span>
+
+                        (<%= reviewCount %> Reviews)
+
+                    </span>
+
+                </div>
+
+                <div class="price-row">
+
+                    <% if(selectedVariant.salePrice>0){ %>
+
+                        <h2>
+
+                            ₹<%= selectedVariant.salePrice.toLocaleString() %>
+
+                        </h2>
+
+                        <span class="old-price">
+
+                            ₹<%= selectedVariant.price.toLocaleString() %>
+
+                        </span>
+
+                        <span class="discount">
+
+                            <%= Math.round(((selectedVariant.price-selectedVariant.salePrice)/selectedVariant.price)*100) %>% OFF
+
+                        </span>
+
+                    <% }else{ %>
+
+                        <h2>
+
+                            ₹<%= selectedVariant.price.toLocaleString() %>
+
+                        </h2>
+
+                    <% } %>
+
+                </div>
+
+
+                <div class="description">
+
+                    <%= product.description %>
+
+                </div>
+
+                <div class="variant-section">
+
+                    <h4>
+
+                        Available Sizes
+
+                    </h4>
+
+                    <div class="variant-buttons">
+
+                        <% variants.forEach(variant=>{ %>
+
+                            <button
+                                class="variant-btn <%= variant._id.equals(selectedVariant._id)?'active':'' %>"
+                                data-id="<%= variant._id %>">
+
+                                <%= variant.size %> ml
+
+                            </button>
+
+                        <% }) %>
+
+                    </div>
+
+                </div>
+
+                <div class="stock-section">
+
+                    <% if(selectedVariant.stock>10){ %>
+
+                        <span class="stock in-stock">
+
+                            <i class="fas fa-circle"></i>
+
+                            In Stock
+
+                        </span>
+
+                    <% }else if(selectedVariant.stock>0){ %>
+
+                        <span class="stock low-stock">
+
+                            <i class="fas fa-circle"></i>
+
+                            Only <%= selectedVariant.stock %> left
+
+                        </span>
+
+                    <% }else{ %>
+
+                        <span class="stock out-stock">
+
+                            <i class="fas fa-circle"></i>
+
+                            Out of Stock
+
+                        </span>
+
+                    <% } %>
+
+                </div>
+
+                <div class="note-section">
+
+                    <div>
+
+                        <strong>
+
+                            Top Notes :
+
+                        </strong>
+
+                        <%= product.topNotes.join(", ") %>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+
+                            Heart Notes :
+
+                        </strong>
+
+                        <%= product.heartNotes.join(", ") %>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+
+                            Base Notes :
+
+                        </strong>
+
+                        <%= product.baseNotes.join(", ") %>
+
+                    </div>
+
+                </div>
+
+                <div class="quantity-cart-row">
+
+                    <div class="quantity-box">
+
+                        <button
+                            type="button"
+                            id="minusBtn">
+
+                            -
+
+                        </button>
+
+                        <input
+                        type="text"
+                        id="quantity"
+                         value="1"
+                          data-stock="<%= selectedVariant.stock %>"
+                         readonly>
+
+                        <button
+                            type="button"
+                            id="plusBtn">
+
+                            +
+
+                        </button>
+
+                    </div>
+
+                    <% if(selectedVariant.stock>0){ %>
+
+                        <button
+                            id="addToCartBtn"
+                            class="cart-btn">
+
+                            Add To Cart
+
+                        </button>
+
+                        <a
+                            href="/cart"
+                            class="go-cart-btn">
+
+                            Go To Cart
+
+                        </a>
+
+                    <% }else{ %>
+
+                        <button
+                            class="cart-btn disabled"
+                            disabled>
+
+                            Out Of Stock
+
+                        </button>
+
+                    <% } %>
+
+                </div>
+                                <div class="delivery-section">
+
+                    <div class="delivery-item">
+
+                        <i class="fa-solid fa-truck-fast"></i>
+
+                        <div>
+
+                            <h5>
+
+                                Estimated Delivery
+
+                            </h5>
+
+                            <p id="deliveryDate"></p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="delivery-item">
+
+                        <i class="fa-solid fa-box-open"></i>
+
+                        <div>
+
+                            <h5>
+
+                                Free Shipping
+
+                            </h5>
+
+                            <p>
+
+                                Free shipping on orders above ₹999
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="delivery-item">
+
+                        <i class="fa-solid fa-rotate-left"></i>
+
+                        <div>
+
+                            <h5>
+
+                                Easy Returns
+
+                            </h5>
+
+                            <p>
+
+                                7 Days Return Policy
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="product-highlights">
+
+                    <h3>
+
+                        Product Highlights
+
+                    </h3>
+
+                    <ul>
+
+                        <li>
+
+                            Premium Imported Fragrance
+
+                        </li>
+
+                        <li>
+
+                            Long Lasting Performance
+
+                        </li>
+
+                        <li>
+
+                            Suitable For Daily Wear
+
+                        </li>
+
+                        <li>
+
+                            Authentic Brand Product
+
+                        </li>
+
+                        <li>
+
+                            Perfect Gift Option
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="product-actions">
+
+                    <button class="outline-btn">
+
+                        <i class="fa-solid fa-code-compare"></i>
+
+                        Compare
+
+                    </button>
+
+                    <button class="outline-btn">
+
+                        <i class="fa-solid fa-share-nodes"></i>
+
+                        Share
+
+                    </button>
+
+                    <button class="outline-btn">
+
+                        <i class="fa-regular fa-circle-question"></i>
+
+                        Ask Question
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="review-section">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>
+
+                Customer Reviews
+
+            </h2>
+
+        </div>
+
+        <% if(reviews.length>0){ %>
+
+            <% reviews.forEach(review=>{ %>
+
+                <div class="review-card">
+
+                    <div class="review-header">
+
+                        <div>
+
+                            <h4>
+
+                                <%= review.user.firstName %>
+
+                                <%= review.user.lastName %>
+
+                            </h4>
+
+                            <span>
+
+                                <%= new Date(review.createdAt).toLocaleDateString() %>
+
+                            </span>
+
+                        </div>
+
+                        <div class="stars">
+
+                            <% for(let i=1;i<=5;i++){ %>
+
+                                <% if(i<=review.rating){ %>
+
+                                    <i class="fas fa-star"></i>
+
+                                <% }else{ %>
+
+                                    <i class="far fa-star"></i>
+
+                                <% } %>
+
+                            <% } %>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+
+                        <%= review.review %>
+
+                    </p>
+
+                </div>
+
+            <% }) %>
+
+        <% }else{ %>
+
+            <div class="empty-review">
+
+                No reviews available for this product.
+
+            </div>
+
+        <% } %>
+
+    </div>
+
+</section>
+
+<section class="related-products">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>
+
+                Similar Products
+
+            </h2>
+
+        </div>
+
+        <div class="related-grid">
+
+            <% relatedProducts.forEach(item=>{ %>
+
+                <div class="related-card">
+
+                    <a href="/product/<%= item.product._id %>">
+
+                        <img
+                            src="/uploads/products/<%= item.variant.images[0]%>"
+                            alt="<%= item.name %>">
+
+                    </a>
+
+                    <div class="related-content">
+
+                        <p class="brand">
+
+                            <%= item.product.brand.name%>
+
+                        </p>
+
+                        <h4>
+
+                            <%=item.product.name%>
+
+                        </h4>
+
+                        <div class="price">
+
+                            ₹<%= item.variant.salePrice>0 ? item.variant.salePrice.toLocaleString() : item.variant.price.toLocaleString() %>
+
+                        </div>
+
+                        <a
+                            href="/product/<%= item._id %>"
+                            class="view-btn">
+
+                            View Product
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            <% }) %>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<%- include("../partials/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+     window.isLoggedIn = <%= !!user %>;
+     window.selectedVariantId = "<%= selectedVariant._id %>";
+
+</script>
+<script>
+const delivery=document.getElementById("deliveryDate");
+
+const today=new Date();
+
+today.setDate(today.getDate()+4);
+
+delivery.innerHTML=today.toLocaleDateString("en-IN",{
+
+day:"numeric",
+
+month:"long",
+
+year:"numeric"
+
+});
+
+const mainImage = document.getElementById("mainProductImage");
+const thumbnails = document.querySelectorAll(".thumb-image");
+const wrapper = document.querySelector(".main-image-wrapper");
+
+thumbnails.forEach((thumb)=>{
+
+    thumb.addEventListener("click",()=>{
+
+        thumbnails.forEach(item=>{
+            item.parentElement.classList.remove("active");
+        });
+
+        thumb.parentElement.classList.add("active");
+
+        mainImage.src = thumb.dataset.image;
+    });
+
+});
+
+wrapper.addEventListener("mousemove",(e)=>{
+
+    const rect = wrapper.getBoundingClientRect();
+
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    mainImage.style.transformOrigin = `${x}% ${y}%`;
+    mainImage.style.transform = "scale(2)";
+
+});
+
+wrapper.addEventListener("mouseleave",()=>{
+
+    mainImage.style.transformOrigin = "center";
+    mainImage.style.transform = "scale(1)";
+
+});
+
+
+</script>
+<script src="/user/js/product-details.js"></script>
+<% if (user) { %>
+<script src="/user/js/block-check.js"></script>
+<% } %>
+</body>
+
+</html>

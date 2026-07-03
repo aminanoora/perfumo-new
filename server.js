@@ -19,6 +19,9 @@ import passport from './src/config/passport.js';
 import googleAuthRoutes from './src/routes/user/googleAuthRoutes.js';
 import categoryRoutes from   "./src/routes/admin/categoryRoutes.js"
 import brandRoutes from "./src/routes/admin/brandRoutes.js";
+import productRoutes from "./src/routes/admin/productRoutes.js"
+import shopRoutes from "./src/routes/user/shopRoutes.js";
+import cartRoutes from "./src/routes/user/cartRoutes.js"
 
 const app = express();
 
@@ -61,6 +64,19 @@ app.use(passport.initialize());
 
 app.use(passport.session());
 
+app.use((req, res, next) => {
+
+    res.set(
+        'Cache-Control',
+        'no-store, no-cache, must-revalidate, private'
+    );
+      res.locals.user = req.session.user;
+
+    next();
+});
+
+
+
 app.use('/auth', googleAuthRoutes);
 
 app.set('view engine', 'ejs');
@@ -70,18 +86,15 @@ app.set(
   path.join(__dirname, 'src/views')
 );
 
-app.use((req, res, next) => {
 
-    res.locals.user = req.session.user || null;
-
-    next();
-});
 
 app.use('/', authRoutes);
 
 
 
 app.use('/', profileRoutes);
+
+app.use("/shop", shopRoutes);
 
 app.use('/admin', adminRoutes);
 
@@ -92,15 +105,11 @@ app.use('/admin',categoryRoutes);
 
 app.use("/admin", brandRoutes);
 
-app.use((req, res, next) => {
+app.use("/admin",productRoutes);
 
-    res.set(
-        'Cache-Control',
-        'no-store, no-cache, must-revalidate, private'
-    );
+app.use("/cart",cartRoutes);
 
-    next();
-});
+
 
 const PORT = process.env.PORT || 4000;
 
