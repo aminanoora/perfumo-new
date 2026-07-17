@@ -480,7 +480,7 @@ const relatedProducts = await Promise.all(
 
                 user: req.session.user.id,
 
-                product: product._id
+             "products.variant": selectedVariant._id
 
             });
 

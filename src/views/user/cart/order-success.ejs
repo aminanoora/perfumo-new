@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Successful</title>
+
+    <link rel="stylesheet" href="/user/css/headers.css">
+    <link rel="stylesheet" href="/user/css/footer.css">
+    <link rel="stylesheet" href="/user/css/order-success.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+<%- include("../partials/header") %>
+
+<section class="success-section">
+
+    <div class="success-card">
+
+        <div class="success-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <h1>Order Placed Successfully!</h1>
+
+        <p class="thank-you">
+            Thank you for shopping with <strong>Perfumo</strong>.
+        </p>
+
+        <p class="message">
+            Your order has been received successfully and is now being processed.
+            We'll notify you as soon as your package is shipped.
+        </p>
+
+        <% if(order){ %>
+
+        <div class="order-info">
+
+            <div class="info-row">
+                <span>Order ID</span>
+                <strong><%= order.orderId %></strong>
+            </div>
+
+            <div class="info-row">
+                <span>Payment Method</span>
+                <strong><%= order.paymentMethod %></strong>
+            </div>
+
+            <div class="info-row">
+                <span>Order Status</span>
+                <strong><%= order.orderStatus %></strong>
+            </div>
+
+            <div class="info-row">
+                <span>Total Paid</span>
+                <strong>₹<%= order.grandTotal.toLocaleString() %></strong>
+            </div>
+
+        </div>
+
+        <% } %>
+
+        <div class="success-buttons">
+
+            <a
+                href="/profile/orders"
+                class="btn-primary">
+
+                View Order Details
+
+            </a>
+
+            <a
+                href="/shop"
+                class="btn-secondary">
+
+                Continue Shopping
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<%- include("../partials/footer") %>
+
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Inventory</title>
+
+<link rel="stylesheet" href="/admin/css/inventory.css">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<%- include("../partials/header") %>
+
+
+<div class="page">
+
+<%- include("../partials/sidebar") %>
+
+  <div class="content">
+<div class="page-header">
+
+<h1>Inventory Management</h1>
+
+<p>Manage product stock and variants</p>
+
+</div>
+
+
+
+<div class="inventory-cards">
+
+<div class="card">
+
+<h2><%= stats.totalVariants %></h2>
+
+<span>Total Variants</span>
+
+</div>
+
+<div class="card">
+
+<h2><%= stats.inStock %></h2>
+
+<span>In Stock</span>
+
+</div>
+
+<div class="card low">
+
+<h2><%= stats.lowStock %></h2>
+
+<span>Low Stock</span>
+
+</div>
+
+<div class="card out">
+
+<h2><%= stats.outOfStock %></h2>
+
+<span>Out Of Stock</span>
+
+</div>
+
+</div>
+
+
+<form
+class="toolbar"
+method="GET"
+action="/admin/inventory">
+
+<input
+type="text"
+name="search"
+placeholder="Search Product..."
+value="<%= search %>">
+
+<select name="status">
+
+<option value="">All Status</option>
+
+<option
+value="instock"
+<%= status==="instock"?"selected":"" %>>
+In Stock
+</option>
+
+<option
+value="lowstock"
+<%= status==="low"?"selected":"" %>>
+Low Stock
+</option>
+
+<option
+value="outofstock"
+<%= status==="out"?"selected":"" %>>
+Out Of Stock
+</option>
+
+</select>
+
+<button>
+
+<i class="fa-solid fa-search"></i>
+
+Search
+
+</button>
+
+</form>
+
+
+
+<table class="inventory-table">
+
+<thead>
+
+<tr>
+
+<th>Image</th>
+
+<th>Product</th>
+
+<th>Variant</th>
+
+<th>SKU</th>
+
+<th>Price</th>
+
+<th>Stock</th>
+
+<th>Status</th>
+
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<% variants.forEach(variant=>{ %>
+
+<tr>
+
+<td>
+
+<img
+src="/admin/uploads/products/<%= variant.images[0] %>"
+class="product-image">
+
+</td>
+
+<td>
+
+<%= variant.product.name %>
+
+</td>
+
+<td>
+
+<%= variant.size %> ml
+
+<br>
+
+<small>
+
+<%= variant.concentration %>
+
+</small>
+
+</td>
+
+<td>
+
+<%= variant.sku %>
+
+</td>
+
+<td>
+
+₹<%= variant.salePrice.toLocaleString() %>
+
+</td>
+
+<td>
+
+<%= variant.stock %>
+
+</td>
+
+<td>
+
+<% if(variant.stock===0){ %>
+
+<span class="badge out">
+
+Out Of Stock
+
+</span>
+
+<% }else if(variant.stock<=10){ %>
+
+<span class="badge low">
+
+Low Stock
+
+</span>
+
+<% }else{ %>
+
+<span class="badge success">
+
+In Stock
+
+</span>
+
+<% } %>
+
+</td>
+
+<td>
+
+<div class="dropdown">
+
+<button class="menu-btn">
+
+<i class="fa-solid fa-ellipsis-vertical"></i>
+
+</button>
+
+<div class="dropdown-content">
+
+<a
+href="/admin/inventory/<%= variant._id %>">
+
+<i class="fa-solid fa-eye"></i>
+
+View Details
+
+</a>
+
+</div>
+
+</div>
+
+</td>
+
+</tr>
+
+<% }) %>
+
+</tbody>
+
+</table>
+
+
+
+<div class="pagination">
+
+<% if(currentPage>1){ %>
+
+<a
+href="?page=<%= currentPage-1 %>&search=<%= search %>&status=<%= status %>">
+
+Previous
+
+</a>
+
+<% } %>
+
+<% for(let i=1;i<=totalPages;i++){ %>
+
+<a
+
+class="<%= currentPage===i?'active':'' %>"
+
+href="?page=<%= i %>&search=<%= search %>&status=<%= status %>">
+
+<%= i %>
+
+</a>
+
+<% } %>
+
+<% if(currentPage<totalPages){ %>
+
+<a
+href="?page=<%= currentPage+1 %>&search=<%= search %>&status=<%= status %>">
+
+Next
+
+</a>
+
+<% } %>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="/admin/js/inventory.js"></script>
+
+</body>
+
+</html>

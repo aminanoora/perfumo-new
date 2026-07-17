@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log("loaded");
-
+   const isLoggedIn = window.isLoggedIn;
     const searchForm = document.querySelector(".search-form");
     const searchInput = document.querySelector(".search-box input");
     const filterForm = document.querySelector(".shop-sidebar form");
@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
     }
-
     
     const searchIcon = document.querySelector(".search-box .fa-magnifying-glass");
 
@@ -39,67 +38,83 @@ if (searchIcon) {
 
     }
 
-    document.querySelectorAll(".wishlist-btn").forEach(button => {
+document.querySelectorAll(".wishlist-btn").forEach(button => {
 
-        button.addEventListener("click", async () => {
+    button.addEventListener("click", async () => {
 
-            const productId = button.dataset.product;
+        if (!window.isLoggedIn) {
 
-            try {
+            window.location.href =
+                "/signin?redirect=" +
+                encodeURIComponent(window.location.pathname + window.location.search);
 
-                const response = await fetch("/wishlist/add", {
+            return;
+        }
 
-                    method: "POST",
+        const variantId = button.dataset.variant;
+        try {
 
-                    headers: {
+            const response = await fetch("/wishlist/add", {
 
-                        "Content-Type": "application/json"
+                method: "POST",
 
-                    },
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-                    body: JSON.stringify({
+                body: JSON.stringify({
+                    variantId
+                })
 
-                        productId
+            });
 
-                    })
+            const data = await response.json();
 
-                });
+            if (data.success) {
 
-                const data = await response.json();
+                button.classList.add("active");
 
-                if (data.success) {
-
-                    button.classList.add("active");
-
-                    button.innerHTML = `<i class="fa-solid fa-heart"></i>`;
-
-                } else {
-
-                    Swal.fire({
-
-                        icon: "warning",
-
-                        title: data.message
-
-                    });
-
-                }
-
-            } catch (error) {
+                button.innerHTML = `<i class="fa-solid fa-heart"></i>`;
 
                 Swal.fire({
 
-                    icon: "error",
+                    icon: "success",
 
-                    title: "Something went wrong"
+                    title: "Added to Wishlist",
+
+                    timer: 1200,
+
+                    showConfirmButton: false
+
+                });
+
+            } else {
+
+                Swal.fire({
+
+                    icon: "warning",
+
+                    title: data.message
 
                 });
 
             }
 
-        });
+        } catch (error) {
+
+            Swal.fire({
+
+                icon: "error",
+
+                title: "Unable to add to wishlist"
+
+            });
+
+        }
 
     });
+
+});
 
 
     const profileToggle =

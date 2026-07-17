@@ -6,6 +6,18 @@ import { sendOTP } from '../../services/mailService.js';
 
 import bcrypt from 'bcrypt';
 
+
+import Cart from "../../models/Cart.js";
+
+import Order from "../../models/Order.js";
+
+import Product from "../../models/Product.js";
+
+import Variant from "../../models/Variant.js";
+
+import Wallet from "../../models/Wallet.js";
+
+
 export const loadProfile = async (req, res) => {
 
     try {
@@ -44,6 +56,21 @@ export const updateProfile = async (req, res) => {
             });
         }
 
+          const nameRegex = /^[A-Za-z\s'-]+$/;
+
+        if (!nameRegex.test(firstName.trim())) {
+    return res.json({
+        success: false,
+        message: "First name should contain only letters"
+    });
+}
+
+if (!nameRegex.test(lastName.trim())) {
+    return res.json({
+        success: false,
+        message: "Last name should contain only letters"
+    });
+}
         const emailChanged = user.email !== email;
 
         if (!emailChanged) {
@@ -355,25 +382,27 @@ export const loadAddAddressPage = async (req, res) => {
 
     try {
 
-        const user =
-        await User.findById(req.session.user.id);
+        const user = await User.findById(req.session.user.id);
 
         if (!user) {
-
-            return res.redirect('/login');
+            return res.redirect("/login");
         }
 
-        res.render(
-            'user/profile/add-address',
-            { user }
-        );
+        const returnTo = req.query.returnTo || "";
+
+        res.render("user/profile/add-address", {
+            user,
+            returnTo
+        });
 
     } catch (error) {
 
         console.log(error);
 
-        res.redirect('/pageNotFound');
+        res.redirect("/pageNotFound");
+
     }
+
 };
 export const addAddress = async (req, res) => {
 
@@ -381,6 +410,9 @@ export const addAddress = async (req, res) => {
 
         const user =
         await User.findById(req.session.user.id);
+
+
+       const returnTo = req.body.returnTo;
 
         if (!user) {
 
@@ -457,11 +489,16 @@ const newAddress = new Address({
 });
         await newAddress.save();
 
-        return res.json({
-            success: true,
-            message: 'Address added successfully',
-            redirectUrl: '/profile/address'
-        });
+       const redirectUrl =
+    returnTo === "checkout"
+        ? "/checkout"
+        : "/profile/address";
+
+return res.json({
+    success: true,
+    message: "Address added successfully",
+    redirectUrl
+});
 
     } catch (error) {
 
@@ -509,31 +546,30 @@ export const loadEditAddressPage = async (req, res) => {
 
     try {
 
-        const user =
-            await User.findById(req.session.user.id);
+        const user = await User.findById(req.session.user.id);
 
-        const address =
-            await Address.findById(req.params.id);
+        const address = await Address.findById(req.params.id);
 
         if (!address) {
-
-            return res.redirect('/profile/address');
+            return res.redirect("/profile/address");
         }
 
-        res.render(
-            'user/profile/edit-address',
-            {
-                user,
-                address
-            }
-        );
+        const returnTo = req.query.returnTo || "";
+
+        res.render("user/profile/edit-address", {
+            user,
+            address,
+            returnTo
+        });
 
     } catch (error) {
 
         console.log(error);
 
-        res.redirect('/profile/address');
+        res.redirect("/profile/address");
+
     }
+
 };
 export const updateAddress = async (req, res) => {
 
@@ -550,6 +586,8 @@ export const updateAddress = async (req, res) => {
             country,
             isDefault
         } = req.body;
+
+        const returnTo = req.body.returnTo;
 
         if (
             !firstName ||
@@ -607,11 +645,16 @@ export const updateAddress = async (req, res) => {
 
         await address.save();
 
-        return res.json({
-            success: true,
-            message: 'Address updated successfully',
-            redirectUrl: '/profile/address'
-        });
+       const redirectUrl =
+    returnTo === "checkout"
+        ? "/checkout"
+        : "/profile/address";
+
+return res.json({
+    success: true,
+    message: "Address updated successfully",
+    redirectUrl
+});
 
     } catch (error) {
 
@@ -654,3 +697,778 @@ export const deleteAddress = async (req, res) => {
         });
     }
 };
+
+export const loadOrders = async (req, res) => {
+
+    try {
+
+        const userId = req.session.user.id;
+
+        const sort = req.query.sort || "newest";
+
+        let sortOption = {};
+
+        switch (sort) {
+
+            case "oldest":
+                sortOption = { createdAt: 1 };
+                break;
+
+            case "high":
+                sortOption = { grandTotal: -1 };
+                break;
+
+            case "low":
+                sortOption = { grandTotal: 1 };
+                break;
+
+            default:
+                sortOption = { createdAt: -1 };
+
+        }
+
+        const orders = await Order.find({
+
+            user: userId
+
+        })
+
+        .populate({
+            path: "items.product"
+        })
+
+        .populate({
+            path: "items.variant"
+        })
+
+        .sort(sortOption);
+
+        res.render("user/profile/orders", {
+
+            user: req.session.user,
+            orders,
+            sort
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.log(error);
+
+        res.redirect("/profile");
+
+    }
+
+};
+
+export const loadOrderDetails = async (req, res) => {
+
+    try {
+
+        const userId = req.session.user.id;
+
+        const order = await Order.findOne({
+
+            _id: req.params.id,
+
+            user: userId
+
+        })
+
+        .populate("items.product")
+
+        .populate("items.variant");
+
+        if (!order) {
+
+            req.session.message = {
+
+                type: "error",
+
+                text: "Order not found"
+
+            };
+
+            return res.redirect("/profile/orders");
+
+        }
+
+        console.log("=== ORDER SENT TO EJS ===");
+console.log(order._id.toString());
+
+console.log(JSON.stringify(order.items, null, 2));
+
+
+console.log(
+    "Before render:",
+    order.items[0]._id.toString()
+);
+
+console.log(
+    order.items.map(i => ({
+        id: i._id.toString(),
+        status: i.itemStatus
+    }))
+);
+        res.render("user/profile/order-details", {
+
+            user: req.session.user,
+
+            order
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.log(error);
+
+        res.redirect("/profile/orders");
+
+    }
+
+};
+
+
+export const cancelItem = async (req, res) => {
+
+    try {
+
+      const { orderId, variantId } = req.params;
+        const { reason } = req.body;
+
+      
+
+        const order = await Order.findOne({
+            _id: orderId,
+            user: req.session.user.id
+        }).populate("items.variant");
+
+        if (!order) {
+
+            return res.json({
+                success: false,
+                message: "Order not found"
+            });
+
+        }
+
+    const item = order.items.find(
+    i => i.variant && i.variant._id.toString() === variantId
+);
+
+        if (!item) {
+
+            return res.json({
+                success: false,
+                message: "Item not found"
+            });
+
+        }
+
+        if (
+            ![
+                "Pending",
+                "Confirmed",
+                "Processing"
+            ].includes(item.itemStatus)
+        ) {
+
+            return res.json({
+                success: false,
+                message: "This item cannot be cancelled"
+            });
+
+        }
+
+        item.itemStatus = "Cancelled";
+        item.cancelReason = reason || "";
+        item.cancelledAt = new Date();
+
+      
+        const variant = await Variant.findById(item.variant);
+
+        if (variant) {
+
+            variant.stock += item.quantity;
+
+            await variant.save();
+
+        }
+
+        if (
+            order.paymentMethod !== "COD" &&
+            order.paymentStatus === "Paid"
+        ) {
+
+            let wallet = await Wallet.findOne({
+                user: order.user
+            });
+
+            if (!wallet) {
+
+                wallet = await Wallet.create({
+                    user: order.user,
+                    balance: 0,
+                    transactions: []
+                });
+
+            }
+
+            wallet.balance += item.total;
+
+            wallet.transactions.push({
+
+                type: "credit",
+
+                amount: item.total,
+
+                reason: "Order Cancelled",
+
+                order: order._id,
+
+                description: `Refund for cancelled item`
+
+            });
+
+            await wallet.save();
+
+        }
+
+      
+       
+ const activeItems = order.items.filter(
+    i =>
+        i.itemStatus !== "Cancelled" &&
+        i.itemStatus !== "Returned"
+);
+
+order.subtotal = activeItems.reduce(
+    (sum, item) => sum + item.total,
+    0
+);
+
+order.grandTotal =
+    order.subtotal -
+    order.discount +
+    order.shippingCharge +
+    order.tax;
+      
+
+     
+
+const allCancelled = order.items.every(
+    i => i.itemStatus === "Cancelled"
+);
+
+if (allCancelled) {
+
+    order.orderStatus = "Cancelled";
+
+} else {
+
+    order.orderStatus = "Partially Cancelled";
+
+}
+
+  await order.save();
+
+        return res.json({
+
+            success: true,
+
+            message: "Item cancelled successfully"
+
+        });
+
+    }
+    catch (error) {
+
+        console.log(error);
+
+        return res.json({
+
+            success: false,
+
+            message: "Something went wrong"
+
+        });
+
+    }
+
+};
+export const returnItem = async (req, res) => {
+
+    try {
+
+     const { orderId, variantId } = req.params;
+        const { reason } = req.body;
+
+        
+        console.log("Variant ID:", variantId);
+
+        const order = await Order.findOne({
+    _id: orderId,
+    user: req.session.user.id
+})
+.populate("items.product")
+.populate("items.variant");
+
+console.log("Variant ID:", variantId);
+
+console.log(
+    "Stored IDs:",
+    order.items.map(i => i._id.toString())
+);
+
+const item = order.items.find(
+    i => i.variant && i.variant._id.toString() === variantId
+);
+
+console.log("Found item:", item);
+
+if (!order) {
+
+            return res.json({
+                success: false,
+                message: "Order not found"
+            });
+
+        }
+      
+        if (!item) {
+
+            return res.json({
+                success: false,
+                message: "Item not found"
+            });
+
+        }
+
+        if (item.itemStatus !== "Delivered") {
+
+            return res.json({
+                success: false,
+                message: "Return is not allowed for this item"
+            });
+
+        }
+       
+        item.itemStatus = "Returned";
+       item.returnedReason = reason || "";
+        item.returnedAt = new Date();
+
+
+
+
+      const variant = await Variant.findById(item.variant._id);
+        if (variant) {
+
+            variant.stock += item.quantity;
+
+            await variant.save();
+
+        }
+
+        if (
+            order.paymentMethod !== "COD" &&
+            order.paymentStatus === "Paid"
+        ) {
+
+            let wallet = await Wallet.findOne({
+                user: order.user
+            });
+
+            if (!wallet) {
+
+                wallet = await Wallet.create({
+                    user: order.user,
+                    balance: 0,
+                    transactions: []
+                });
+
+            }
+const refundAmount = item.total;
+
+wallet.transactions.push({
+
+    type: "credit",
+
+    amount: refundAmount,
+
+    reason: "Order Refund",
+
+    order: order._id,
+
+    description: `Refund for ${item.product.name}`
+
+});
+
+wallet.balance += refundAmount;
+
+await wallet.save();
+}
+
+const refundedItems = order.items.filter(
+    i =>
+        i.itemStatus === "Cancelled" ||
+        i.itemStatus === "Returned"
+);
+
+if (refundedItems.length > 0 &&
+    refundedItems.length < order.items.length) {
+
+    order.paymentStatus = "Partially Refunded";
+
+}
+        
+        const remainingItems = order.items.filter(i =>
+            i.itemStatus !== "Returned"
+        );
+
+        if (remainingItems.length === 0) {
+
+            order.orderStatus = "Returned";
+            order.returnedAt = new Date();
+
+            if (
+                order.paymentMethod !== "COD" &&
+                order.paymentStatus === "Paid"
+            ) {
+
+                order.paymentStatus = "Refunded";
+
+            }
+
+        }
+
+        const allReturned = order.items.every(
+    i => i.itemStatus === "Returned"
+);
+
+if (allReturned) {
+
+    order.orderStatus = "Returned";
+
+} else {
+
+    order.orderStatus = "Partially Returned";
+
+}
+
+const activeItems = order.items.filter(
+    i =>
+        i.itemStatus !== "Cancelled" &&
+        i.itemStatus !== "Returned"
+);
+
+order.subtotal = activeItems.reduce(
+    (sum, item) => sum + item.total,
+    0
+);
+
+order.grandTotal =
+    order.subtotal -
+    order.discount +
+    order.shippingCharge +
+    order.tax;
+
+        await order.save();
+
+        return res.json({
+
+            success: true,
+
+            message: "Return request submitted"
+
+        });
+
+    }catch(error) {
+
+        console.log(error);
+
+        return res.json({
+
+            success: false,
+
+            message: "Something went wrong"
+
+        });
+
+    }
+
+};
+
+
+
+export const buyAgain = async (req, res) => {
+
+    try {
+
+        const order = await Order.findOne({
+
+            _id: req.params.id,
+
+            user: req.session.user.id
+
+        });
+
+        if (!order) {
+
+            return res.json({
+
+                success: false,
+
+                message: "Order not found"
+
+            });
+
+        }
+
+        let cart = await Cart.findOne({
+
+            user: req.session.user.id
+
+        });
+
+        if (!cart) {
+
+            cart = await Cart.create({
+
+                user: req.session.user.id,
+
+                items: []
+
+            });
+
+        }
+
+        for (const item of order.items) {
+
+         if (
+    item.itemStatus === "Cancelled" ||
+    item.itemStatus === "Returned"
+){
+    continue;
+}
+
+            const existingItem = cart.items.find(
+
+                cartItem =>
+                    cartItem.variant.toString() === item.variant.toString()
+
+            );
+
+            if (existingItem) {
+
+                existingItem.quantity += item.quantity;
+
+            } else {
+
+                cart.items.push({
+
+                    product: item.product,
+
+                    variant: item.variant,
+
+                    quantity: item.quantity
+
+                });
+
+            }
+
+        }
+
+        await cart.save();
+
+        return res.json({
+
+            success: true,
+
+            message: "Products added to cart"
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.log(error);
+
+        return res.json({
+
+            success: false,
+
+            message: "Something went wrong"
+
+        });
+
+    }
+
+};
+
+
+export const downloadInvoice = async (req, res) => {
+
+    try {
+
+        const order = await Order.findOne({
+            _id: req.params.id,
+            user: req.session.user.id
+        })
+        .populate("items.product")
+        .populate("items.variant");
+
+        if (!order) {
+            return res.redirect("/profile/orders");
+        }
+
+        const invoiceItems = order.items.filter(item =>
+            item.itemStatus !== "Cancelled" &&
+            item.itemStatus !== "Returned"
+        );
+
+        const subtotal = invoiceItems.reduce(
+            (sum, item) => sum + item.total,
+            0
+        );
+
+        const grandTotal =
+            subtotal -
+            order.discount +
+            order.shippingCharge +
+            order.tax;
+
+        res.render("user/profile/order-document", {
+
+            user: req.session.user,
+
+            order,
+
+            documentType: "invoice",
+
+            items: invoiceItems,
+
+            subtotal,
+
+            grandTotal
+
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+    }
+
+};
+
+
+export const searchOrders = async (req, res) => {
+
+    try {
+
+        const keyword = req.query.keyword || "";
+
+        const orders = await Order.find({
+
+            user: req.session.user.id,
+
+            orderId: {
+
+                $regex: keyword,
+
+                $options: "i"
+
+            }
+
+        })
+
+        .populate("items.product")
+
+        .populate("items.variant")
+
+        .sort({
+
+            createdAt: -1
+
+        });
+
+        res.render("user/profile/orders", {
+
+            user: req.session.user,
+
+            orders,
+
+            sort: "newest"
+
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.redirect("/profile/orders");
+
+    }
+
+};
+
+export const downloadOrderSummary = async (req,res)=>{
+
+    try{
+
+        const order = await Order.findOne({
+
+            _id:req.params.id,
+
+            user:req.session.user.id
+
+        })
+
+        .populate("items.product")
+
+        .populate("items.variant");
+
+        if(!order){
+
+            return res.redirect("/profile/orders");
+
+        }
+
+        const subtotal = order.items.reduce(
+
+            (sum,item)=>sum+item.total,
+
+            0
+
+        );
+
+        res.render("user/profile/order-document",{
+
+            user:req.session.user,
+
+            order,
+
+            documentType:"summary",
+
+            items:order.items,
+
+            subtotal,
+
+            grandTotal:order.grandTotal
+
+        });
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+    }
+
+}

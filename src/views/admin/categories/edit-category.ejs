@@ -125,69 +125,87 @@ rows="5"><%= category.description %></textarea>
 </div>
 
 
-<div class="form-group full-width">
+<div class="right-section">
 
-    <label>Current Image</label>
+    <h3>Category Image</h3>
 
-    <div class="image-box">
+    <div class="category-upload">
 
-        <% if(category.image){ %>
+        <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            hidden>
 
-           <img
-class="category-preview"
-id="previewImage"
-src="<%= category.image %>"
-alt="Category Image">
-        <% } else { %>
+        <div class="upload-box" id="uploadBox">
+
+            <div
+                class="upload-placeholder <%= category.image ? 'hidden' : '' %>"
+                id="uploadPlaceholder">
+
+               
+
+                <h4>Upload Category Image</h4>
+
+              
+                <button
+                    type="button"
+                    class="browse-btn"
+                    id="browseBtn">
+
+                    Browse Files
+
+                </button>
+
+            </div>
 
             <img
-class="category-preview"
-id="previewImage"
-src="/admin/images/no-image.png"
-alt="No Image">
+                id="previewImage"
+                class="category-preview <%= category.image ? '' : 'hidden' %>"
+                src="<%= category.image || '' %>">
 
-        <% } %>
+        </div>
+
+        <small
+            class="error"
+            id="imageError"></small>
+
+        <div class="image-actions">
+
+            <button
+                type="button"
+                class="browse-btn"
+                id="changeImageBtn">
+
+                <i class="fa-solid fa-camera"></i>
+
+                Change Image
+
+            </button>
+
+            <button
+                type="button"
+                class="remove-image-btn"
+                id="removeImage">
+
+                <i class="fa-solid fa-trash"></i>
+
+                Remove Image
+
+            </button>
+
+        </div>
+
+        <input
+            type="hidden"
+            id="removeImageInput"
+            name="removeImage"
+            value="false">
 
     </div>
-
-    <div class="image-actions">
-
-        <label class="change-image">
-
-            <i class="fa-solid fa-camera"></i>
-
-            Change Image
-
-            <input
-                type="file"
-                id="image"
-                name="image"
-                accept="image/*"
-                hidden>
-
-        </label>
-
-        <button
-            type="button"
-            class="remove-image-btn"
-            id="removeImage">
-
-            <i class="fa-solid fa-trash"></i>
-
-            Remove Image
-
-        </button>
-
-    </div>
-
-    <input
-        type="hidden"
-        name="removeImage"
-        id="removeImageInput"
-        value="false">
 
 </div>
-
 </div>
 
 <div class="button-group">

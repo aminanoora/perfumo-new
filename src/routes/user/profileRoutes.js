@@ -12,7 +12,14 @@ import {
     addAddress,
      loadEditAddressPage,
       updateAddress,
-      deleteAddress
+      deleteAddress,
+      loadOrders,
+      loadOrderDetails,
+      cancelItem,
+      returnItem,
+      downloadInvoice,
+      buyAgain,
+      downloadOrderSummary
 } from '../../controllers/user/profileController.js';
 
 import userAuth from '../../middleware/userAuth.js';
@@ -71,6 +78,27 @@ router.delete(
     '/address/delete/:id',
     userAuth,
     deleteAddress
+);
+
+
+
+
+router.get("/profile/orders", userAuth, loadOrders);
+
+router.get("/profile/orders/:id", userAuth, loadOrderDetails);
+
+router.patch("/orders/:orderId/items/:variantId/cancel", userAuth, cancelItem);
+
+router.patch("/orders/:orderId/items/:variantId/return", userAuth, returnItem);
+
+router.get("/profile/orders/:id/invoice", userAuth, downloadInvoice);
+
+router.post("/profile/orders/:id/buy-again", userAuth, buyAgain);
+
+router.get(
+    "/profile/orders/:id/summary",
+    userAuth,
+    downloadOrderSummary
 );
 
 export default router;

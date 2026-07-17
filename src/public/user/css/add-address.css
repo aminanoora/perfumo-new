@@ -247,3 +247,17 @@ body{
         font-size:14px;
     }
 }
+
+.input-group input.error,
+.input-group select.error{
+    border:2px solid #dc3545;
+    outline:none;
+}
+
+.error-message{
+    color:#dc3545;
+    font-size:13px;
+    margin-top:6px;
+    display:block;
+    font-weight:500;
+}

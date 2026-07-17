@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile | Perfumo</title>
+
+    <link rel="stylesheet" href="/user/css/profile.css">
+
+  
+
+            <link rel="stylesheet" href="/user/css/order-details.css">
+
+
+        
+
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+ <link rel="stylesheet" href="/user/css/headers.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+</head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<body>
+
+<%- include('../partials/header') %>
+
+
+
+<section class="order-details-section">
+
+<div class="order-details-container">
+
+<div class="page-header">
+
+<h1>Order Details</h1>
+
+<a href="/orders" class="back-btn">
+<i class="fa-solid fa-arrow-left"></i>
+Back to Orders
+</a>
+
+</div>
+
+
+<div class="summary-card">
+
+<div class="summary-item">
+<span>Order ID</span>
+<h3>#<%= order.orderId %></h3>
+</div>
+
+<div class="summary-item">
+<span>Order Date</span>
+<h3>
+<%= new Date(order.createdAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) %>
+</h3>
+</div>
+
+<div class="summary-item">
+<span>Total Amount</span>
+<h3>₹<%= order.grandTotal.toLocaleString() %></h3>
+</div>
+
+<div class="summary-item">
+<span>Payment</span>
+<h3><%= order.paymentMethod %></h3>
+</div>
+
+<div class="summary-item">
+<span>Status</span>
+
+<span class="status-badge <%= order.orderStatus.toLowerCase().replace(/\s+/g,'-') %>">
+<%= order.orderStatus %>
+</span>
+
+</div>
+
+</div>
+
+<%
+let timelineStatus = order.orderStatus;
+
+if (timelineStatus === "Partially Cancelled") {
+    const activeItem = order.items.find(
+        item =>
+            item.itemStatus !== "Cancelled" &&
+            item.itemStatus !== "Returned"
+    );
+
+    if (activeItem) {
+        timelineStatus = activeItem.itemStatus;
+    }
+}
+
+if (timelineStatus === "Partially Returned") {
+    timelineStatus = "Delivered";
+}
+%>
+
+<div class="timeline-card">
+
+<h2>Order Timeline</h2>
+
+<ul class="timeline">
+
+<li class="<%= ['Pending','Confirmed','Processing','Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+Pending
+</li>
+
+<li class="<%= ['Confirmed','Processing','Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+Confirmed
+</li>
+
+<li class="<%= ['Processing','Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+Processing
+</li>
+
+<li class="<%= ['Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+Shipped
+</li>
+
+<li class="<%= ['Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+Out For Delivery
+</li>
+
+<li class="<%= timelineStatus==='Delivered' ? 'active':'' %>">
+Delivered
+</li>
+
+</ul>
+
+</div>
+
+<% if(order.cancelledAt){ %>
+
+<div class="cancel-card">
+
+    <h2>Order Cancelled</h2>
+
+    <p>
+        Cancelled On :
+        <strong>
+            <%= new Date(order.cancelledAt).toLocaleString("en-IN") %>
+        </strong>
+    </p>
+
+    <% if(order.cancelReason){ %>
+
+    <p>
+        Reason :
+        <%= order.cancelReason %>
+    </p>
+
+    <% } %>
+
+</div>
+
+<% } %>
+
+<% if(order.returnedAt){ %>
+
+<div class="return-card">
+
+    <h2>Returned</h2>
+
+    <p>
+        Returned On :
+        <strong>
+            <%= new Date(order.returnedAt).toLocaleString("en-IN") %>
+        </strong>
+    </p>
+
+    <% if(order.returnedReason){ %>
+
+    <p>
+        Reason :
+        <%= order.returnedReason %>
+    </p>
+
+    <% } %>
+
+</div>
+
+<% } %>
+
+<% if(order.deliveredAt){ %>
+
+<div class="delivered-card">
+
+    <h2>Delivered</h2>
+
+    <p>
+        Delivered On :
+        <strong>
+            <%= new Date(order.deliveredAt).toLocaleString("en-IN") %>
+        </strong>
+    </p>
+
+</div>
+
+<% } %>
+
+<div class="address-card">
+
+<h2>Delivery Address</h2>
+
+<p><strong><%= order.shippingAddress.fullName %></strong></p>
+
+<p><%= order.shippingAddress.house %></p>
+
+<p><%= order.shippingAddress.street %></p>
+
+<p>
+
+<%= order.shippingAddress.city %>,
+
+<%= order.shippingAddress.state %>
+
+-
+
+<%= order.shippingAddress.pincode %>
+
+</p>
+
+<p><%= order.shippingAddress.mobile %></p>
+
+</div>
+
+<div class="products-card">
+
+<% order.items.forEach(item=>{ %>
+
+    <p><%= item._id %></p>
+<div class="product-row">
+
+    <div class="product-image">
+        <img src="/admin/uploads/products/<%= item.variant.images[0] %>" alt="">
+    </div>
+
+    <div class="product-info">
+        <h3><%= item.product.name %></h3>
+        <p><%= item.variant.size %> ml | <%= item.variant.concentration %></p>
+        <p>Qty : <%= item.quantity %></p>
+        <p>Status : <strong><%= item.itemStatus %></strong></p>
+    </div>
+
+    <div class="product-price">
+        ₹<%= item.total.toLocaleString() %>
+    </div>
+
+    <div class="item-actions">
+
+        <% if(["Pending","Confirmed","Processing"].includes(item.itemStatus)){ %>
+
+            <button
+                class="cancel-item-btn danger-btn"
+                data-order="<%= order._id %>"
+              data-item="<%= item.variant._id %>">
+                Cancel Item
+            </button>
+
+        <% } %>
+
+        <% if(item.itemStatus==="Delivered"){ %>
+
+           
+            <button
+                class="return-item-btn secondary-btn"
+                data-order="<%= order._id %>"
+                data-item="<%= item.variant._id %>">
+                Return Item
+            </button>
+
+           
+
+        <% } %>
+
+    </div>
+
+</div>
+
+<% }) %>
+<div class="price-card">
+
+<h2>Price Details</h2>
+
+<div class="row">
+
+<span>Subtotal</span>
+
+<span>
+
+₹<%= order.subtotal.toLocaleString() %>
+
+</span>
+
+</div>
+
+<div class="row">
+
+<span>Discount</span>
+
+<span>
+
+- ₹<%= order.discount.toLocaleString() %>
+
+</span>
+
+</div>
+
+<div class="row">
+
+<span>Shipping</span>
+
+<span>
+
+₹<%= order.shippingCharge.toLocaleString() %>
+
+</span>
+
+</div>
+
+<div class="row">
+
+<span>Tax</span>
+
+<span>
+
+₹<%= order.tax.toLocaleString() %>
+
+</span>
+
+</div>
+
+<hr>
+
+<div class="row total">
+
+<span>Total</span>
+
+<span>
+
+₹<%= order.grandTotal.toLocaleString() %>
+
+</span>
+
+</div>
+
+</div>
+
+<div class="payment-card">
+
+<h2>Payment Details</h2>
+
+<p>
+
+Method :
+
+<strong>
+
+<%= order.paymentMethod %>
+
+</strong>
+
+</p>
+
+<p>
+
+Status :
+
+<strong>
+
+<%
+let paymentDisplay = order.paymentStatus;
+
+if(order.orderStatus==="Cancelled"){
+    if(order.paymentMethod==="COD"){
+        paymentDisplay="Not Applicable";
+    }else if(order.paymentStatus==="Refund Pending"){
+        paymentDisplay="Refund Pending";
+    }else if(order.paymentStatus==="Refunded"){
+        paymentDisplay="Refunded";
+    }
+}
+%>
+
+<strong><%= paymentDisplay %></strong>
+</strong>
+
+</p>
+
+<% if(order.razorpayPaymentId){ %>
+
+<p>
+
+Transaction ID :
+
+<%= order.razorpayPaymentId %>
+
+</p>
+
+<% } %>
+
+</div>
+
+
+
+
+<div class="action-card">
+
+ 
+
+
+
+<% if(order.orderStatus==="Cancelled"){ %>
+
+<a href="/profile/orders/<%= order._id %>/summary"
+   class="primary-btn">
+    Download Order Summary
+</a>
+
+<% } else if (
+    order.orderStatus==="Shipped" ||
+    order.orderStatus==="Out For Delivery" ||
+    order.orderStatus==="Delivered" ||
+    order.orderStatus==="Partially Returned" ||
+    order.orderStatus==="Returned"
+){ %>
+
+<a href="/profile/orders/<%= order._id %>/invoice"
+   class="primary-btn">
+    Download Invoice
+</a>
+
+<% } %>
+
+<a
+href="/shop"
+class="secondary-btn">
+
+Buy Again
+
+</a>
+
+
+
+</div>
+
+
+
+</div>
+
+</section>
+
+<footer class="profile-footer">
+
+    <div class="footer-logo">
+        PERFUMO
+    </div>
+
+    <div class="footer-links">
+
+        <a href="/">Home</a>
+        <a href="/shop">Shop</a>
+        <a href="/products">Products</a>
+        <a href="/pages">Pages</a>
+
+    </div>
+
+    <p>
+        Copyright © 2025 PERFUMO . All Rights Reserved.
+    </p>
+
+</footer>
+
+<script src="/user/js/block-check.js"></script>
+
+<script src="/user/js/order-details.js"></script>
+
+
+</body>
+</html>

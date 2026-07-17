@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Orders</title>
+
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/orders.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+<%- include("../partials/header") %>
+
+<div class="page">
+
+    <%- include("../partials/sidebar") %>
+
+    <main class="content">
+
+        <div class="orders-container">
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1>Orders</h1>
+
+                    <p>Manage customer orders and track deliveries.</p>
+
+                </div>
+
+            </div>
+        
+    </div>
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-info">
+                <span>Pending Orders</span>
+                <h2><%= stats.pending %></h2>
+            </div>
+            <div class="stat-icon warning">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-info">
+                <span>Shipped</span>
+                <h2><%= stats.shipped %></h2>
+            </div>
+            <div class="stat-icon primary">
+                <i class="fa-solid fa-truck-fast"></i>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-info">
+                <span>Delivered</span>
+                <h2><%= stats.delivered %></h2>
+            </div>
+            <div class="stat-icon success">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-info">
+                <span>Returns / Cancelled</span>
+                <h2><%= stats.returned + stats.cancelled %></h2>
+            </div>
+            <div class="stat-icon danger">
+                <i class="fa-solid fa-rotate-left"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="filters-card">
+
+        <form action="/admin/orders" method="GET">
+
+            <div class="filter-top">
+
+                <div class="search-box">
+
+    <input
+        type="text"
+        name="search"
+        value="<%= search || '' %>"
+        placeholder="Search Order ID, Customer Name">
+
+    <button type="submit" class="search-btn">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+
+</div>
+
+            </div>
+
+            <div class="filter-bottom">
+
+                <select name="sort">
+
+                    <option value="">Sort</option>
+
+                    <option value="newest"
+                    <%= sort==="newest" ? "selected":"" %>>
+                        Newest First
+                    </option>
+
+                    <option value="oldest"
+                    <%= sort==="oldest" ? "selected":"" %>>
+                        Oldest First
+                    </option>
+
+                    <option value="high"
+                    <%= sort==="high" ? "selected":"" %>>
+                        Amount High-Low
+                    </option>
+
+                    <option value="low"
+                    <%= sort==="low" ? "selected":"" %>>
+                        Amount Low-High
+                    </option>
+
+                </select>
+
+                <select name="status">
+
+                    <option value="">All Status</option>
+
+                    <option value="Pending"
+                    <%= status==="Pending"?"selected":"" %>>
+                        Pending
+                    </option>
+
+                    <option value="Confirmed"
+                    <%= status==="Confirmed"?"selected":"" %>>
+                        Confirmed
+                    </option>
+
+                    <option value="Processing"
+                    <%= status==="Processing"?"selected":"" %>>
+                        Processing
+                    </option>
+
+                    <option value="Shipped"
+                    <%= status==="Shipped"?"selected":"" %>>
+                        Shipped
+                    </option>
+
+                    <option value="Out For Delivery"
+                    <%= status==="Out For Delivery"?"selected":"" %>>
+                        Out For Delivery
+                    </option>
+
+                    <option value="Delivered"
+                    <%= status==="Delivered"?"selected":"" %>>
+                        Delivered
+                    </option>
+
+                    <option value="Cancelled"
+                    <%= status==="Cancelled"?"selected":"" %>>
+                        Cancelled
+                    </option>
+
+                    <option value="Returned"
+                    <%= status==="Returned"?"selected":"" %>>
+                        Returned
+                    </option>
+
+                </select>
+
+                <select name="payment">
+
+                    <option value="">Payment</option>
+
+                    <option value="Pending"
+                    <%= payment==="Pending"?"selected":"" %>>
+                        Pending
+                    </option>
+
+                    <option value="Paid"
+                    <%= payment==="Paid"?"selected":"" %>>
+                        Paid
+                    </option>
+
+                    <option value="Failed"
+                    <%= payment==="Failed"?"selected":"" %>>
+                        Failed
+                    </option>
+
+                    <option value="Refunded"
+                    <%= payment==="Refunded"?"selected":"" %>>
+                        Refunded
+                    </option>
+
+                </select>
+
+                <select name="dateRange">
+
+                    <option value="">Date Range</option>
+
+                    <option value="today"
+                    <%= dateRange==="today"?"selected":"" %>>
+                        Today
+                    </option>
+
+                    <option value="week"
+                    <%= dateRange==="week"?"selected":"" %>>
+                        Last 7 Days
+                    </option>
+
+                    <option value="month"
+                    <%= dateRange==="month"?"selected":"" %>>
+                        This Month
+                    </option>
+
+                    <option value="year"
+                    <%= dateRange==="year"?"selected":"" %>>
+                        This Year
+                    </option>
+
+                </select>
+
+                <button type="submit" class="filter-btn">
+
+                    <i class="fa-solid fa-filter"></i>
+
+                    Apply
+
+                </button>
+
+                <a href="/admin/orders" class="clear-btn">
+
+                    Clear
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+ 
+
+<div class="orders-table-card">
+
+    <table class="orders-table">
+
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <% if(orders.length){ %>
+
+                <% orders.forEach(order=>{ %>
+
+                <tr>
+
+                    <td class="order-id">
+                        #<%= order.orderId %>
+                    </td>
+
+                    <td>
+
+                        <div class="customer-box">
+
+                          <div class="customer-info">
+
+                                <h4>
+                                    <%= order.user.firstName %>
+                                    <%= order.user.lastName %>
+                                </h4>
+
+                             
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    
+
+                    <td>
+
+                        <%= order.items.length %>
+
+                    </td>
+
+                    <td>
+
+                        ₹<%= order.grandTotal.toLocaleString() %>
+
+                    </td>
+
+                    <td>
+
+                        <span class="payment-badge <%= order.paymentMethod.toLowerCase() %>">
+
+                            <%= order.paymentMethod %>
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <span class="status-badge <%= order.orderStatus.toLowerCase().replace(/\s+/g,'-') %>">
+
+                            <%= order.orderStatus %>
+
+                        </span>
+
+                    </td>
+
+                    <td>
+<a
+href="/admin/orders/<%= order._id %>"
+class="action-menu">
+
+<i class="fa-solid fa-ellipsis-vertical"></i>
+
+</a>
+                    </td>
+
+                </tr>
+
+                <% }) %>
+
+            <% }else{ %>
+
+                <tr>
+
+                    <td colspan="8">
+
+                        <div class="empty-orders">
+
+                           
+                            <h3>No Orders Found</h3>
+
+                            <p>
+                                Try changing your search or filters.
+                            </p>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            <% } %>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<div class="pagination-wrapper">
+
+    <div class="pagination-info">
+        Showing
+        <strong><%= orders.length ? ((currentPage - 1) * limit) + 1 : 0 %></strong>
+        -
+        <strong><%= ((currentPage - 1) * limit) + orders.length %></strong>
+        of
+        <strong><%= totalOrders %></strong>
+        Orders
+    </div>
+
+    <% if(totalPages > 1){ %>
+
+    <div class="pagination">
+
+        <% if(currentPage > 1){ %>
+            <a
+                class="page-btn"
+                href="?page=<%= currentPage-1 %>&search=<%= search||'' %>&sort=<%= sort||'' %>&status=<%= status||'' %>&payment=<%= payment||'' %>&dateRange=<%= dateRange||'' %>">
+                <i class="fa-solid fa-angle-left"></i>
+            </a>
+        <% } %>
+
+        <% for(let i=1;i<=totalPages;i++){ %>
+
+            <% if(
+                i===1 ||
+                i===totalPages ||
+                (i>=currentPage-2 && i<=currentPage+2)
+            ){ %>
+
+                <a
+                    class="page-btn <%= currentPage===i ? 'active' : '' %>"
+                    href="?page=<%= i %>&search=<%= search||'' %>&sort=<%= sort||'' %>&status=<%= status||'' %>&payment=<%= payment||'' %>&dateRange=<%= dateRange||'' %>">
+                    <%= i %>
+                </a>
+
+            <% } else if(i===currentPage-3 || i===currentPage+3){ %>
+
+                <span class="dots">...</span>
+
+            <% } %>
+
+        <% } %>
+
+        <% if(currentPage < totalPages){ %>
+            <a
+                class="page-btn"
+                href="?page=<%= currentPage+1 %>&search=<%= search||'' %>&sort=<%= sort||'' %>&status=<%= status||'' %>&payment=<%= payment||'' %>&dateRange=<%= dateRange||'' %>">
+                <i class="fa-solid fa-angle-right"></i>
+            </a>
+        <% } %>
+
+    </div>
+
+    <% } %>
+
+</div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="/admin/js/orders.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if(message){ %>
+
+<script>
+
+Swal.fire({
+    icon: "<%= message.type %>",
+    title: "<%= message.type === 'success' ? 'Success' : 'Error' %>",
+    text: "<%= message.text %>",
+    confirmButtonText: "OK"
+});
+
+</script>
+
+<% } %>
+</body>
+</html>

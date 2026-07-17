@@ -14,27 +14,17 @@ const wishlistSchema=new mongoose.Schema({
 
     },
 
-    products:[{
-
-        product:{
-
-            type:mongoose.Schema.Types.ObjectId,
-
-            ref:"Product",
-
-            required:true
-
-        },
-
-        addedAt:{
-
-            type:Date,
-
-            default:Date.now
-
-        }
-
-    }]
+    products: [{
+    variant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Variant",
+        required: true
+    },
+    addedAt: {
+        type: Date,
+        default: Date.now
+    }
+}]
 
 },
 {

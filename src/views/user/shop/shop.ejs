@@ -130,12 +130,15 @@
                     <% brands.forEach(brand=>{ %>
 
                         <label>
-
-                            <input
-                                type="checkbox"
-                                name="brand"
-                                value="<%= brand._id %>">
-
+<input
+    type="checkbox"
+    name="brand"
+    value="<%= brand._id %>"
+    <%= (
+        Array.isArray(query.brand)
+            ? query.brand.includes(brand._id.toString())
+            : query.brand === brand._id.toString()
+    ) ? "checked" : "" %>>
                             <%= brand.name %>
 
                         </label>
@@ -155,10 +158,14 @@
                     <label>
 
                         <input
-                            type="checkbox"
-                            name="category"
-                            value="<%= category._id %>">
-
+    type="checkbox"
+    name="category"
+    value="<%= category._id %>"
+    <%= (
+        Array.isArray(query.category)
+            ? query.category.includes(category._id.toString())
+            : query.category === category._id.toString()
+    ) ? "checked" : "" %>>
                         <%= category.name %>
 
                     </label>
@@ -173,21 +180,30 @@
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="size"
-                        value="30">
-
+                   <input
+    type="checkbox"
+    name="size"
+    value="30"
+    <%= (
+        Array.isArray(query.size)
+            ? query.size.includes("30")
+            : query.size === "30"
+    ) ? "checked" : "" %>>
                     30 ml
 
                 </label>
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="size"
-                        value="50">
+                   <input
+    type="checkbox"
+    name="size"
+    value="30"
+    <%= (
+        Array.isArray(query.size)
+            ? query.size.includes("30")
+            : query.size === "50"
+    ) ? "checked" : "" %>>
 
                     50 ml
 
@@ -196,9 +212,14 @@
                 <label>
 
                     <input
-                        type="checkbox"
-                        name="size"
-                        value="100">
+    type="checkbox"
+    name="size"
+    value="30"
+    <%= (
+        Array.isArray(query.size)
+            ? query.size.includes("30")
+            : query.size === "100"
+    ) ? "checked" : "" %>>
 
                     100 ml
 
@@ -212,10 +233,15 @@
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="concentration"
-                        value="EDP">
+                   <input
+    type="checkbox"
+    name="concentration"
+    value="EDP"
+    <%= (
+        Array.isArray(query.concentration)
+            ? query.concentration.includes("EDP")
+            : query.concentration === "EDP"
+    ) ? "checked" : "" %>>
 
                     EDP
 
@@ -223,10 +249,15 @@
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="concentration"
-                        value="EDT">
+                   <input
+    type="checkbox"
+    name="concentration"
+    value="EDT"
+    <%= (
+        Array.isArray(query.concentration)
+            ? query.concentration.includes("EDT")
+            : query.concentration === "EDT"
+    ) ? "checked" : "" %>>
 
                     EDT
 
@@ -234,10 +265,15 @@
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="concentration"
-                        value="EDC">
+                   <input
+    type="checkbox"
+    name="concentration"
+    value="EDC"
+    <%= (
+        Array.isArray(query.concentration)
+            ? query.concentration.includes("EDC")
+            : query.concentration === "EDC"
+    ) ? "checked" : "" %>>
 
                     EDC
 
@@ -246,9 +282,14 @@
                 <label>
 
                     <input
-                        type="checkbox"
-                        name="concentration"
-                        value="Mist/Fraiche">
+    type="checkbox"
+    name="concentration"
+    value=" Mist/Fraiche"
+    <%= (
+        Array.isArray(query.concentration)
+            ? query.concentration.includes(" Mist/Fraiche")
+            : query.concentration === " Mist/Fraiche"
+    ) ? "checked" : "" %>>
 
                     Mist/Fraiche
 
@@ -262,22 +303,30 @@
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="price"
-                        value="0-1000">
-
+                  <input
+    type="checkbox"
+    name="price"
+    value="0-1000"
+    <%= (
+        Array.isArray(query.price)
+            ? query.price.includes("0-1000")
+            : query.price === "0-1000"
+    ) ? "checked" : "" %>>
                     Below ₹1000
 
                 </label>
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="price"
-                        value="1000-3000">
-
+                   <input
+    type="checkbox"
+    name="price"
+    value="1000-3000"
+    <%= (
+        Array.isArray(query.price)
+            ? query.price.includes("1000-3000")
+            : query.price === "1000-3000"
+    ) ? "checked" : "" %>>
                     ₹1000 - ₹3000
 
                 </label>
@@ -285,9 +334,14 @@
                 <label>
 
                     <input
-                        type="checkbox"
-                        name="price"
-                        value="3000-5000">
+    type="checkbox"
+    name="price"
+    value="3000-5000"
+    <%= (
+        Array.isArray(query.price)
+            ? query.price.includes("3000-5000")
+            : query.price === "3000-5000"
+    ) ? "checked" : "" %>>
 
                     ₹3000 - ₹5000
 
@@ -296,9 +350,14 @@
                 <label>
 
                     <input
-                        type="checkbox"
-                        name="price"
-                        value="5000+">
+    type="checkbox"
+    name="price"
+    value="5000+"
+    <%= (
+        Array.isArray(query.price)
+            ? query.price.includes("5000+")
+            : query.price === "5000+"
+    ) ? "checked" : "" %>>
 
                     Above ₹5000
 
@@ -312,10 +371,15 @@
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="occasion"
-                        value="Daily wear">
+                   <input
+    type="checkbox"
+    name="occasion"
+    value="Daily wear"
+    <%= (
+        Array.isArray(query.occasion)
+            ? query.occasion.includes("Daily wear")
+            : query.occasion === "Daily wear"
+    ) ? "checked" : "" %>>
 
                     Daily Wear
 
@@ -323,10 +387,15 @@
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="occasion"
-                        value="Date night">
+                   <input
+    type="checkbox"
+    name="occasion"
+    value="Date night"
+    <%= (
+        Array.isArray(query.occasion)
+            ? query.occasion.includes("Date night")
+            : query.occasion === "Date night"
+    ) ? "checked" : "" %>>
 
                     Date Night
 
@@ -334,10 +403,15 @@
 
                 <label>
 
-                    <input
-                        type="checkbox"
-                        name="occasion"
-                        value="formal/office">
+                      <input
+    type="checkbox"
+    name="occasion"
+    value="formal/office"
+    <%= (
+        Array.isArray(query.occasion)
+            ? query.occasion.includes("formal/office")
+            : query.occasion === "formal/office"
+    ) ? "checked" : "" %>>
 
                     Formal
 
@@ -346,9 +420,15 @@
                 <label>
 
                     <input
-                        type="checkbox"
-                        name="occasion"
-                        value="Summer/Beach">
+    type="checkbox"
+    name="occasion"
+    value="Summer/Beach"
+    <%= (
+        Array.isArray(query.occasion)
+            ? query.occasion.includes("Summer/Beach")
+            : query.occasion === "Summer/Beach"
+    ) ? "checked" : "" %>>
+
 
                     Summer
 
@@ -357,10 +437,14 @@
                 <label>
 
                     <input
-                        type="checkbox"
-                        name="occasion"
-                        value="Night Out">
-
+    type="checkbox"
+    name="occasion"
+    value="   Night Out"
+    <%= (
+        Array.isArray(query.occasion)
+            ? query.occasion.includes("   Night Out")
+            : query.occasion === "Night Out"
+    ) ? "checked" : "" %>>
                     Night Out
 
                 </label>
@@ -538,7 +622,7 @@
 
                             <button
                                 class="wishlist-btn"
-                                data-product="<%= product._id %>">
+                                data-variant="<%= product.variants._id %>">
 
                                 <i class="fa-regular fa-heart"></i>
 
@@ -634,10 +718,7 @@
 
                 <div class="empty-products">
 
-                    <img
-                        src="/user/images/no-products.png"
-                        alt="No Products">
-
+                   
                     <h3>No Products Found</h3>
 
                     <p>

@@ -52,6 +52,11 @@
         class="address-form"
         id="addressForm">
 
+        <input
+    type="hidden"
+    name="returnTo"
+    value="<%= returnTo || '' %>">
+
             <div class="form-row">
 
                 <div class="input-group">
@@ -78,7 +83,7 @@
                     type="text"
                     name="lastName"
                     placeholder="Enter your Last name"
-                    required>
+                    >
 
                 </div>
 
@@ -94,7 +99,7 @@
                 type="text"
                 name="phone"
                 placeholder="Enter phone number"
-                required>
+              >
 
             </div>
 
@@ -108,7 +113,7 @@
                 type="text"
                 name="streetAddress"
                 placeholder="Enter street address"
-                required>
+              >
 
             </div>
 
@@ -124,7 +129,7 @@
                     type="text"
                     name="city"
                     placeholder="Enter city"
-                    required>
+                    >
 
                 </div>
 
@@ -138,7 +143,7 @@
                     type="text"
                     name="state"
                     placeholder="Enter state"
-                    required>
+                    >
 
                 </div>
 
@@ -152,7 +157,7 @@
                     type="text"
                     name="pincode"
                     placeholder="Enter pincode"
-                    required>
+                    >
 
                 </div>
 
@@ -166,7 +171,7 @@
 
                 <select
                 name="country"
-                required>
+                >
 
                     <option value="India">
                         India
@@ -223,102 +228,163 @@
 
 </section>
 <script>
+const form = document.getElementById("addressForm");
 
-    const form =
-    document.getElementById('addressForm');
+const firstName = document.querySelector("input[name='firstName']");
+const lastName = document.querySelector("input[name='lastName']");
+const phone = document.querySelector("input[name='phone']");
+const streetAddress = document.querySelector("input[name='streetAddress']");
+const city = document.querySelector("input[name='city']");
+const state = document.querySelector("input[name='state']");
+const pincode = document.querySelector("input[name='pincode']");
+const country = document.querySelector("select[name='country']");
 
-    form.addEventListener('submit', async (e) => {
+const nameRegex = /^[A-Za-z ]+$/;
+const phoneRegex = /^[6-9]\d{9}$/;
+const pincodeRegex = /^[1-9][0-9]{5}$/;
 
-        e.preventDefault();
+function clearErrors() {
 
-        const formData =
-        new FormData(form);
+    document.querySelectorAll(".error-message").forEach(error => error.remove());
 
-        const data =
-        Object.fromEntries(formData.entries());
-
-        try {
-
-            const response = await fetch(
-                '/address/add-address',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type':
-                        'application/json'
-                    },
-                    body: JSON.stringify(data)
-                }
-            );
-
-            const result =
-            await response.json();
-
-            if (result.success) {
-
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: result.message,
-                    confirmButtonColor: '#151412'
-                });
-
-                window.location.href =
-                result.redirectUrl;
-
-            } else {
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: result.message,
-                    confirmButtonColor: '#151412'
-                });
-            }
-
-        } catch (error) {
-
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Something went wrong',
-                confirmButtonColor: '#151412'
-            });
-        }
-    });
- 
- const firstName = documetn.getElementById('firstName');
- firstName.addEventListener('blur',(event)=>{
-    if(event.target.value.trim===""){
-        alert('first name is required');
-    }
- })
- const profileToggle =
-document.getElementById('profileToggle');
-
-const profileMenu =
-document.getElementById('profileMenu');
-
-if(profileToggle){
-
-    profileToggle.addEventListener('click', (e) => {
-
-        e.preventDefault();
-
-        profileMenu.classList.toggle('show');
+    document.querySelectorAll(".error").forEach(field => {
+        field.classList.remove("error");
     });
 
-    document.addEventListener('click', (e) => {
-
-        if(
-            !profileToggle.contains(e.target) &&
-            !profileMenu.contains(e.target)
-        ){
-            profileMenu.classList.remove('show');
-        }
-    });
 }
 
+function showFieldError(field, message) {
+
+    field.classList.add("error");
+
+    const error = document.createElement("small");
+    error.className = "error-message";
+    error.innerText = message;
+
+    field.parentElement.appendChild(error);
+
+}
+
+form.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    clearErrors();
+
+    let valid = true;
+
+    if(firstName.value.trim() === ""){
+        showFieldError(firstName,"First name is required");
+        valid = false;
+    }else if(!nameRegex.test(firstName.value.trim())){
+        showFieldError(firstName,"Only letters are allowed");
+        valid = false;
+    }
+
+    if(lastName.value.trim() === ""){
+        showFieldError(lastName,"Last name is required");
+        valid = false;
+    }else if(!nameRegex.test(lastName.value.trim())){
+        showFieldError(lastName,"Only letters are allowed");
+        valid = false;
+    }
+
+    if(phone.value.trim() === ""){
+        showFieldError(phone,"Phone number is required");
+        valid = false;
+    }else if(!phoneRegex.test(phone.value.trim())){
+        showFieldError(phone,"Enter a valid 10 digit phone number");
+        valid = false;
+    }
+
+    if(streetAddress.value.trim() === ""){
+        showFieldError(streetAddress,"Street address is required");
+        valid = false;
+    }else if(streetAddress.value.trim().length < 5){
+        showFieldError(streetAddress,"Enter a valid street address");
+        valid = false;
+    }
+
+    if(city.value.trim() === ""){
+        showFieldError(city,"City is required");
+        valid = false;
+    }else if(!nameRegex.test(city.value.trim())){
+        showFieldError(city,"Only letters are allowed");
+        valid = false;
+    }
+
+    if(state.value.trim() === ""){
+        showFieldError(state,"State is required");
+        valid = false;
+    }else if(!nameRegex.test(state.value.trim())){
+        showFieldError(state,"Only letters are allowed");
+        valid = false;
+    }
+
+    if(pincode.value.trim() === ""){
+        showFieldError(pincode,"Pincode is required");
+        valid = false;
+    }else if(!pincodeRegex.test(pincode.value.trim())){
+        showFieldError(pincode,"Enter a valid 6 digit pincode");
+        valid = false;
+    }
+
+    if(country.value.trim() === ""){
+        showFieldError(country,"Please select a country");
+        valid = false;
+    }
+
+    if(!valid) return;
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    try{
+
+        const response = await fetch(form.action,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if(result.success){
+
+            await Swal.fire({
+                icon:"success",
+                title:"Success",
+                text:result.message,
+                confirmButtonColor:"#151412"
+            });
+
+            window.location.href = result.redirectUrl;
+
+        }else{
+
+            Swal.fire({
+                icon:"error",
+                title:"Error",
+                text:result.message,
+                confirmButtonColor:"#151412"
+            });
+
+        }
+
+    }catch(error){
+
+        Swal.fire({
+            icon:"error",
+            title:"Error",
+            text:"Something went wrong",
+            confirmButtonColor:"#151412"
+        });
+
+    }
+
+});
 </script>
 <script src="/user/js/block-check.js"></script>
 

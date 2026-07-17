@@ -5,6 +5,7 @@ import {
 
 } from "../../controllers/user/shopController.js";
 
+
 const router = express.Router();
 
 router.get("/", loadShop);

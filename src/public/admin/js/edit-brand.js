@@ -87,10 +87,7 @@ function validateDescription() {
         return false;
     }
 
-    if (/\d/.test(value)) {
-        showError(descriptionError, "Numbers are not allowed.");
-        return false;
-    }
+
 
     return true;
 }

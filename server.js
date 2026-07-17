@@ -22,6 +22,12 @@ import brandRoutes from "./src/routes/admin/brandRoutes.js";
 import productRoutes from "./src/routes/admin/productRoutes.js"
 import shopRoutes from "./src/routes/user/shopRoutes.js";
 import cartRoutes from "./src/routes/user/cartRoutes.js"
+import cartCount from "./src/middleware/cartCount.js";
+import wishlistRoutes from "./src/routes/user/wishlistRoutes.js"
+import checkoutRoutes from "./src/routes/user/checkoutRoutes.js";
+import orderRoutes  from "./src/routes/admin/orderRoutes.js"
+import inventoryRoutes from "./src/routes/admin/inventoryRoutes.js"
+
 
 const app = express();
 
@@ -39,6 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(noCache);
+
 
 
 app.use(
@@ -75,7 +82,7 @@ app.use((req, res, next) => {
     next();
 });
 
-
+app.use(cartCount);
 
 app.use('/auth', googleAuthRoutes);
 
@@ -107,7 +114,16 @@ app.use("/admin", brandRoutes);
 
 app.use("/admin",productRoutes);
 
+app.use('/admin',orderRoutes);
+
+app.use('/admin',inventoryRoutes);
+
 app.use("/cart",cartRoutes);
+
+app.use("/wishlist",wishlistRoutes);
+
+
+app.use("/checkout", checkoutRoutes);
 
 
 

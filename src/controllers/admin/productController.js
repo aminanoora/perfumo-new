@@ -115,8 +115,8 @@ const totalProducts = countResult.length
     ? countResult[0].total
     : 0;
 
-        const message = req.session.message;
-        req.session.message = null;
+       const message = req.session.adminMessage || null;
+req.session.adminMessage = null;
 
         res.render("admin/product/products", {
             products,
@@ -134,7 +134,7 @@ const totalProducts = countResult.length
 
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "error",
             text: "Unable to load products."
         };
@@ -165,8 +165,8 @@ export const loadAddProduct = async (req, res) => {
     { value: "limited", label: "Limited Edition" },
     { value: "budget", label: "Budget Pick" }
 ];
-        const message = req.session.message;
-        req.session.message = null;
+       const message = req.session.adminMessage || null;
+req.session.adminMessage = null;
 
         res.render("admin/product/add-product", {
             categories,
@@ -180,7 +180,7 @@ export const loadAddProduct = async (req, res) => {
 
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "error",
             text: "Unable to load add product page."
         };
@@ -218,7 +218,7 @@ export const addProduct = async (req, res) => {
             !occasion
         ) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Please fill all required fields."
             };
@@ -238,7 +238,7 @@ export const addProduct = async (req, res) => {
 
         if (existingProduct) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Product already exists."
             };
@@ -280,7 +280,7 @@ export const addProduct = async (req, res) => {
 
         
 console.log("Created:", product);
-        req.session.message = {
+        req.session.adminMessage = {
             type: "success",
             text: "Product added successfully."
         };
@@ -291,7 +291,7 @@ console.log("Created:", product);
 
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "error",
             text: "Something went wrong while adding the product."
         };
@@ -314,7 +314,7 @@ export const loadAddVariant = async (req, res) => {
 
 if (!product || product.isDeleted) {
 
-    req.session.message = {
+    req.session.adminMessage = {
         type: "error",
         text: "Product not found."
     };
@@ -326,11 +326,12 @@ const variants = await Variant.find({
     product: product._id,
     isDeleted: false
 });
-        const message = req.session.message;
-        req.session.message = null;
-
+     
 
         console.log("Found:", product);
+
+        const message = req.session.adminMessage || null;
+req.session.adminMessage = null;
         res.render("admin/product/add-variant", {
             product,
             active: "product",
@@ -342,7 +343,7 @@ const variants = await Variant.find({
 
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "error",
             text: "Unable to load add variant page."
         };
@@ -375,7 +376,7 @@ console.log("FILES:", req.files);
 
         if (!product || product.isDeleted) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Product not found."
             };
@@ -392,7 +393,7 @@ console.log("FILES:", req.files);
             !weight
         ) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Please fill all required fields."
             };
@@ -402,7 +403,7 @@ console.log("FILES:", req.files);
 
         if (sku.trim().length < 3) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "SKU must contain at least 3 characters."
             };
@@ -412,7 +413,7 @@ console.log("FILES:", req.files);
 
         if (Number(size) <= 0) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Invalid size."
             };
@@ -422,7 +423,7 @@ console.log("FILES:", req.files);
 
         if (Number(stock) < 0) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Stock cannot be negative."
             };
@@ -432,7 +433,7 @@ console.log("FILES:", req.files);
 
         if (Number(price) <= 0) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Price must be greater than zero."
             };
@@ -442,7 +443,7 @@ console.log("FILES:", req.files);
 
         if (salePrice && Number(salePrice) > Number(price)) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Sale price cannot exceed regular price."
             };
@@ -452,7 +453,7 @@ console.log("FILES:", req.files);
 
         if (Number(weight) <= 0) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Weight must be greater than zero."
             };
@@ -462,7 +463,7 @@ console.log("FILES:", req.files);
 
         if (!req.files || req.files.length < 3 || req.files.length > 5) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Upload minimum 3 and maximum 5 images."
             };
@@ -476,7 +477,7 @@ console.log("FILES:", req.files);
 
         if (skuExists) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "SKU already exists."
             };
@@ -510,7 +511,7 @@ console.log("FILES:", req.files);
 
         });
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "success",
             text: "Variant added successfully."
         };
@@ -521,7 +522,7 @@ console.log("FILES:", req.files);
 
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "error",
             text: "Unable to add variant."
         };
@@ -574,7 +575,7 @@ export const loadEditVariant = async (req, res) => {
 
         if (!variant || variant.isDeleted) {
 
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Variant not found."
             };
@@ -587,8 +588,9 @@ export const loadEditVariant = async (req, res) => {
             .populate("brand")
             .populate("category");
 
-        const message = req.session.message;
-        req.session.message = null;
+       const message = req.session.adminMessage || null;
+req.session.adminMessage = null;
+
 
         res.render("admin/product/edit-variant", {
 
@@ -608,7 +610,7 @@ export const loadEditVariant = async (req, res) => {
 
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
 
             type: "error",
 
@@ -653,7 +655,7 @@ export const updateVariant = async (req, res) => {
 
         if (!variant || variant.isDeleted) {
 
-            req.session.message = {
+            req.session.adminMessage = {
 
                 type: "error",
 
@@ -675,7 +677,7 @@ export const updateVariant = async (req, res) => {
 
         if (skuExists) {
 
-            req.session.message = {
+            req.session.adminMessage = {
 
                 type: "error",
 
@@ -731,7 +733,7 @@ removedImages.forEach(img => {
 
         if (images.length < 3 || images.length > 5) {
 
-            req.session.message = {
+            req.session.adminMessage = {
 
                 type: "error",
 
@@ -761,7 +763,7 @@ removedImages.forEach(img => {
 
         await variant.save();
 
-        req.session.message = {
+        req.session.adminMessage = {
 
             type: "success",
 
@@ -777,7 +779,7 @@ removedImages.forEach(img => {
 
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
 
             type: "error",
 
@@ -797,7 +799,7 @@ export const loadProductDetails = async (req, res) => {
         const product = await Product.findById(productId);
 
         if (!product || product.isDeleted) {
-            req.session.message = {
+            req.session.adminMessage = {
                 type: "error",
                 text: "Product not found."
             };
@@ -826,6 +828,9 @@ export const loadProductDetails = async (req, res) => {
             isDeleted: false
         });
 
+        const message = req.session.adminMessage || null;
+req.session.adminMessage = null;
+
         res.render("admin/product/product-details", {
             product,
             variants,
@@ -833,10 +838,10 @@ export const loadProductDetails = async (req, res) => {
             categories,
             active: "product",
           featuredTypes,
-            message: req.session.message || null
+            message
         });
 
-        req.session.message = null;
+       
 
     } catch (error) {
         console.log(error);
@@ -903,17 +908,19 @@ export const updateProduct = async (req, res) => {
 
         await product.save();
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "success",
             text: "Product updated successfully."
         };
+
+        
 
         res.redirect(`/admin/product/${productId}/details`);
 
     } catch (error) {
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "error",
             text: "Unable to update product."
         };
@@ -935,7 +942,7 @@ export const softDeleteProduct = async (req, res) => {
             { isDeleted: true }
         );
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "success",
             text: "Product deleted successfully."
         };
@@ -945,7 +952,7 @@ export const softDeleteProduct = async (req, res) => {
     } catch (error) {
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "error",
             text: "Unable to delete product."
         };
@@ -972,7 +979,7 @@ export const toggleProductListing = async (req, res) => {
 
         await product.save();
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "success",
             text: product.isListed
                 ? "Product listed successfully."
@@ -984,7 +991,7 @@ export const toggleProductListing = async (req, res) => {
     } catch (error) {
         console.log(error);
 
-        req.session.message = {
+        req.session.adminMessage = {
             type: "error",
             text: "Unable to update listing status."
         };

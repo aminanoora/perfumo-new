@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+@media print{
+
+button,
+.no-print{
+    display:none;
+}
+
+}
+</style>
+
+    <link rel="stylesheet" href="/user/css/order-document.css">
+</head>
+<body>
+    <h1>
+
+<%= documentType==="invoice"
+? "Invoice"
+: "Order Summary" %>
+
+</h1>
+
+<p>Order ID : <%= order.orderId %></p>
+
+<p>
+Date :
+<%= new Date(order.createdAt).toLocaleDateString("en-IN") %>
+</p>
+
+<p>Status : <%= order.orderStatus %></p>
+
+<p>Payment : <%= order.paymentMethod %></p>
+
+<table>
+
+<tr>
+    <th>Product</th>
+    <th>Qty</th>
+    <th>Price</th>
+    <th>Status</th>
+</tr>
+
+<% items.forEach(item=>{ %>
+
+<tr>
+
+<td>
+
+<%= item.product.name %>
+
+</td>
+
+<td>
+
+<%= item.quantity %>
+
+</td>
+
+<td>
+
+₹<%= item.total %>
+
+</td>
+
+<td>
+
+<%= item.itemStatus %>
+
+</td>
+
+</tr>
+
+
+<% }) %>
+
+</table>
+
+<% if(documentType==="invoice"){ %>
+
+<h3>
+
+Payment Details
+
+</h3>
+
+<p>
+
+Method
+
+<%= order.paymentMethod %>
+
+</p>
+
+<p>
+
+Transaction
+
+<%= order.razorpayPaymentId %>
+
+</p>
+
+<% } %>
+
+<% if(documentType==="summary"){ %>
+
+<h3>
+
+Cancellation Details
+
+</h3>
+
+<p>
+
+Status :
+
+<%= order.orderStatus %>
+
+</p>
+
+<p>
+
+Reason :
+
+<%= order.cancelReason || "Not Provided" %>
+
+</p>
+
+<% } %>
+
+<% if(order.orderStatus==="Cancelled"){ %>
+
+<h3>Cancellation Details</h3>
+
+<p>
+Cancelled On :
+<%= new Date(order.cancelledAt).toLocaleString("en-IN") %>
+</p>
+
+<p>
+Reason :
+<%= order.cancelReason || "Not provided" %>
+</p>
+
+<% } %>
+
+<p>
+
+Payment Status :
+<%= order.paymentStatus %>
+
+</p>
+
+<% if(order.paymentStatus==="Refunded"){ %>
+
+<p>
+Refund has been credited to your wallet.
+</p>
+
+<% } %>
+
+<button onclick="window.print()">
+
+<%= documentType==="invoice"
+
+? "Print Invoice"
+
+: "Print Order Summary" %>
+
+</button>
+</body>
+
+
+</html>
