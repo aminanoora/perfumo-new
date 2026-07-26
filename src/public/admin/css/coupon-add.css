@@ -1,0 +1,140 @@
+.content{
+    flex:1;
+    padding:24px;
+    background:#f1f1f1;
+    min-height:calc(100vh - 64px);
+}
+
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:24px;
+}
+
+.page-header h2{
+    font-size:28px;
+    font-weight:600;
+    color:#1f2937;
+    margin-bottom:6px;
+}
+
+.page-header p{
+    font-size:14px;
+    color:#6b7280;
+}
+
+.card{
+    background:#fff;
+    border-radius:12px;
+    padding:30px;
+    box-shadow:0 5px 18px rgba(0,0,0,.06);
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:24px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group label{
+    margin-bottom:8px;
+    font-size:14px;
+    font-weight:500;
+    color:#374151;
+}
+
+.form-group input,
+.form-group select{
+    height:46px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    padding:0 14px;
+    font-size:14px;
+    outline:none;
+    transition:.3s;
+    background:#fff;
+}
+
+.form-group input:focus,
+.form-group select:focus{
+    border-color:#111827;
+}
+
+.form-footer{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:35px;
+}
+
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-decoration:none;
+    border:none;
+    border-radius:8px;
+    padding:12px 22px;
+    font-size:14px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn-primary{
+    background:#4075e6;
+    color:#fafafa;
+}
+
+
+
+.btn-secondary{
+    background:#e5e7eb;
+    color:#111827;
+}
+
+.btn-secondary:hover{
+    background:#d1d5db;
+}
+
+@media(max-width:992px){
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .page-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .content{
+        padding:16px;
+    }
+
+    .card{
+        padding:20px;
+    }
+
+}
+.error-text{
+    display:block;
+    color:#dc2626;
+    font-size:13px;
+    margin-top:4px;
+    min-height:18px;
+}
+
+.input-error{
+    border:1px solid #dc2626 !important;
+}

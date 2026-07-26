@@ -105,5 +105,91 @@ document.addEventListener("DOMContentLoaded", () => {
         form.submit();
 
     });
+document.querySelectorAll(".approve-return-btn").forEach(btn => {
+
+    btn.addEventListener("click", async () => {
+
+        const orderId = btn.dataset.order;
+        const itemId = btn.dataset.item;
+
+        const res = await fetch(
+            `/admin/orders/${orderId}/items/${itemId}/approve-return`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        const data = await res.json();
+
+        if (data.success) {
+
+            Swal.fire({
+                icon: "success",
+                title: data.message
+            }).then(() => location.reload());
+
+        } else {
+
+            Swal.fire({
+                icon: "error",
+                title: data.message
+            });
+
+        }
+
+    });
+
+});
+
+
+
+document.querySelectorAll(".reject-return-btn").forEach(btn => {
+
+    btn.addEventListener("click", async () => {
+
+        const { value: reason } = await Swal.fire({
+            title: "Reject Return",
+            input: "text",
+            inputPlaceholder: "Reason",
+            showCancelButton: true
+        });
+
+        if (!reason) return;
+
+        const orderId = btn.dataset.order;
+        const itemId = btn.dataset.item;
+
+        const res = await fetch(
+            `/admin/orders/${orderId}/items/${itemId}/reject-return`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ reason })
+            }
+        );
+
+        const data = await res.json();
+
+        if (data.success) {
+
+            Swal.fire({
+                icon: "success",
+                title: data.message
+            }).then(() => location.reload());
+
+        } else {
+
+            Swal.fire({
+                icon: "error",
+                title: data.message
+            });
+
+        }
+
+    });
+
+});
 
 });

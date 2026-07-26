@@ -81,7 +81,7 @@
         <div class="stat-card">
             <div class="stat-info">
                 <span>Returns / Cancelled</span>
-                <h2><%= stats.returned + stats.cancelled %></h2>
+             <h2><%= stats.returnsCancelled %></h2>
             </div>
             <div class="stat-icon danger">
                 <i class="fa-solid fa-rotate-left"></i>
@@ -331,15 +331,25 @@
 
                     </td>
 
-                    <td>
+               <td>
 
-                        <span class="status-badge <%= order.orderStatus.toLowerCase().replace(/\s+/g,'-') %>">
+<% const hasPendingReturn = order.items.some(item => item.returnStatus === "Requested"); %>
 
-                            <%= order.orderStatus %>
+<% if (hasPendingReturn) { %>
 
-                        </span>
+    <span class="status-badge requested">
+        Waiting for Approval
+    </span>
 
-                    </td>
+<% } else { %>
+
+    <span class="status-badge <%= order.orderStatus.toLowerCase().replace(/\s+/g,'-') %>">
+        <%= order.orderStatus %>
+    </span>
+
+<% } %>
+
+</td>
 
                     <td>
 <a

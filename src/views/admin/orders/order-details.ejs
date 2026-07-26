@@ -71,17 +71,31 @@
 
                     </div>
 
-                    <div>
+                   <%
+const hasPendingReturn = order.items.some(
+    item => item.returnStatus === "Requested"
+);
+%>
 
-                        <span>Order Status</span>
+<div>
 
-                        <h3>
+    <span>Order Status</span>
 
-                            <%= order.orderStatus %>
+    <h3>
 
-                        </h3>
+        <% if (hasPendingReturn) { %>
 
-                    </div>
+            Waiting for Approval
+
+        <% } else { %>
+
+            <%= order.orderStatus %>
+
+        <% } %>
+
+    </h3>
+
+</div>
 
                 </div>
 
@@ -500,106 +514,158 @@
 
         <table class="products-table">
 
-            <thead>
+        <thead>
 
-                <tr>
+<tr>
 
-                    <th>Product</th>
+    <th>Product</th>
 
-                    <th>Variant</th>
+    <th>Variant</th>
 
-                    <th>Price</th>
+    <th>Price</th>
 
-                    <th>Qty</th>
+    <th>Qty</th>
 
-                    <th>Total</th>
+    <th>Total</th>
 
-                    <th>Status</th>
+    <th>Status</th>
 
-                </tr>
+    <th>Reason</th>
 
-            </thead>
+    <th>Action</th>
 
-            <tbody>
+</tr>
 
-                <% order.items.forEach(item=>{ %>
+</thead>
 
-                <tr>
+         <tbody>
 
-                    <td>
+    <% order.items.forEach(item => { %>
 
-                        <div class="product-info">
+    <tr>
 
-                           
+        <td>
 
-                            <div>
+            <div class="product-info">
 
-                                <h4>
+                <div>
 
-                                    <%= item.product.name %>
+                    <h4>
+                        <%= item.product.name %>
+                    </h4>
 
-                                </h4>
+                    <small>
+                        SKU : <%= item.variant.sku %>
+                    </small>
 
-                                <small>
+                </div>
 
-                                    SKU :
-                                    <%= item.variant.sku %>
+            </div>
 
-                                </small>
+        </td>
 
-                            </div>
+        <td>
 
-                        </div>
+            <%= item.variant.size %> ml
 
-                    </td>
+            <br>
 
-                    <td>
+            <small>
+                <%= item.variant.concentration %>
+            </small>
 
-                        <%= item.variant.size %> ml
+        </td>
 
-                        <br>
+        <td>
 
-                        <small>
+            ₹<%= item.salePrice.toLocaleString("en-IN") %>
 
-                            <%= item.variant.concentration %>
+        </td>
 
-                        </small>
+        <td>
 
-                    </td>
+            <%= item.quantity %>
 
-                    <td>
+        </td>
 
-                        ₹<%= item.salePrice.toLocaleString() %>
+        <td>
 
-                    </td>
+            ₹<%= item.total.toLocaleString("en-IN") %>
 
-                    <td>
+        </td>
 
-                        <%= item.quantity %>
+      <td>
 
-                    </td>
+    <% if(item.returnStatus === "Requested"){ %>
 
-                    <td>
+        <span class="status-badge requested">
+            Return Requested
+        </span>
 
-                        ₹<%= item.total.toLocaleString() %>
+    <% } else { %>
 
-                    </td>
+        <span class="status-badge <%= item.itemStatus.toLowerCase().replace(/\s+/g,'-') %>">
 
-                    <td>
+            <%= item.itemStatus %>
 
-                        <span class="status-badge <%= item.itemStatus.toLowerCase().replace(/\s+/g,'-') %>">
+        </span>
 
-                            <%= item.itemStatus %>
+    <% } %>
 
-                        </span>
+</td>
 
-                    </td>
+        <td>
 
-                </tr>
+           <% if(item.itemStatus === "Cancelled"){ %>
 
-                <% }) %>
+    <%= item.cancelReason || "-" %>
 
-            </tbody>
+<% } else if(item.returnStatus === "Requested"){ %>
+
+    <%= item.returnedReason || "-" %>
+
+<% } else if(item.itemStatus === "Returned"){ %>
+
+    <%= item.returnedReason || "-" %>
+
+<% } else { %>
+
+    -
+
+<% } %>
+
+        </td>
+
+        <td>
+
+            <% if(item.returnStatus === "Requested"){ %>
+
+              <button
+    class="approve-return-btn"
+    data-order="<%= order._id %>"
+    data-item="<%= item._id %>">
+    Approve
+</button>
+            <button
+    class="reject-return-btn"
+    data-order="<%= order._id %>"
+    data-item="<%= item._id %>">
+    Reject
+</button>
+
+            <% } else { %>
+
+                -
+
+            <% } %>
+
+        </td>
+
+    </tr>
+
+    <% }) %>
+
+</tbody>
 
         </table>
 

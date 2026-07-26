@@ -1,7 +1,7 @@
 import Order from "../../models/Order.js";
 import User from "../../models/User.js";
-
-
+import Wallet from "../../models/Wallet.js";
+import Variant from "../../models/Variant.js";
 
 const statusFlow = {
     Pending: ["Confirmed", "Cancelled"],
@@ -172,7 +172,7 @@ const stats = {
         orderStatus: "Delivered"
     }),
 
-    cancelled: await Order.countDocuments({
+     returnsCancelled: await Order.countDocuments({
         orderStatus: {
             $in: [
                 "Cancelled",
@@ -183,6 +183,7 @@ const stats = {
         }
     })
 };
+
 
 const message = req.session.message || null;
 delete req.session.message;
@@ -233,19 +234,15 @@ const updateOrderStatusFromItems = (order) => {
 
     const total = order.items.length;
 
-    const cancelled = order.items.filter(i => i.itemStatus === "Cancelled").length;
+    const cancelled =
+        order.items.filter(i => i.itemStatus === "Cancelled").length;
 
-    const returned = order.items.filter(i => i.itemStatus === "Returned").length;
+    const returned =
+        order.items.filter(i => i.itemStatus === "Returned").length;
 
     if (cancelled === total) {
 
         order.orderStatus = "Cancelled";
-
-    }
-
-    else if (cancelled > 0) {
-
-        order.orderStatus = "Partially Cancelled";
 
     }
 
@@ -255,37 +252,15 @@ const updateOrderStatusFromItems = (order) => {
 
     }
 
+    else if (cancelled > 0) {
+
+        order.orderStatus = "Partially Cancelled";
+
+    }
+
     else if (returned > 0) {
 
         order.orderStatus = "Partially Returned";
-
-    }else {
-   
-    order.orderStatus = order.items[0].itemStatus;
-}
-
-    if (
-        order.orderStatus === "Cancelled" ||
-        order.orderStatus === "Partially Cancelled"
-    ) {
-
-        if (order.paymentMethod === "RAZORPAY") {
-
-            order.paymentStatus = "Refund Pending";
-
-        }
-
-        else if (order.paymentMethod === "WALLET") {
-
-            order.paymentStatus = "Refunded";
-
-        }
-
-        else {
-
-            order.paymentStatus = "Pending";
-
-        }
 
     }
 
@@ -528,3 +503,228 @@ catch (error) {
 
 };
 
+export const approveReturn = async (req,res)=>{
+
+    try{
+
+        const {orderId,itemId}=req.params;
+
+        const order=await Order.findById(orderId)
+        .populate("items.product")
+        .populate("items.variant");
+
+        if(!order){
+
+            return res.json({
+                success:false,
+                message:"Order not found"
+            });
+
+        }
+
+        const item=order.items.id(itemId);
+
+        if(!item){
+
+            return res.json({
+                success:false,
+                message:"Item not found"
+            });
+
+        }
+
+        if(item.returnStatus!=="Requested"){
+
+            return res.json({
+                success:false,
+                message:"Return request not found"
+            });
+
+        }
+
+        if (item.itemStatus !== "Delivered") {
+
+    return res.json({
+        success: false,
+        message: "Only delivered items can be returned."
+    });
+
+}
+
+
+
+        item.returnStatus="Approved";
+        item.itemStatus="Returned";
+        item.returnedAt=new Date();
+
+        if (
+    order.paymentMethod !== "COD"
+) {
+
+    let wallet = await Wallet.findOne({
+        user: order.user
+    });
+
+    if (!wallet) {
+
+        wallet = await Wallet.create({
+            user: order.user,
+            balance: 0,
+            transactions: []
+        });
+
+    }
+
+    
+
+    wallet.balance += item.total;
+
+    wallet.transactions.push({
+        type: "credit",
+        amount: item.total,
+        reason: "Order Refund",
+        order: order._id,
+        description: `Refund for ${item.product.name}`
+    });
+
+    await wallet.save();
+
+}
+      const variant = await Variant.findById(item.variant);
+
+if(variant){
+
+    variant.stock+=item.quantity;
+
+    await variant.save();
+
+}
+
+const activeItems = order.items.filter(
+    i =>
+        i.itemStatus !== "Cancelled" &&
+        i.itemStatus !== "Returned"
+);
+
+order.subtotal = activeItems.reduce(
+    (sum,item)=>sum+item.total,
+    0
+);
+
+order.grandTotal =
+order.subtotal-
+order.discount+
+order.shippingCharge+
+order.tax;
+
+const refundedItems=order.items.filter(i=>
+i.itemStatus==="Cancelled" ||
+i.itemStatus==="Returned"
+);
+
+if(refundedItems.length===order.items.length){
+
+    order.paymentStatus="Refunded";
+
+}else{
+
+    order.paymentStatus="Partially Refunded";
+
+}
+
+const allReturned=order.items.every(
+i=>i.itemStatus==="Returned"
+);
+
+const returnedCount=order.items.filter(
+i=>i.itemStatus==="Returned"
+).length;
+
+if(allReturned){
+
+    order.orderStatus="Returned";
+
+}else if(returnedCount>0){
+
+    order.orderStatus="Partially Returned";
+
+}
+
+
+
+await order.save();
+
+return res.json({
+    success: true,
+    message: "Return approved."
+});
+
+} catch (error) {
+
+    console.log(error);
+
+    return res.json({
+        success: false,
+        message: "Something went wrong"
+    });
+
+}
+};
+export const rejectReturn = async (req, res) => {
+
+    try {
+
+        const { orderId, itemId } = req.params;
+        const { reason } = req.body;
+
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.json({
+                success: false,
+                message: "Order not found"
+            });
+        }
+
+        const item = order.items.id(itemId);
+
+        if (!item) {
+            return res.json({
+                success: false,
+                message: "Item not found"
+            });
+        }
+
+        if (item.returnStatus !== "Requested") {
+
+            return res.json({
+                success: false,
+                message: "No pending return request."
+            });
+
+        }
+
+        item.returnStatus = "Rejected";
+        item.returnRejectedReason = reason || "";
+
+        await order.save();
+
+        return res.json({
+            success: true,
+            message: "Return request rejected."
+        });
+
+    }
+
+    catch (error) {
+
+        console.log(error);
+
+        return res.json({
+            success: false,
+            message: "Something went wrong"
+        });
+
+    }
+
+};

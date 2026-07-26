@@ -46,6 +46,23 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
 },
+referralCode: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+},
+
+referredBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+},
+
+isReferralApplied: {
+    type: Boolean,
+    default: false
+},
 authProvider: {
     type: String,
     enum: ['local', 'google'],

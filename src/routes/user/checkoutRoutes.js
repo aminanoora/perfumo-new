@@ -11,6 +11,8 @@ router.post("/apply-coupon", userAuth, checkoutController.applyCoupon);
 
 router.post("/place-order", userAuth, checkoutController.placeOrder);
 
+router.post("/create-pending-order", userAuth, checkoutController.createPendingOrder);
+
 router.post("/create-order", userAuth, checkoutController.createRazorpayOrder);
 
 router.post("/verify-payment", userAuth, checkoutController.verifyPayment);
@@ -27,6 +29,22 @@ router.get("/address/edit-address/:id", userAuth, addressController.loadEditAddr
 router.post("/address/edit-address/:id", userAuth, addressController.updateAddress);
 
 router.get("/order-success/:orderId", checkoutController.loadOrderSuccess);
+
+router.get(
+    "/payment-failed/:orderId",
+    userAuth,
+    checkoutController.loadPaymentFailed
+);
+
+router.get(
+
+"/retry-payment/:orderId",
+
+userAuth,
+
+checkoutController.retryPayment
+
+);
 
 
 export default router;

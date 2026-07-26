@@ -27,7 +27,8 @@ import wishlistRoutes from "./src/routes/user/wishlistRoutes.js"
 import checkoutRoutes from "./src/routes/user/checkoutRoutes.js";
 import orderRoutes  from "./src/routes/admin/orderRoutes.js"
 import inventoryRoutes from "./src/routes/admin/inventoryRoutes.js"
-
+import couponRoutes from "./src/routes/admin/couponRoutes.js";
+import analyticsRoute from "./src/routes/admin/analyticsRoutes.js";
 
 const app = express();
 
@@ -125,7 +126,15 @@ app.use("/wishlist",wishlistRoutes);
 
 app.use("/checkout", checkoutRoutes);
 
+app.use("/admin/coupons", couponRoutes);
 
+app.use(
+
+    "/admin/analytics",
+
+    analyticsRoute
+
+);
 
 const PORT = process.env.PORT || 4000;
 

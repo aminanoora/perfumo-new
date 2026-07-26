@@ -1,3 +1,23 @@
+function updateCartBadge(count) {
+
+    const badge = document.getElementById("cartBadge");
+
+    if (!badge) return;
+
+    if (count > 0) {
+
+        badge.style.display = "flex";
+        badge.textContent = count;
+
+    } else {
+
+        badge.style.display = "none";
+        badge.textContent = "0";
+
+    }
+
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("loaded");
    const isLoggedIn = window.isLoggedIn;
@@ -172,17 +192,16 @@ if(profileToggle){
         });
 
         const data = await response.json();
+if (data.success) {
+  updateCartBadge(data.cartCount);
+    Swal.fire({
+        icon: "success",
+        title: "Added to cart",
+        timer: 1200,
+        showConfirmButton: false
+    });
 
-        if (data.success) {
-
-            Swal.fire({
-                icon: "success",
-                title: "Added to cart",
-                timer: 1200,
-                showConfirmButton: false
-            });
-
-        } else {
+} else {
 
             Swal.fire({
                 icon: "warning",

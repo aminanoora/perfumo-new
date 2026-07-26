@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payment Failed</title>
+
+    <link rel="stylesheet" href="/user/css/headers.css">
+    <link rel="stylesheet" href="/user/css/footer.css">
+    <link rel="stylesheet" href="/user/css/payment-failed.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<%- include("../partials/header") %>
+
+<section class="payment-failed-section">
+
+    <div class="payment-card">
+
+        <div class="failure-icon">
+
+            <i class="fa-solid fa-circle-xmark"></i>
+
+        </div>
+
+        <h1>Payment Failed</h1>
+
+        <p class="subtitle">
+
+            Unfortunately your payment could not be completed.
+
+        </p>
+
+        <div class="payment-info">
+
+            <div class="info-row">
+
+                <span>Order ID</span>
+
+                <strong><%= order.orderId %></strong>
+
+            </div>
+
+            <div class="info-row">
+
+                <span>Amount</span>
+
+                <strong>₹<%= order.grandTotal.toLocaleString() %></strong>
+
+            </div>
+
+            <div class="info-row">
+
+                <span>Payment Method</span>
+
+                <strong><%= order.paymentMethod %></strong>
+
+            </div>
+
+            <div class="info-row">
+
+                <span>Status</span>
+
+                <span class="pending-badge">
+
+                    Pending Payment
+
+                </span>
+
+            </div>
+
+        </div>
+
+        <% if(reason){ %>
+
+        <div class="failure-reason">
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            <%= reason %>
+
+        </div>
+
+        <% } %>
+
+        <div class="button-group">
+
+            <% if(order.paymentMethod==="RAZORPAY"){ %>
+
+            <a href="/checkout/retry-payment/<%= order._id %>" class="retry-btn">
+
+                Retry Payment
+
+            </a>
+
+            <% } %>
+
+            <% if(order.paymentMethod==="WALLET"){ %>
+
+            <a href="/profile/wallet" class="retry-btn">
+
+                Add Money & Retry
+
+            </a>
+
+            <% } %>
+
+            <a href="/checkout" class="checkout-btn">
+
+                Back to Checkout
+
+            </a>
+
+            <a href="/shop" class="shopping-btn">
+
+                Continue Shopping
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<%- include("../partials/footer") %>
+
+<script>
+document.getElementById("retryBtn").addEventListener("click", async () => {
+
+    const response = await fetch(
+
+        "/checkout/retry-payment/<%= order._id %>",
+
+        {
+
+            method:"POST"
+
+        }
+
+    );
+
+    const data = await response.json();
+
+    if(!data.success){
+
+        return;
+
+    }
+
+    const razor = await fetch("/checkout/create-order",{
+
+        method:"POST",
+
+        headers:{
+
+            "Content-Type":"application/json"
+
+        },
+
+        body:JSON.stringify({
+
+            orderId:data.orderId
+
+        })
+
+    });
+
+    const razorData = await razor.json();
+
+    openRazorpay(
+
+        razorData.razorpayOrder,
+
+        razorData.mongoOrderId
+
+    );
+
+});
+</script>
+<script>
+
+const profileToggle =
+document.getElementById('profileToggle');
+
+const profileMenu =
+document.getElementById('profileMenu');
+
+if(profileToggle){
+
+    profileToggle.addEventListener('click', (e) => {
+
+        e.preventDefault();
+
+        profileMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+
+        if(
+            !profileToggle.contains(e.target) &&
+            !profileMenu.contains(e.target)
+        ){
+            profileMenu.classList.remove('show');
+        }
+    });
+}
+
+</script>
+</body>
+
+</html>

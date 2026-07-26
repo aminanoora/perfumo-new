@@ -1,6 +1,7 @@
 import User from "../../models/User.js";
 import Address from "../../models/Address.js";
 import bcrypt from "bcrypt";
+import Order from "../../models/Order.js";
 
 export const getUsersPage = async (req, res) => {
 
@@ -79,6 +80,12 @@ export const getUsersPage = async (req, res) => {
 
     const totalPages =
       Math.ceil(totalUsers / limit);
+
+      for (const user of users) {
+    user.ordersCount = await Order.countDocuments({
+        user: user._id
+    });
+}
 
     res.render(
       'admin/users/users',

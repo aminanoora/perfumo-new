@@ -2,32 +2,32 @@ import mongoose from "mongoose";
 
 const orderItemSchema = new mongoose.Schema({
 
-    product:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Product",
-        required:true
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true
     },
 
-    variant:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Variant",
-        required:true
+    variant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Variant",
+        required: true
     },
 
-    quantity:{
-        type:Number,
-        required:true
+    quantity: {
+        type: Number,
+        required: true
     },
 
-    price:Number,
+    price: Number,
 
-    salePrice:Number,
+    salePrice: Number,
 
-    total:Number,
+    total: Number,
 
-    itemStatus:{
-        type:String,
-        enum:[
+    itemStatus: {
+        type: String,
+        enum: [
             "Pending",
             "Confirmed",
             "Processing",
@@ -37,21 +37,37 @@ const orderItemSchema = new mongoose.Schema({
             "Cancelled",
             "Returned"
         ],
-        default:"Pending"
+        default: "Pending"
     },
 
-    cancelReason:String,
+    // Return request workflow
+    returnStatus: {
+        type: String,
+        enum: [
+            "None",
+            "Requested",
+            "Approved",
+            "Rejected"
+        ],
+        default: "None"
+    },
 
-    cancelledAt:Date,
+    returnRejectedReason: {
+        type: String,
+        default: ""
+    },
 
-    returnedReason:String,
+    cancelReason: String,
 
-    returnedAt:Date,
+    cancelledAt: Date,
+
+    returnedReason: String,
+
+    returnedAt: Date,
 
     deliveredAt: Date
 
-}
-);
+});
 
 const orderSchema = new mongoose.Schema(
   {

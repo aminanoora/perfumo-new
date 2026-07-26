@@ -1,3 +1,24 @@
+function updateCartBadge(count) {
+
+    const badge = document.getElementById("cartBadge");
+
+    if (!badge) return;
+
+    if (count > 0) {
+
+        badge.style.display = "flex";
+        badge.textContent = count;
+
+    } else {
+
+        badge.style.display = "none";
+        badge.textContent = "0";
+
+    }
+
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
 
 
@@ -29,6 +50,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await res.json();
 
             if (data.success) {
+
+                updateCartBadge(data.cartCount);
+
+    const qtyElement =
+        btn.parentElement.querySelector(".qty-value");
+
+    if (qtyElement) {
+
+        qtyElement.textContent = data.quantity;
+
+    }
 
                 location.reload();
 
@@ -77,6 +109,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await res.json();
 
             if (data.success) {
+
+
+    updateCartBadge(data.cartCount);
+
 
                 location.reload();
 
@@ -129,6 +165,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     showConfirmButton: false
 
                 });
+
+                updateCartBadge(data.cartCount);
 
                 setTimeout(() => {
 

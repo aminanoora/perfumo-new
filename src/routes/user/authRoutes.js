@@ -28,8 +28,7 @@ router.get("/", async (req, res) => {
             isDeleted: false,
             isListed: true
         });
-
-         const featured = req.query.featured || "";
+let featured = req.query.featured || "bestseller";
 
           const featuredProducts = await Product.aggregate([
 
@@ -130,10 +129,10 @@ router.post('/reset-password', resetPassword);
 
 router.get('/logout',noCache, (req, res) => {
 
-    req.session.destroy(() => {
+      delete req.session.user;
 
         res.redirect('/');
-    });
+   
 });
 router.get("/check-block-status",noCache, checkBlockStatus);
 

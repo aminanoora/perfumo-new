@@ -6,7 +6,9 @@ import {
     loadOrders,
     loadOrderDetails,
      getOrderDetails,
-    updateOrderStatus
+    updateOrderStatus,
+    approveReturn,
+    rejectReturn
 } from "../../controllers/admin/orderController.js";
 
 const router = express.Router();
@@ -31,6 +33,17 @@ router.get(
 router.post(
     "/orders/:orderId/status",
     updateOrderStatus
+);
+router.patch(
+    "/orders/:orderId/items/:itemId/approve-return",
+    adminAuth,
+    approveReturn
+);
+
+router.patch(
+    "/orders/:orderId/items/:itemId/reject-return",
+    adminAuth,
+    rejectReturn
 );
 
 export default router;

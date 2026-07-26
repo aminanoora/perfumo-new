@@ -36,7 +36,7 @@
 
 <h1>Order Details</h1>
 
-<a href="/orders" class="back-btn">
+<a href="/profile/orders" class="back-btn">
 <i class="fa-solid fa-arrow-left"></i>
 Back to Orders
 </a>
@@ -263,19 +263,70 @@ Delivered
 
         <% } %>
 
-        <% if(item.itemStatus==="Delivered"){ %>
+       <% if(item.itemStatus === "Delivered" && item.returnStatus === "None"){ %>
 
-           
-            <button
-                class="return-item-btn secondary-btn"
-                data-order="<%= order._id %>"
-                data-item="<%= item.variant._id %>">
-                Return Item
-            </button>
+<button
+    class="return-item-btn secondary-btn"
+    data-order="<%= order._id %>"
+    data-item="<%= item.variant._id %>">
+    Return Item
+</button>
 
-           
+<% } %>
 
-        <% } %>
+
+<% if(item.returnStatus === "Requested"){ %>
+
+<div class="return-request-badge">
+
+    <i class="fa-solid fa-clock"></i>
+
+    Return Requested
+
+</div>
+
+<% } %>
+
+
+<% if(item.returnStatus === "Approved"){ %>
+
+<div class="return-approved-badge">
+
+    <i class="fa-solid fa-circle-check"></i>
+
+    Returned
+
+</div>
+
+<% } %>
+
+
+<% if(item.returnStatus === "Rejected"){ %>
+
+<div class="return-rejected-box">
+
+    <div class="return-rejected-badge">
+
+        <i class="fa-solid fa-circle-xmark"></i>
+
+        Return Rejected
+
+    </div>
+
+    <% if(item.returnRejectedReason){ %>
+
+        <small>
+
+            Reason:
+            <%= item.returnRejectedReason %>
+
+        </small>
+
+    <% } %>
+
+</div>
+
+<% } %>
 
     </div>
 

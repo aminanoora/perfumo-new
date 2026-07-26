@@ -181,6 +181,11 @@
                             <i class="fa-regular fa-credit-card"></i>
 
                         </label>
+                        <input
+type="hidden"
+name="paymentVerified"
+id="paymentVerified"
+value="false">
 
                         <label class="payment-card">
 
@@ -325,34 +330,126 @@
 
         </div>
 
-        <div class="coupon-section">
+        <% if (!retryOrder) { %>
+    <div class="coupon-section">
 
-            <h3>
+    <h3>Coupons</h3>
 
-                Coupon / Referral Code
+    <div class="coupon-box">
 
-            </h3>
+        <input
+            type="text"
+            id="couponCode"
+            placeholder="Enter coupon code">
 
-            <div class="coupon-box">
+        <button
+            type="button"
+            id="applyCoupon">
 
-                <input
-                    type="text"
-                    id="couponCode"
-                    placeholder="Enter coupon code">
+            Apply
 
-                <button
-                    type="button"
-                    id="applyCoupon">
+        </button>
 
-                    Apply
+    </div>
 
-                </button>
+    <small id="couponMessage"></small>
+
+    <% if(coupons && coupons.length){ %>
+
+    <div class="available-coupons">
+
+        <h4>
+
+            Available Coupons (<%= coupons.length %>)
+
+        </h4>
+
+      
+
+        <% coupons.forEach(coupon=>{ %>
+
+        <div class="available-coupon">
+
+            <div class="coupon-left">
+
+                <div class="coupon-code">
+
+                    <%= coupon.code %>
+
+                </div>
+
+                <div class="coupon-desc">
+
+                    <%= coupon.description %>
+
+                </div>
+
+                <div class="coupon-meta">
+
+                    <% if(coupon.discountType==="percentage"){ %>
+
+                        <span>
+
+                            <strong><%= coupon.discount %>% OFF</strong>
+
+                        </span>
+
+                        <span>
+
+                            Max ₹<%= coupon.maximumDiscount %>
+
+                        </span>
+
+                    <% }else{ %>
+
+                        <span>
+
+                            <strong>₹<%= coupon.discount %> OFF</strong>
+
+                        </span>
+
+                    <% } %>
+
+                </div>
+
+                <div class="coupon-meta">
+
+                    Minimum Purchase ₹<%= coupon.minimumPurchase %>
+
+                </div>
+
+                <div class="coupon-expiry">
+
+                    Expires
+
+                    <%= new Date(coupon.validUntil).toLocaleDateString("en-IN") %>
+
+                </div>
 
             </div>
 
-            <small id="couponMessage"></small>
+            <button
+                type="button"
+                class="selectCoupon"
+                data-code="<%= coupon.code %>">
+
+                Apply
+
+            </button>
 
         </div>
+
+        <% }) %>
+
+       
+
+    </div>
+
+    <% } %>
+
+</div>
+
+<% } %>
 
         <div class="price-details">
 
@@ -521,7 +618,97 @@ Swal.fire({
 
 <script src="/user/js/block-check.js"></script>
 <script src="/user/js/checkout.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    const retryOrder = "<%= retryOrder || '' %>";
+</script>
+<script>
+    const razorpayKey = "<%= razorpayKey %>";
+    console.log(razorpayKey);
+   function openRazorpay(order,mongoOrderId){
 
+    const options = {
+
+        key: razorpayKey,
+
+        amount: order.amount,
+
+        currency: order.currency,
+
+        name: "Perfumo",
+
+        description: "Perfume Purchase",
+
+        order_id: order.id,
+
+        handler: function(response){
+
+    verifyPayment(response, mongoOrderId);
+
+},
+
+        modal:{
+    ondismiss:function(){
+        window.location.href =
+            "/checkout/payment-failed/" + mongoOrderId;
+    }
+},
+
+        theme:{
+
+            color:"#000"
+
+        }
+
+    };
+
+    const rzp = new Razorpay(options);
+
+    rzp.open();
+
+    rzp.on("payment.failed", function () {
+
+    window.location.href =
+        "/checkout/payment-failed/" + mongoOrderId;
+
+});
+
+}
+async function verifyPayment(response, mongoOrderId){
+
+    const result = await fetch("/checkout/verify-payment",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+       body: JSON.stringify({
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature,
+        mongoOrderId
+    })
+
+    });
+
+    const data = await result.json();
+
+   if(data.success){
+
+    window.location.href =
+        "/checkout/order-success/" + data.orderId;
+
+}else{
+
+    window.location.href =
+        "/checkout/payment-failed/" + data.orderId;
+
+}
+
+}
+</script>
 </body>
 
 </html>

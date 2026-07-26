@@ -28,6 +28,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+       
 
 </head>
 
@@ -37,208 +38,244 @@
 
       <%- include('../partials/sidebar') %>
 
+<div class="admin-content">
 
-        <div class="main-content">
+    <div class="dashboard-header">
 
-         
+        <div class="dashboard-title">
+            <h2>Dashboard Overview</h2>
+           <p>Welcome back, Admin</p>
+        </div>
 
+        <div class="dashboard-filter">
+            <select id="dashboardFilter" class="filter-select">
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month" selected>This Month</option>
+                <option value="year">This Year</option>
+                <option value="custom">Custom Date</option>
+            </select>
 
-            <section class="dashboard-content">
+            <div class="custom-date-range" id="customDateRange" style="display:none;">
+                <input type="date" id="startDate">
+                <input type="date" id="endDate">
+                <button id="applyDateFilter" class="apply-btn">
+                    Apply
+                </button>
+            </div>
+        </div>
 
-                <div class="dashboard-title">
+    </div>
 
-                    <h1>
-                        Dashboard Overview
-                    </h1>
+    <div class="dashboard-cards">
 
-                    <p>
-                        Welcome back Admin
-                    </p>
+        <div class="dashboard-card">
 
-                </div>
+            <div class="card-content">
 
+                <span class="card-label">
+                    TOTAL ORDERS
+                </span>
 
-              
+                <h3 id="totalOrders">
+                    <%= dashboard.totalOrders %>
+                </h3>
 
-                <div class="dashboard-cards">
+            </div>
 
-                    <div class="dashboard-card">
+            <div class="card-icon orders-icon">
+                <i class="fa-solid fa-box"></i>
+            </div>
 
-                        <div class="card-icon sales">
+        </div>
 
-                            <i class="fa-solid fa-dollar-sign"></i>
+        <div class="dashboard-card">
 
-                        </div>
+            <div class="card-content">
 
-                        <div>
+                <span class="card-label">
+                    TOTAL USERS
+                </span>
 
-                            <h3>
-                                Total Sales
-                            </h3>
+                <h3 id="totalUsers">
+                    <%= dashboard.totalUsers %>
+                </h3>
 
-                            <h2>
-                                ₹1,24,500
-                            </h2>
+            </div>
 
-                        </div>
+            <div class="card-icon users-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
 
-                    </div>
+        </div>
 
+        <div class="dashboard-card">
 
-                    <div class="dashboard-card">
+            <div class="card-content">
 
-                        <div class="card-icon orders">
+                <span class="card-label">
+                    TOTAL SALES REVENUE
+                </span>
 
-                            <i class="fa-solid fa-cart-shopping"></i>
+                <h3 id="totalRevenue">
+                    ₹<%= dashboard.totalRevenue.toLocaleString("en-IN") %>
+                </h3>
 
-                        </div>
+            </div>
 
-                        <div>
-
-                            <h3>
-                                Orders
-                            </h3>
-
-                            <h2>
-                                325
-                            </h2>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="dashboard-card">
-
-                        <div class="card-icon users">
-
-                            <i class="fa-solid fa-users"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h3>
-                                Users
-                            </h3>
-
-                            <h2>
-                                1,240
-                            </h2>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="dashboard-card">
-
-                        <div class="card-icon products">
-
-                            <i class="fa-solid fa-box"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h3>
-                                Products
-                            </h3>
-
-                            <h2>
-                                86
-                            </h2>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                
-
-                <div class="recent-orders">
-
-                    <div class="table-header">
-
-                        <h2>
-                            Recent Orders
-                        </h2>
-
-                    </div>
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Order ID
-                                </th>
-
-                                <th>
-                                    Customer
-                                </th>
-
-                                <th>
-                                    Amount
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            <tr>
-
-                                <td>#1025</td>
-
-                                <td>Amina</td>
-
-                                <td>₹4,500</td>
-
-                                <td>
-                                    <span class="status completed">
-                                        Completed
-                                    </span>
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td>#1026</td>
-
-                                <td>Rahul</td>
-
-                                <td>₹2,200</td>
-
-                                <td>
-                                    <span class="status pending">
-                                        Pending
-                                    </span>
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </section>
+            <div class="card-icon revenue-icon">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
 
         </div>
 
     </div>
+
+    <div class="dashboard-grid">
+
+                <div class="dashboard-left">
+
+            <div class="dashboard-panel">
+
+                <div class="panel-header">
+
+                    <h3>Revenue Overview</h3>
+
+                </div>
+
+                <div class="panel-body">
+
+                    <canvas id="revenueChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="dashboard-right">
+
+            <div class="dashboard-panel">
+
+                <div class="panel-header">
+
+                    <h3>Order Status Summary</h3>
+
+                </div>
+
+                <div class="panel-body">
+
+                    <canvas id="orderStatusChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="dashboard-grid bottom-grid">
+
+        <div class="dashboard-bottom-grid">
+
+    <div class="dashboard-card category-card">
+
+        <div class="card-header">
+            <h3>Top Categories</h3>
+        </div>
+
+        <div class="category-chart-wrapper">
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-card products-card">
+
+        <div class="card-header">
+            <h3>Top 3 Selling Products</h3>
+        </div>
+
+        <div class="top-products-list">
+
+            <% if(topProducts && topProducts.length){ %>
+
+                <% topProducts.forEach((product,index)=>{ %>
+
+                    <div class="product-item">
+
+                        <div class="product-rank">
+                            <%= index + 1 %>
+                        </div>
+
+                        <div class="product-image">
+
+                            <% if(product.image){ %>
+
+                               <img
+    src="/admin/uploads/products/<%= product.image %>"
+    alt="<%= product.name %>">
+
+                            <% } else { %>
+
+                                <img
+                                    src="/images/default-product.png"
+                                    alt="Product"
+                                >
+
+                            <% } %>
+
+                        </div>
+
+                        <div class="product-details">
+
+                            <h5><%= product.name %></h5>
+
+                            <span>
+                                <%= product.unitsSold %> Units Sold
+                            </span>
+
+                        </div>
+
+                        <div class="product-revenue">
+
+                            ₹<%= product.revenue.toLocaleString("en-IN") %>
+
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <div class="empty-state">
+
+                    No sales available
+
+                </div>
+
+            <% } %>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+       
+
+    </div>
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+<script src="/admin/js/dashboard.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 

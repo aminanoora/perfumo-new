@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    const params = new URLSearchParams(window.location.search);
+
+const retryOrder = params.get("retryOrder");
+    
+
     const paymentMethods =
         document.querySelectorAll("input[name='paymentMethod']");
 
@@ -36,17 +41,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!selected) return;
 
-        if (selected.value === "COD") {
-
-            payNowBtn.style.display = "none";
-            placeOrderBtn.style.display = "block";
-
-        } else {
-
-            payNowBtn.style.display = "block";
-            placeOrderBtn.style.display = "none";
-
-        }
+       if (
+    selected.value === "COD" ||
+    selected.value === "WALLET"
+) {
+    payNowBtn.style.display = "none";
+    placeOrderBtn.style.display = "block";
+} else {
+    payNowBtn.style.display = "block";
+    placeOrderBtn.style.display = "none";
+}
 
     }
 
@@ -156,31 +160,121 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
+payNowBtn.addEventListener("click", async () => {
 
-    payNowBtn?.addEventListener("click", () => {
+    try {
 
-        const address =
-            document.querySelector("input[name='addressId']:checked");
+        const address = document.querySelector(
+            "input[name='addressId']:checked"
+        );
 
         if (!address) {
-
-            Swal.fire({
-
+            return Swal.fire({
                 icon: "warning",
-
                 title: "Select Delivery Address"
-
             });
-
-            return;
-
         }
 
-        checkoutForm.submit();
+        const selectedPayment = document.querySelector(
+            "input[name='paymentMethod']:checked"
+        );
+
+        if (!selectedPayment) {
+            return Swal.fire({
+                icon: "warning",
+                title: "Select Payment Method"
+            });
+        }
+
+        const paymentMethod = selectedPayment.value;
+
+        if (paymentMethod !== "RAZORPAY") {
+            checkoutForm.submit();
+            return;
+        }
+let pendingData;
+
+if (retryOrder) {
+
+    pendingData = {
+        success: true,
+        orderId: retryOrder
+    };
+
+} else {
+
+    const pending = await fetch("/checkout/create-pending-order", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            addressId: address.value
+        })
 
     });
 
+    pendingData = await pending.json();
+}
 
+if (!pendingData.success) {
+
+    return Swal.fire({
+
+        icon: "error",
+
+        title: "Unable to create order"
+
+    });
+
+}
+
+       
+        const razorpay = await fetch("/checkout/create-order", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                orderId: pendingData.orderId
+            })
+
+        });
+
+        const razorData = await razorpay.json();
+
+        if (!razorData.success) {
+
+            return Swal.fire({
+                icon: "error",
+                title: "Unable to create Razorpay Order"
+            });
+
+        }
+
+        openRazorpay(
+            razorData.razorpayOrder,
+            razorData.mongoOrderId
+        );
+
+    } catch (err) {
+
+        console.error(err);
+
+        Swal.fire({
+            icon: "error",
+            title: "Something went wrong"
+        });
+
+    }
+
+});
 
     checkoutForm?.addEventListener("submit", (e) => {
 
@@ -235,5 +329,18 @@ document.addEventListener("DOMContentLoaded", () => {
             .classList.add("selected-address");
 
     }
+    document.querySelectorAll(".selectCoupon").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        const code = button.dataset.code;
+
+        document.getElementById("couponCode").value = code;
+
+        document.getElementById("applyCoupon").click();
+
+    });
+
+});
 
 });

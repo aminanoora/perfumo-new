@@ -1,3 +1,4 @@
+import cartCount from "../../middleware/cartCount.js";
 import Cart from "../../models/Cart.js";
 import Product from "../../models/Product.js";
 import Variant from "../../models/Variant.js";
@@ -203,6 +204,9 @@ export const addToCart = async (req, res) => {
 
         await cart.save();
 
+        delete req.session.coupon;
+
+
         await Wishlist.deleteOne({
 
             user: userId,
@@ -211,11 +215,19 @@ export const addToCart = async (req, res) => {
 
         });
 
+        const totalCount = cart.items.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+);
+
         res.json({
 
             success: true,
 
-            message: "Added to cart."
+            message: "Added to cart.",
+
+            cartCount:totalCount
+
 
         });
 
@@ -301,14 +313,22 @@ export const updateCartQuantity = async (req, res) => {
 
         await cart.save();
 
-        res.json({
+        delete req.session.coupon;
 
-            success: true,
+       const totalCount = cart.items.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+);
 
-            quantity: item.quantity
+res.json({
 
-        });
+    success: true,
 
+    quantity: item.quantity,
+
+    cartCount: totalCount
+
+});
     } catch (error) {
 
         console.log(error);
@@ -336,13 +356,22 @@ export const removeCartItem = async (req, res) => {
 
         await cart.save();
 
-        res.json({
+        delete req.session.coupon;
+        
+     const totalCount = cart.items.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+);
 
-            success: true,
+res.json({
 
-            message: "Item removed."
+    success: true,
 
-        });
+    message: "Item removed.",
+
+    cartCount: totalCount
+
+});
 
     } catch (error) {
 

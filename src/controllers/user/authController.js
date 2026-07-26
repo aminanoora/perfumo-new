@@ -1,10 +1,15 @@
 import bcrypt from 'bcryptjs';
 import User from '../../models/User.js';
 import { sendOTP } from '../../services/mailService.js';
+import Wallet from '../../models/Wallet.js';
+import generateReferralCode from "../../util/generateReferralCode.js";
 
 
 export const loadSignup = (req, res) => {
-    res.render('user/auth/signup');
+    res.render("user/auth/signup", {
+        referralCode: req.query.ref || ""
+    });
+
 };
 export const loadSignin = (req, res) => {
     res.render('user/auth/signin');
@@ -28,7 +33,8 @@ export const signup = async (req, res) => {
             email,
             phone,
             password,
-            confirmPassword
+            confirmPassword,
+              referralCode
         } = req.body;
 
       
@@ -47,7 +53,7 @@ export const signup = async (req, res) => {
             });
         }
 
-    
+
         if (password !== confirmPassword) {
 
             return res.json({
@@ -95,7 +101,7 @@ req.session.userData = {
     phone,
 
     password: hashedPassword,
-
+       referralCode,
     otp,
     otpExpiry
 };
@@ -154,6 +160,28 @@ export const verifyOTP = async (req, res) => {
             });
         }
 
+        const existingEmail = await User.findOne({
+    email: userData.email
+});
+
+if (existingEmail) {
+    return res.json({
+        success:false,
+        message:"Email already registered"
+    });
+}
+let referralCode;
+let exists = true;
+
+while (exists) {
+
+    referralCode = generateReferralCode();
+
+    exists = await User.findOne({
+        referralCode
+    });
+
+}
         const newUser = new User({
 
             firstName: userData.firstName,
@@ -161,10 +189,73 @@ export const verifyOTP = async (req, res) => {
             email: userData.email,
             phone: userData.phone,
             password: userData.password,
-            isVerified: true
+            isVerified: true,
+              referralCode
         });
 
         await newUser.save();
+
+       await Wallet.create({
+    user: newUser._id
+});
+
+if (userData.referralCode) {
+
+    const referrer = await User.findOne({
+        referralCode: userData.referralCode
+    });
+
+    if (referrer) {
+
+        let referrerWallet = await Wallet.findOne({
+            user: referrer._id
+        });
+
+        let newUserWallet = await Wallet.findOne({
+            user: newUser._id
+        });
+
+        referrerWallet.balance += 50;
+
+        referrerWallet.transactions.push({
+            type: "credit",
+            amount: 50,
+            reason: "Referral Bonus",
+            description: `Referral bonus for inviting ${newUser.firstName}`
+        });
+
+        newUserWallet.balance += 50;
+
+        newUserWallet.transactions.push({
+            type: "credit",
+            amount: 50,
+            reason: "Referral Bonus",
+            description: "Signup referral reward"
+        });
+
+        await referrerWallet.save();
+        await newUserWallet.save();
+
+        newUser.referredBy = referrer._id;
+        newUser.isReferralApplied = true;
+
+        await newUser.save();
+
+        await Referral.create({
+
+            referrer: referrer._id,
+
+            referredUser: newUser._id,
+
+            referralCode: userData.referralCode,
+
+            rewardAmount: 50
+
+        });
+
+    }
+
+}
 
         req.session.user = {
 

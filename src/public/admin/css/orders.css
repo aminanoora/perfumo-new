@@ -1505,3 +1505,8 @@ body{
 }
 
 }
+.status-badge.requested{
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}

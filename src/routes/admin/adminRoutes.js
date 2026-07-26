@@ -10,6 +10,8 @@ import {
 
     adminDashboard,
 
+    getDashboardData,
+
     adminLogout
 
 } from '../../controllers/admin/adminController.js';
@@ -33,6 +35,13 @@ router.get(
     adminAuth,
      noCache,
     adminDashboard
+);
+
+router.get(
+    "/dashboard/data",
+    adminAuth,
+    noCache,
+    getDashboardData
 );
 
 router.get(

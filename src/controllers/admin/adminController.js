@@ -2,6 +2,8 @@ import bcrypt from 'bcryptjs';
 
 import Admin from '../../models/Admin.js';
 
+import * as dashboardService from "../../services/admin/dashboardService.js";
+
 export const loadAdminLogin = (req, res) => {
 
     res.render('admin/auth/login');
@@ -81,17 +83,74 @@ export const adminLogin = async (req, res) => {
     }
 };
 
-export const adminDashboard = (req, res) => {
+export const adminDashboard = async (req,res)=>{
 
-    res.render("admin/dashboard/dashboard", {
-    active: "dashboard"
-  });
+
+    try{
+
+    
+    const data =
+       await dashboardService.getDashboardData("month");
+
+    res.render("admin/dashboard/dashboard",{
+
+        active:"dashboard",
+
+        ...data
+
+    });
+
+}catch(err){
+    console.log(err);
+    res.redirect("/admin");
+}
+
 };
+
+export const getDashboardData = async(req,res)=>{
+
+try{
+
+const data=
+await dashboardService.getDashboardData(
+
+req.query.filter,
+
+req.query.start,
+
+req.query.end
+
+);
+
+return res.json({
+
+success:true,
+
+...data
+
+});
+
+}catch(error){
+
+console.log(error);
+
+return res.json({
+
+success:false,
+
+message:"Unable to load dashboard"
+
+});
+
+}
+
+};
+
+
 
 export const adminLogout = (req, res) => {
 
-    req.session.destroy(() => {
+     delete req.session.admin;
 
-        res.redirect('/admin/login');
-    });
+    res.redirect("/admin/login");
 };

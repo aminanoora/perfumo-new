@@ -9,7 +9,6 @@
         <a href="/">Home</a>
         <a href="/shop">Shop</a>
      
-        <a href="/explore">Explore</a>
 
     </nav>
 
@@ -43,13 +42,14 @@
 
     <i class="fas fa-shopping-bag"></i>
 
-    <% if(cartCount && cartCount > 0){ %>
+    <span
+    id="cartBadge"
+    class="cart-badge"
+    style="<%= cartCount > 0 ? '' : 'display:none' %>">
 
-        <span class="cart-badge">
-            <%= cartCount %>
-        </span>
+    <%= cartCount || 0 %>
 
-    <% } %>
+</span>
 
 </a>
 

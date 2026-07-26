@@ -8,6 +8,8 @@ const previewGrid = document.getElementById("previewGrid");
 const cropImage = document.getElementById("cropImage");
 const cropSave = document.getElementById("cropSave");
 
+       let isSubmitting = false;
+       
 const cropModal = new bootstrap.Modal(document.getElementById("cropModal"));
     function showError(fieldId, errorId, message) {
         document.getElementById(fieldId).classList.add("error-input");
@@ -106,6 +108,8 @@ const imageCount = existingImages + selectedImages.length;
 
     }
        const dt = new DataTransfer();
+
+
    form.addEventListener("submit", e => {
 
     if (!validateForm()) {
@@ -120,6 +124,9 @@ const imageCount = existingImages + selectedImages.length;
     });
 
     imageInput.files = dt.files;
+
+    isSubmitting = true;
+
 
 });
 
@@ -470,7 +477,7 @@ document.getElementById("variantForm").addEventListener("reset", () => {
 
 window.addEventListener("beforeunload", e => {
 
-    if (selectedImages.length > 0) {
+    if (!isSubmitting && selectedImages.length > 0) {
 
         e.preventDefault();
 

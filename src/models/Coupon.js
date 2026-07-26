@@ -136,4 +136,10 @@ const couponSchema = new mongoose.Schema(
 
 );
 
+
+couponSchema.index({
+
+description:"text"
+
+});
 export default mongoose.model("Coupon",couponSchema);

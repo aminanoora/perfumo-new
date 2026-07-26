@@ -17,6 +17,9 @@ import Variant from "../../models/Variant.js";
 
 import Wallet from "../../models/Wallet.js";
 
+import Referral from "../../models/Refferal.js";
+
+import * as profileService from "../../services/user/profileService.js";
 
 export const loadProfile = async (req, res) => {
 
@@ -456,7 +459,13 @@ export const addAddress = async (req, res) => {
             });
         }
 
-       const defaultValue = isDefault === 'on';
+      
+
+const addressCount = await Address.countDocuments({
+    userId: user._id
+});
+
+ const defaultValue = isDefault === 'on';
 
 if (defaultValue) {
 
@@ -682,6 +691,27 @@ export const deleteAddress = async (req, res) => {
 
         await Address.findByIdAndDelete(req.params.id);
 
+        const defaultAddress = await Address.findOne({
+    userId: req.session.user.id,
+    isDefault: true
+});
+
+if (!defaultAddress) {
+
+    const firstAddress = await Address.findOne({
+        userId: req.session.user.id
+    });
+
+    if (firstAddress) {
+
+        firstAddress.isDefault = true;
+
+        await firstAddress.save();
+
+    }
+
+}
+
         return res.json({
             success: true,
             message: 'Address deleted successfully'
@@ -889,7 +919,7 @@ export const cancelItem = async (req, res) => {
         item.cancelledAt = new Date();
 
       
-        const variant = await Variant.findById(item.variant);
+     const variant = await Variant.findById(item.variant);
 
         if (variant) {
 
@@ -899,10 +929,10 @@ export const cancelItem = async (req, res) => {
 
         }
 
-        if (
-            order.paymentMethod !== "COD" &&
-            order.paymentStatus === "Paid"
-        ) {
+       if (
+    order.paymentMethod !== "COD" &&
+    order.paymentStatus === "Paid"
+) { 
 
             let wallet = await Wallet.findOne({
                 user: order.user
@@ -918,27 +948,22 @@ export const cancelItem = async (req, res) => {
 
             }
 
-            wallet.balance += item.total;
+          const refundAmount = item.total;
 
-            wallet.transactions.push({
+wallet.balance += refundAmount;
 
-                type: "credit",
-
-                amount: item.total,
-
-                reason: "Order Cancelled",
-
-                order: order._id,
-
-                description: `Refund for cancelled item`
-
-            });
-
+wallet.transactions.push({
+    type: "credit",
+    amount: refundAmount,
+    reason: "Order Cancelled",
+    order: order._id,
+    description: `Refund for cancelled item`
+});
             await wallet.save();
 
         }
 
-      
+ 
        
  const activeItems = order.items.filter(
     i =>
@@ -960,7 +985,7 @@ order.grandTotal =
 
      
 
-const allCancelled = order.items.every(
+     const allCancelled = order.items.every(
     i => i.itemStatus === "Cancelled"
 );
 
@@ -968,9 +993,17 @@ if (allCancelled) {
 
     order.orderStatus = "Cancelled";
 
+    if (order.paymentMethod !== "COD") {
+        order.paymentStatus = "Refunded";
+    }
+
 } else {
 
     order.orderStatus = "Partially Cancelled";
+
+    if (order.paymentMethod !== "COD") {
+        order.paymentStatus = "Partially Refunded";
+    }
 
 }
 
@@ -1004,46 +1037,36 @@ export const returnItem = async (req, res) => {
 
     try {
 
-     const { orderId, variantId } = req.params;
+        const { orderId, variantId } = req.params;
         const { reason } = req.body;
 
-        
-        console.log("Variant ID:", variantId);
-
         const order = await Order.findOne({
-    _id: orderId,
-    user: req.session.user.id
-})
-.populate("items.product")
-.populate("items.variant");
+            _id: orderId,
+            user: req.session.user.id
+        })
+        .populate("items.product")
+        .populate("items.variant");
 
-console.log("Variant ID:", variantId);
-
-console.log(
-    "Stored IDs:",
-    order.items.map(i => i._id.toString())
-);
-
-const item = order.items.find(
-    i => i.variant && i.variant._id.toString() === variantId
-);
-
-console.log("Found item:", item);
-
-if (!order) {
+        if (!order) {
 
             return res.json({
-                success: false,
-                message: "Order not found"
+                success:false,
+                message:"Order not found"
             });
 
         }
-      
+
+        const item = order.items.find(
+            i =>
+                i.variant &&
+                i.variant._id.toString() === variantId
+        );
+
         if (!item) {
 
             return res.json({
-                success: false,
-                message: "Item not found"
+                success:false,
+                message:"Item not found"
             });
 
         }
@@ -1051,156 +1074,55 @@ if (!order) {
         if (item.itemStatus !== "Delivered") {
 
             return res.json({
-                success: false,
-                message: "Return is not allowed for this item"
+                success:false,
+                message:"Return not allowed"
             });
 
         }
-       
-        item.itemStatus = "Returned";
-       item.returnedReason = reason || "";
-        item.returnedAt = new Date();
 
+        if (item.returnStatus === "Requested") {
 
-
-
-      const variant = await Variant.findById(item.variant._id);
-        if (variant) {
-
-            variant.stock += item.quantity;
-
-            await variant.save();
-
-        }
-
-        if (
-            order.paymentMethod !== "COD" &&
-            order.paymentStatus === "Paid"
-        ) {
-
-            let wallet = await Wallet.findOne({
-                user: order.user
+            return res.json({
+                success:false,
+                message:"Return already requested."
             });
 
-            if (!wallet) {
-
-                wallet = await Wallet.create({
-                    user: order.user,
-                    balance: 0,
-                    transactions: []
-                });
-
-            }
-const refundAmount = item.total;
-
-wallet.transactions.push({
-
-    type: "credit",
-
-    amount: refundAmount,
-
-    reason: "Order Refund",
-
-    order: order._id,
-
-    description: `Refund for ${item.product.name}`
-
-});
-
-wallet.balance += refundAmount;
-
-await wallet.save();
-}
-
-const refundedItems = order.items.filter(
-    i =>
-        i.itemStatus === "Cancelled" ||
-        i.itemStatus === "Returned"
-);
-
-if (refundedItems.length > 0 &&
-    refundedItems.length < order.items.length) {
-
-    order.paymentStatus = "Partially Refunded";
-
-}
-        
-        const remainingItems = order.items.filter(i =>
-            i.itemStatus !== "Returned"
-        );
-
-        if (remainingItems.length === 0) {
-
-            order.orderStatus = "Returned";
-            order.returnedAt = new Date();
-
-            if (
-                order.paymentMethod !== "COD" &&
-                order.paymentStatus === "Paid"
-            ) {
-
-                order.paymentStatus = "Refunded";
-
-            }
-
         }
 
-        const allReturned = order.items.every(
-    i => i.itemStatus === "Returned"
-);
+        item.returnStatus = "Requested";
 
-if (allReturned) {
-
-    order.orderStatus = "Returned";
-
-} else {
-
-    order.orderStatus = "Partially Returned";
-
-}
-
-const activeItems = order.items.filter(
-    i =>
-        i.itemStatus !== "Cancelled" &&
-        i.itemStatus !== "Returned"
-);
-
-order.subtotal = activeItems.reduce(
-    (sum, item) => sum + item.total,
-    0
-);
-
-order.grandTotal =
-    order.subtotal -
-    order.discount +
-    order.shippingCharge +
-    order.tax;
+        item.returnedReason = reason || "";
 
         await order.save();
 
         return res.json({
 
-            success: true,
+            success:true,
 
-            message: "Return request submitted"
+            message:"Return request submitted successfully."
 
         });
 
-    }catch(error) {
+    }
+
+    catch(error){
 
         console.log(error);
 
         return res.json({
 
-            success: false,
+            success:false,
 
-            message: "Something went wrong"
+            message:"Something went wrong"
 
         });
 
     }
 
 };
+
+
+
 
 
 
@@ -1472,3 +1394,334 @@ export const downloadOrderSummary = async (req,res)=>{
     }
 
 }
+
+export const loadWallet = async (req, res) => {
+
+    try {
+
+        const page = Number(req.query.page) || 1;
+
+        const limit = 10;
+
+        const wallet = await Wallet.findOne({
+
+            user: req.session.user.id
+
+        });
+
+        if (!wallet) {
+
+            return res.render("user/profile/wallet", {
+
+                user: req.session.user,
+
+                wallet: {
+
+                    balance: 0,
+
+                    transactions: []
+
+                },
+
+                currentPage: 1,
+
+                totalPages: 1
+
+            });
+
+        }
+
+        wallet.transactions.sort(
+
+            (a, b) => b.createdAt - a.createdAt
+
+        );
+
+        const totalTransactions = wallet.transactions.length;
+
+        const totalPages = Math.ceil(totalTransactions / limit);
+
+        const transactions = wallet.transactions.slice(
+
+            (page - 1) * limit,
+
+            page * limit
+
+        );
+
+        res.render("user/profile/wallet", {
+
+            user: req.session.user,
+
+            wallet: {
+
+                balance: wallet.balance,
+
+                transactions
+
+            },
+
+            currentPage: page,
+
+            totalPages
+
+           
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.log(error);
+
+        res.redirect("/profile");
+
+    }
+
+};
+
+export const loadReferralPage = async (req, res) => {
+
+    try {
+
+        const userId = req.session.user.id;
+
+        const user = await User.findById(userId);
+
+        const wallet = await Wallet.findOne({
+            user: userId
+        });
+        const referralLink =
+`${req.protocol}://${req.get("host")}/signup?ref=${user.referralCode}`;
+
+        const referrals = await Referral.find({
+            referrer: userId
+        }).populate(
+            "referredUser",
+            "firstName lastName email createdAt"
+        );
+
+        const message = req.session.message;
+        delete req.session.message;
+
+        res.render("user/profile/refferal", {
+            user,
+            wallet,
+            referrals,
+            referralCount: referrals.length,
+            totalRewards: referrals.length * 50,
+            message,
+           referralLink 
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.redirect("/profile");
+
+    }
+
+};
+export const applyReferralCode = async (req,res)=>{
+
+try{
+
+const userId=req.session.user.id;
+
+const { referralCode }=req.body;
+
+const user=await User.findById(userId);
+
+if(user.isReferralApplied){
+
+return res.json({
+
+success:false,
+
+message:"Referral already applied."
+
+});
+
+}
+
+if(user.referralCode===referralCode){
+
+return res.json({
+
+success:false,
+
+message:"You cannot use your own referral code."
+
+});
+
+}
+
+const referrer=await User.findOne({
+
+referralCode
+
+});
+
+if(!referrer){
+
+return res.json({
+
+success:false,
+
+message:"Invalid referral code."
+
+});
+
+}
+
+const alreadyExists=await Referral.findOne({
+
+referredUser:userId
+
+});
+
+if(alreadyExists){
+
+return res.json({
+
+success:false,
+
+message:"Referral already used."
+
+});
+
+}
+
+let referrerWallet=await Wallet.findOne({
+
+user:referrer._id
+
+});
+
+if(!referrerWallet){
+
+referrerWallet=new Wallet({
+
+user:referrer._id
+
+});
+
+}
+
+let userWallet=await Wallet.findOne({
+
+user:userId
+
+});
+
+if(!userWallet){
+
+userWallet=new Wallet({
+
+user:userId
+
+});
+
+}
+
+referrerWallet.balance+=50;
+
+referrerWallet.transactions.push({
+
+type:"credit",
+
+amount:50,
+
+reason:"Referral Bonus",
+
+description:`Referral bonus for inviting ${user.firstName}`
+
+});
+
+userWallet.balance+=50;
+
+userWallet.transactions.push({
+
+type:"credit",
+
+amount:50,
+
+reason:"Referral Bonus",
+
+description:`Referral signup reward`
+
+});
+
+await referrerWallet.save();
+
+await userWallet.save();
+
+user.referredBy=referrer._id;
+
+user.isReferralApplied=true;
+
+await user.save();
+
+await Referral.create({
+
+referrer:referrer._id,
+
+referredUser:userId,
+
+referralCode,
+
+rewardAmount:50
+
+});
+
+return res.json({
+
+success:true,
+
+message:"Referral applied successfully. ₹50 added to your wallet."
+
+});
+
+}
+
+catch(error){
+
+console.log(error);
+
+return res.json({
+
+success:false,
+
+message:"Something went wrong."
+
+});
+
+}
+
+}
+export const loadCoupons = async (req, res) => {
+
+    try {
+
+        const userId =req.session.user.id;
+
+        const coupons = await profileService.getAvailableCoupons(userId);
+
+        res.render("user/profile/coupons", {
+
+            coupons,
+            active: "coupons"
+
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.redirect("/profile");
+
+    }
+
+};

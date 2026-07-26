@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Coupon</title>
+
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/coupon-add.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+<%- include('../partials/header') %>
+
+<div class="page">
+
+<%- include('../partials/sidebar') %>
+
+<div class="content">
+
+<div class="page-header">
+
+    <div>
+
+        <h2>Add Coupon</h2>
+
+        <p>Create a new coupon for customers.</p>
+
+    </div>
+
+    <a href="/admin/coupons" class="btn btn-secondary">
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Back
+
+    </a>
+
+</div>
+
+<div class="card">
+
+<form id="couponForm">
+
+<div class="form-grid">
+
+<div class="form-group">
+
+<label>Coupon Code *</label>
+
+<input
+type="text"
+name="code"
+placeholder="WELCOME50"
+
+>
+<small class="error-text"></small>
+</div>
+
+<div class="form-group">
+
+<label>Description *</label>
+
+<input
+type="text"
+name="description"
+placeholder="Coupon description"
+
+>
+<small class="error-text"></small>
+
+</div>
+
+<div class="form-group">
+
+<label>Discount Type *</label>
+
+<select
+name="discountType"
+id="discountType"
+
+>
+
+
+<option value="">Select</option>
+
+<option value="percentage">
+
+Percentage
+
+</option>
+
+
+<option value="fixed">
+
+Fixed Amount
+
+</option>
+
+
+</select>
+<small class="error-text"></small>
+
+</div>
+
+<div class="form-group">
+
+<label>Discount *</label>
+
+<input
+type="number"
+name="discount"
+min="1"
+
+>
+<small class="error-text"></small>
+
+</div>
+
+<div class="form-group">
+
+<label>Minimum Purchase</label>
+
+<input
+type="number"
+name="minimumPurchase"
+min="0"
+value="0"
+>
+<small class="error-text"></small>
+
+</div>
+
+<div class="form-group">
+
+<label>Maximum Discount</label>
+
+<input
+type="number"
+name="maximumDiscount"
+min="0"
+value="0"
+id="maximumDiscount"
+>
+<small class="error-text"></small>
+
+</div>
+
+<div class="form-group">
+
+<label>Usage Limit</label>
+
+<input
+type="number"
+name="usageLimit"
+min="0"
+value="0"
+>
+<small class="error-text"></small>
+
+</div>
+
+<div class="form-group">
+
+<label>Status</label>
+
+<select name="isActive">
+
+<option value="true">
+
+Active
+
+</option>
+
+<option value="false">
+
+Disabled
+
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Valid From *</label>
+
+<input
+type="date"
+name="validFrom"
+
+>
+<small class="error-text"></small>
+
+</div>
+
+<div class="form-group">
+
+<label>Valid Until *</label>
+
+<input
+type="date"
+name="validUntil"
+
+>
+<small class="error-text"></small>
+
+</div>
+
+</div>
+
+<div class="form-footer">
+
+<button
+type="submit"
+class="btn btn-primary"
+>
+
+<i class="fa-solid fa-plus"></i>
+
+Create Coupon
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/admin/js/add-coupon.js"></script>
+
+</body>
+
+</html>

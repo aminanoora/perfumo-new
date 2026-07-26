@@ -19,7 +19,11 @@ import {
       returnItem,
       downloadInvoice,
       buyAgain,
-      downloadOrderSummary
+      downloadOrderSummary,
+      loadWallet,
+      loadReferralPage,
+      applyReferralCode,
+      loadCoupons
 } from '../../controllers/user/profileController.js';
 
 import userAuth from '../../middleware/userAuth.js';
@@ -91,6 +95,8 @@ router.patch("/orders/:orderId/items/:variantId/cancel", userAuth, cancelItem);
 
 router.patch("/orders/:orderId/items/:variantId/return", userAuth, returnItem);
 
+
+
 router.get("/profile/orders/:id/invoice", userAuth, downloadInvoice);
 
 router.post("/profile/orders/:id/buy-again", userAuth, buyAgain);
@@ -100,5 +106,19 @@ router.get(
     userAuth,
     downloadOrderSummary
 );
+
+router.get(
+    "/wallet",
+    userAuth,
+    loadWallet
+);
+
+router.get("/refer", userAuth, loadReferralPage);
+
+router.post("/refer/apply", userAuth, applyReferralCode);
+
+
+router.get("/coupons", userAuth, loadCoupons);
+
 
 export default router;
