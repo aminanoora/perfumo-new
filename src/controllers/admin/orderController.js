@@ -20,12 +20,7 @@ const statusFlow = {
 
     Returned: [],
 
-    "Partially Cancelled": [
-        "Processing",
-        "Shipped",
-        "Out For Delivery",
-        "Delivered"
-    ],
+    "Partially Cancelled": [],
 
     "Partially Returned": []
 };
@@ -290,6 +285,22 @@ export const loadOrderDetails = async (req, res) => {
             return res.redirect("/admin/orders");
 
         }
+        let currentStatus = order.orderStatus;
+
+if (
+    currentStatus === "Partially Returned" ||
+    currentStatus === "Partially Cancelled"
+) {
+    const activeItem = order.items.find(
+        item =>
+            item.itemStatus !== "Returned" &&
+            item.itemStatus !== "Cancelled"
+    );
+
+    if (activeItem) {
+        currentStatus = activeItem.itemStatus;
+    }
+}
 
         const message = req.session.message || null;
 
@@ -298,6 +309,7 @@ delete req.session.message;
         res.render("admin/orders/order-details", {
 
             order,
+             currentStatus,
               message,
                active:"orders"
 
@@ -386,7 +398,22 @@ export const updateOrderStatus = async (req, res) => {
     return res.redirect("/admin/orders");
 
 }
-        const currentStatus = order.orderStatus;
+     let currentStatus = order.orderStatus;
+
+        if (
+    currentStatus === "Partially Returned" ||
+    currentStatus === "Partially Cancelled"
+) {
+    const activeItem = order.items.find(
+        item =>
+            item.itemStatus !== "Returned" &&
+            item.itemStatus !== "Cancelled"
+    );
+
+    if (activeItem) {
+        currentStatus = activeItem.itemStatus;
+    }
+}
 
 
         const allowedStatuses = statusFlow[currentStatus] || [];
@@ -480,11 +507,21 @@ await order.save();
 
 console.log("Saved order status:", order.orderStatus);
 
-       req.session.message = {
-    type: "success",
-    text: "Order status updated successfully."
-};
+      if (orderStatus === "Cancelled") {
 
+    req.session.message = {
+        type: "success",
+        text: "Order cancelled successfully."
+    };
+
+} else {
+
+    req.session.message = {
+        type: "success",
+        text: "Order status updated successfully."
+    };
+
+}
 res.redirect(`/admin/orders/${order._id}`);
     }
 
@@ -503,215 +540,253 @@ catch (error) {
 
 };
 
-export const approveReturn = async (req,res)=>{
-
-    try{
-
-        const {orderId,itemId}=req.params;
-
-        const order=await Order.findById(orderId)
-        .populate("items.product")
-        .populate("items.variant");
-
-        if(!order){
-
-            return res.json({
-                success:false,
-                message:"Order not found"
-            });
-
-        }
-
-        const item=order.items.id(itemId);
-
-        if(!item){
-
-            return res.json({
-                success:false,
-                message:"Item not found"
-            });
-
-        }
-
-        if(item.returnStatus!=="Requested"){
-
-            return res.json({
-                success:false,
-                message:"Return request not found"
-            });
-
-        }
-
-        if (item.itemStatus !== "Delivered") {
-
-    return res.json({
-        success: false,
-        message: "Only delivered items can be returned."
-    });
-
-}
-
-
-
-        item.returnStatus="Approved";
-        item.itemStatus="Returned";
-        item.returnedAt=new Date();
-
-        if (
-    order.paymentMethod !== "COD"
-) {
-
-    let wallet = await Wallet.findOne({
-        user: order.user
-    });
-
-    if (!wallet) {
-
-        wallet = await Wallet.create({
-            user: order.user,
-            balance: 0,
-            transactions: []
-        });
-
-    }
-
-    
-
-    wallet.balance += item.total;
-
-    wallet.transactions.push({
-        type: "credit",
-        amount: item.total,
-        reason: "Order Refund",
-        order: order._id,
-        description: `Refund for ${item.product.name}`
-    });
-
-    await wallet.save();
-
-}
-      const variant = await Variant.findById(item.variant);
-
-if(variant){
-
-    variant.stock+=item.quantity;
-
-    await variant.save();
-
-}
-
-const activeItems = order.items.filter(
-    i =>
-        i.itemStatus !== "Cancelled" &&
-        i.itemStatus !== "Returned"
-);
-
-order.subtotal = activeItems.reduce(
-    (sum,item)=>sum+item.total,
-    0
-);
-
-order.grandTotal =
-order.subtotal-
-order.discount+
-order.shippingCharge+
-order.tax;
-
-const refundedItems=order.items.filter(i=>
-i.itemStatus==="Cancelled" ||
-i.itemStatus==="Returned"
-);
-
-if(refundedItems.length===order.items.length){
-
-    order.paymentStatus="Refunded";
-
-}else{
-
-    order.paymentStatus="Partially Refunded";
-
-}
-
-const allReturned=order.items.every(
-i=>i.itemStatus==="Returned"
-);
-
-const returnedCount=order.items.filter(
-i=>i.itemStatus==="Returned"
-).length;
-
-if(allReturned){
-
-    order.orderStatus="Returned";
-
-}else if(returnedCount>0){
-
-    order.orderStatus="Partially Returned";
-
-}
-
-
-
-await order.save();
-
-return res.json({
-    success: true,
-    message: "Return approved."
-});
-
-} catch (error) {
-
-    console.log(error);
-
-    return res.json({
-        success: false,
-        message: "Something went wrong"
-    });
-
-}
-};
-export const rejectReturn = async (req, res) => {
+export const approveReturn = async (req, res) => {
 
     try {
 
         const { orderId, itemId } = req.params;
-        const { reason } = req.body;
 
-        const order = await Order.findById(orderId);
+        const order = await Order.findById(orderId)
+            .populate("coupon")
+            .populate("items.product")
+            .populate("items.variant");
 
         if (!order) {
+
             return res.json({
                 success: false,
                 message: "Order not found"
             });
+
         }
 
         const item = order.items.id(itemId);
 
         if (!item) {
+
             return res.json({
                 success: false,
                 message: "Item not found"
             });
+
         }
 
         if (item.returnStatus !== "Requested") {
 
             return res.json({
                 success: false,
-                message: "No pending return request."
+                message: "No return request found."
             });
 
         }
 
-        item.returnStatus = "Rejected";
-        item.returnRejectedReason = reason || "";
+        if (item.itemStatus !== "Delivered") {
+
+            return res.json({
+                success: false,
+                message: "Only delivered items can be returned."
+            });
+
+        }
+
+        item.returnStatus = "Approved";
+        item.itemStatus = "Returned";
+        item.returnedAt = new Date();
+
+        const variant = await Variant.findById(item.variant);
+
+        if (variant) {
+
+            variant.stock += item.quantity;
+
+            await variant.save();
+
+        }
+
+        let refundAmount = item.finalPricePaid;
+
+        if (order.paymentMethod !== "COD") {
+
+            if (order.coupon) {
+
+                const remainingItems = order.items.filter(i =>
+
+                    i._id.toString() !== item._id.toString() &&
+                    i.itemStatus !== "Cancelled" &&
+                    i.itemStatus !== "Returned"
+
+                );
+
+                const remainingOriginalTotal = remainingItems.reduce(
+
+                    (sum, i) => sum + i.originalPrice,
+
+                    0
+
+                );
+
+               if (remainingOriginalTotal < order.coupon.minimumPurchase) {
+
+    const coupon = await Coupon.findById(order.coupon._id);
+
+    const clawback = remainingItems.reduce(
+
+        (sum, i) => sum + i.allocatedCouponDiscount,
+
+        0
+
+    );
+
+    refundAmount = Math.max(
+        0,
+        item.finalPricePaid - clawback
+    );
+
+    if (coupon) {
+
+        coupon.usedCount = Math.max(0, coupon.usedCount - 1);
+
+        coupon.usedBy = coupon.usedBy.filter(
+            u => u.user.toString() !== order.user.toString()
+        );
+
+        await coupon.save();
+
+    }
+
+    order.discount = 0;
+    order.coupon = null;
+
+}
+            }
+
+            let wallet = await Wallet.findOne({
+
+                user: order.user
+
+            });
+
+            if (!wallet) {
+
+                wallet = await Wallet.create({
+
+                    user: order.user,
+
+                    balance: 0,
+
+                    transactions: []
+
+                });
+
+            }
+
+            wallet.balance += refundAmount;
+
+            wallet.transactions.push({
+
+                type: "credit",
+
+                amount: refundAmount,
+
+                reason: "Return Refund",
+
+                order: order._id,
+
+                description: `Refund for ${item.product.name}`
+
+            });
+
+            await wallet.save();
+
+        }
+
+        const activeItems = order.items.filter(i =>
+
+            i.itemStatus !== "Cancelled" &&
+            i.itemStatus !== "Returned"
+
+        );
+
+        order.subtotal = activeItems.reduce(
+    (sum, i) => sum + i.originalPrice,
+    0
+);
+
+        if (order.coupon) {
+
+            order.discount = activeItems.reduce(
+
+                (sum, i) => sum + i.allocatedCouponDiscount,
+
+                0
+
+            );
+
+        }
+
+        order.shippingCharge = order.subtotal >= 999 ? 0 : 100;
+
+        order.grandTotal =
+
+            order.subtotal -
+            order.discount +
+            order.shippingCharge +
+            order.tax;
+
+        const allReturned = order.items.every(i =>
+
+            i.itemStatus === "Returned"
+
+        );
+
+        const returnedCount = order.items.filter(i =>
+
+            i.itemStatus === "Returned"
+
+        ).length;
+
+        if (allReturned) {
+
+            order.orderStatus = "Returned";
+
+            if (order.paymentMethod !== "COD") {
+
+                order.paymentStatus = "Refunded";
+
+            }
+
+        }
+
+        else if (returnedCount > 0) {
+
+            order.orderStatus = "Partially Returned";
+
+            if (order.paymentMethod !== "COD") {
+
+                order.paymentStatus = "Partially Refunded";
+
+            }
+
+        }
+        order.returnStatus = "Approved";
 
         await order.save();
 
+        const pendingItems = order.items.filter(
+    i => i.returnStatus === "Requested"
+);
+
+if (pendingItems.length === 0) {
+    order.returnedAt = new Date();
+}
+
+await order.save();
         return res.json({
+
             success: true,
-            message: "Return request rejected."
+
+            message: "Return approved successfully."
+
         });
 
     }
@@ -721,8 +796,91 @@ export const rejectReturn = async (req, res) => {
         console.log(error);
 
         return res.json({
+
             success: false,
-            message: "Something went wrong"
+
+            message: "Something went wrong."
+
+        });
+
+    }
+
+};
+export const rejectReturn = async (req, res) => {
+
+    try {
+
+        const { orderId, itemId } = req.params;
+
+        const { reason } = req.body;
+
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+
+            return res.json({
+
+                success: false,
+
+                message: "Order not found"
+
+            });
+
+        }
+
+        const item = order.items.id(itemId);
+
+        if (!item) {
+
+            return res.json({
+
+                success: false,
+
+                message: "Item not found"
+
+            });
+
+        }
+
+        if (item.returnStatus !== "Requested") {
+
+            return res.json({
+
+                success: false,
+
+                message: "No pending return request."
+
+            });
+
+        }
+
+        item.returnStatus = "Rejected";
+
+        item.returnRejectedReason = reason || "";
+
+      
+        await order.save();
+
+        return res.json({
+
+            success: true,
+
+            message: "Return request rejected."
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.log(error);
+
+        return res.json({
+
+            success: false,
+
+            message: "Something went wrong."
+
         });
 
     }

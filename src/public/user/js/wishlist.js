@@ -46,6 +46,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (data.success) {
 
+                  const badge = document.getElementById("wishlistBadge");
+
+if (badge) {
+
+    badge.textContent = data.wishlistCount;
+
+    badge.style.display =
+        data.wishlistCount > 0 ? "flex" : "none";
+}
+
                     Swal.fire({
 
                         icon: "success",
@@ -141,6 +151,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 const data = await response.json();
+                const badge = document.getElementById("wishlistBadge");
+
+if (badge) {
+
+    badge.textContent = data.wishlistCount;
+
+    badge.style.display =
+        data.wishlistCount > 0 ? "flex" : "none";
+}
 
                 if (data.success) {
 

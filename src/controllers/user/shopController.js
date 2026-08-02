@@ -188,6 +188,24 @@ match.category = {
 
         }
 
+
+let wishlistVariantIds = [];
+
+if (req.session.user) {
+
+    const wishlist = await Wishlist.findOne({
+        user: req.session.user.id
+    });
+
+    if (wishlist) {
+
+        wishlistVariantIds = wishlist.products.map(item =>
+            item.variant.toString()
+        );
+
+    }
+}
+
         if (req.query.price) {
 
             const ranges = Array.isArray(req.query.price)
@@ -331,6 +349,8 @@ res.render("user/shop/shop", {
     search,
 
     sort,
+
+     wishlistVariantIds,
 
     currentPage: page,
 

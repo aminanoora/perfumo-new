@@ -5,6 +5,7 @@ const thumbnails = document.querySelectorAll(".thumb-image");
     const selectedVariantId = window.selectedVariantId;
     const qtyInput = document.getElementById("quantity");
 
+ 
     thumbnails.forEach((thumb) => {
 
         thumb.addEventListener("click", () => {
@@ -21,15 +22,55 @@ const thumbnails = document.querySelectorAll(".thumb-image");
     });
 
 
-    const wishlistBtn = document.querySelector(".wishlist-btn");
+   const wishlistBtn = document.querySelector(".wishlist-btn");
 
-    if (wishlistBtn) {
+if (wishlistBtn) {
 
-        wishlistBtn.addEventListener("click", () => {
+    wishlistBtn.addEventListener("click", async () => {
+
+        if (!isLoggedIn) {
+
+            window.location.href =
+                "/signin?redirect=" +
+                encodeURIComponent(window.location.pathname);
+
+            return;
+
+        }
+
+        const variantId = wishlistBtn.dataset.variant;
+
+        const active = wishlistBtn.classList.contains("active");
+
+        const url = active
+            ? "/wishlist/remove"
+            : "/wishlist/add";
+
+
+        const response = await fetch(url, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                variantId
+            })
+
+        });
+
+
+        const data = await response.json();
+
+
+        if (data.success) {
 
             wishlistBtn.classList.toggle("active");
 
             const icon = wishlistBtn.querySelector("i");
+
 
             if (wishlistBtn.classList.contains("active")) {
 
@@ -43,9 +84,31 @@ const thumbnails = document.querySelectorAll(".thumb-image");
 
             }
 
-        });
 
-    }
+            Swal.fire({
+
+                icon: "success",
+                title: data.message,
+                timer: 1500,
+                showConfirmButton:false
+
+            });
+
+
+        } else {
+
+            Swal.fire({
+
+                icon:"error",
+                title:data.message
+
+            });
+
+        }
+
+    });
+
+}
 
  
    const plusBtn = document.getElementById("plusBtn");

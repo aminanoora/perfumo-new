@@ -18,6 +18,26 @@ function updateCartBadge(count) {
 
 }
 
+function updateWishlistBadge(count) {
+
+    const badge = document.getElementById("wishlistBadge");
+
+    if (!badge) return;
+
+    if (count > 0) {
+
+        badge.style.display = "flex";
+        badge.textContent = count;
+
+    } else {
+
+        badge.style.display = "none";
+        badge.textContent = "0";
+
+    }
+
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("loaded");
    const isLoggedIn = window.isLoggedIn;
@@ -91,6 +111,9 @@ document.querySelectorAll(".wishlist-btn").forEach(button => {
             const data = await response.json();
 
             if (data.success) {
+
+
+                  updateWishlistBadge(data.wishlistCount);
 
                 button.classList.add("active");
 

@@ -98,19 +98,14 @@ export const getAnalyticsData = async ({
 
     const match = {
 
-        orderStatus: {
 
-            $nin: [
-
-                "Cancelled",
-
-                "Returned"
-
-            ]
-
-        },
-
-        paymentStatus: "Paid"
+         $or: [
+        { paymentStatus: "Paid" },
+        {
+            paymentMethod: "COD",
+            orderStatus: "Delivered"
+        }
+    ]
 
     };
 
@@ -259,29 +254,50 @@ export const getAnalyticsData = async ({
         {
     $project: {
 
-        orderId: 1,
+    orderId: 1,
 
-        customer: {
-            $concat: [
-                "$user.firstName",
-                " ",
-                "$user.lastName"
-            ]
-        },
+    customer: {
+        $concat: [
+            "$user.firstName",
+            " ",
+            "$user.lastName"
+        ]
+    },
 
-        paymentMethod: 1,
+    paymentMethod: 1,
 
-        totalAmount: "$grandTotal",
+    orderStatus: 1,
 
-        products: {
-            $map: {
-                input: "$products",
-                as: "product",
-                in: "$$product.name"
+  totalAmount: {
+    $sum: {
+        $map: {
+            input: "$items",
+            as: "item",
+            in: {
+                $cond: [
+                    {
+                        $in: [
+                            "$$item.itemStatus",
+                            ["Cancelled", "Returned"]
+                        ]
+                    },
+                    0,
+                    "$$item.total"
+                ]
             }
         }
-
     }
+},
+
+    products: {
+        $map: {
+            input: "$products",
+            as: "product",
+            in: "$$product.name"
+        }
+    }
+
+}
 }
 
     );
@@ -308,16 +324,13 @@ export const getAnalyticsData = async ({
 async function getExportData(search, datePreset, fromDate, toDate) {
 
     const match = {
-
-        orderStatus: {
-            $nin: [
-                "Cancelled",
-                "Returned"
-            ]
-        },
-
-        paymentStatus: "Paid"
-
+        $or: [
+            { paymentStatus: "Paid" },
+            {
+                paymentMethod: "COD",
+                orderStatus: "Delivered"
+            }
+        ]
     };
 
     const dateFilter = getDateFilter(
@@ -327,9 +340,7 @@ async function getExportData(search, datePreset, fromDate, toDate) {
     );
 
     if (Object.keys(dateFilter).length) {
-
         match.createdAt = dateFilter;
-
     }
 
     const pipeline = [
@@ -350,14 +361,15 @@ async function getExportData(search, datePreset, fromDate, toDate) {
         {
             $unwind: "$user"
         },
+
         {
-    $lookup: {
-        from: "products",
-        localField: "items.product",
-        foreignField: "_id",
-        as: "products"
-    }
-},
+            $lookup: {
+                from: "products",
+                localField: "items.product",
+                foreignField: "_id",
+                as: "products"
+            }
+        }
 
     ];
 
@@ -417,9 +429,7 @@ async function getExportData(search, datePreset, fromDate, toDate) {
                 $concat: [
 
                     "$user.firstName",
-
                     " ",
-
                     "$user.lastName"
 
                 ]
@@ -428,16 +438,66 @@ async function getExportData(search, datePreset, fromDate, toDate) {
 
             paymentMethod: 1,
 
-            totalAmount: "$grandTotal",
+            orderStatus: 1,
+
+            totalAmount: {
+
+                $sum: {
+
+                    $map: {
+
+                        input: "$items",
+
+                        as: "item",
+
+                        in: {
+
+                            $cond: [
+
+                                {
+
+                                    $in: [
+
+                                        "$$item.itemStatus",
+
+                                        [
+                                            "Cancelled",
+                                            "Returned"
+                                        ]
+
+                                    ]
+
+                                },
+
+                                0,
+
+                                "$$item.total"
+
+                            ]
+
+                        }
+
+                    }
+
+                }
+
+            },
 
             createdAt: 1,
+
             products: {
-    $map: {
-        input: "$products",
-        as: "product",
-        in: "$$product.name"
-    }
-}
+
+                $map: {
+
+                    input: "$products",
+
+                    as: "product",
+
+                    in: "$$product.name"
+
+                }
+
+            }
 
         }
 
@@ -446,6 +506,167 @@ async function getExportData(search, datePreset, fromDate, toDate) {
     return await Order.aggregate(pipeline);
 
 }
+async function getSalesSummary(search, datePreset, fromDate, toDate) {
+
+    const match = {
+        $or: [
+            { paymentStatus: "Paid" },
+            {
+                paymentMethod: "COD",
+                orderStatus: "Delivered"
+            }
+        ]
+    };
+
+    const dateFilter = getDateFilter(
+        datePreset,
+        fromDate,
+        toDate
+    );
+
+    if (Object.keys(dateFilter).length) {
+        match.createdAt = dateFilter;
+    }
+
+    const pipeline = [
+
+        {
+            $match: match
+        },
+
+        {
+            $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user"
+            }
+        },
+
+        {
+            $unwind: "$user"
+        }
+
+    ];
+
+    if (search) {
+
+        pipeline.push({
+
+            $match: {
+
+                $or: [
+
+                    {
+                        orderId: {
+                            $regex: search,
+                            $options: "i"
+                        }
+                    },
+
+                    {
+                        "user.firstName": {
+                            $regex: search,
+                            $options: "i"
+                        }
+                    },
+
+                    {
+                        "user.lastName": {
+                            $regex: search,
+                            $options: "i"
+                        }
+                    }
+
+                ]
+
+            }
+
+        });
+
+    }
+
+    pipeline.push(
+
+        {
+            $unwind: "$items"
+        },
+
+        {
+            $group: {
+
+                _id: null,
+
+                netSales: {
+
+                    $sum: {
+
+                        $cond: [
+
+                            {
+                                $in: [
+                                    "$items.itemStatus",
+                                    [
+                                        "Cancelled",
+                                        "Returned"
+                                    ]
+                                ]
+                            },
+
+                            0,
+
+                            "$items.total"
+
+                        ]
+
+                    }
+
+                },
+
+                refundAmount: {
+
+                    $sum: {
+
+                        $cond: [
+
+                            {
+                                $in: [
+                                    "$items.itemStatus",
+                                    [
+                                        "Cancelled",
+                                        "Returned"
+                                    ]
+                                ]
+                            },
+
+                            "$items.total",
+
+                            0
+
+                        ]
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+    const result = await Order.aggregate(pipeline);
+
+    return result[0] || {
+
+        netSales: 0,
+
+        refundAmount: 0
+
+    };
+
+}
+
 
 export const exportPdf = async (req, res) => {
 
@@ -472,6 +693,34 @@ export const exportPdf = async (req, res) => {
         toDate
 
     );
+
+    const dateFilter = getDateFilter(
+    datePreset,
+    fromDate,
+    toDate
+);
+
+    let displayStart = "-";
+let displayEnd = "-";
+
+if (Object.keys(dateFilter).length) {
+
+    displayStart = dateFilter.$gte.toLocaleDateString("en-IN");
+
+    displayEnd = dateFilter.$lte.toLocaleDateString("en-IN");
+
+}
+    const summary = await getSalesSummary(
+
+    search,
+
+    datePreset,
+
+    fromDate,
+
+    toDate
+
+);
 
     const doc = new PDFDocument({
 
@@ -518,25 +767,113 @@ export const exportPdf = async (req, res) => {
     doc.moveDown(2);
 
     doc.fontSize(12);
+doc.font("Helvetica-Bold");
 
-    sales.forEach((sale) => {
+doc.text(`Start Date : ${displayStart}`);
+doc.text(`End Date   : ${displayEnd}`);
 
-        doc.text(`Order ID : ${sale.orderId}`);
+doc.moveDown(0.5);
 
-        doc.text(`Customer : ${sale.customer}`);
+doc.text(
+    `Net Sales : ₹${summary.netSales.toLocaleString("en-IN")}`
+);
 
-        doc.text(`Products : ${sale.products.join(", ")}`);
-        
-        doc.text(`Payment : ${sale.paymentMethod}`);
+doc.text(
+    `Refund Amount : ₹${summary.refundAmount.toLocaleString("en-IN")}`
+);
 
-        doc.text(`Amount : ₹${sale.totalAmount}`);
+doc.moveDown(1.5);
 
-        doc.text(`Date : ${sale.createdAt.toLocaleDateString()}`);
+doc.font("Helvetica");
 
-        doc.moveDown();
+const startX = 40;
+const rowHeight = 22;
 
+let y = doc.y;
+
+doc
+    .rect(startX, y, 520, rowHeight)
+    .fillAndStroke("#e5e5e5", "#000000");
+
+doc
+    .fillColor("black")
+    .font("Helvetica-Bold")
+    .fontSize(10);
+
+doc.text("Order ID", 45, y + 6);
+doc.text("Customer", 120, y + 6);
+doc.text("Payment", 235, y + 6);
+doc.text("Status", 320, y + 6);
+doc.text("Amount", 430, y + 6);
+
+doc.font("Helvetica");
+
+y += rowHeight;
+
+sales.forEach((sale) => {
+
+    if (y > 730) {
+
+        doc.addPage();
+
+        y = 40;
+
+        doc
+            .rect(startX, y, 520, rowHeight)
+            .fillAndStroke("#e5e5e5", "#000000");
+
+        doc
+            .fillColor("black")
+            .font("Helvetica-Bold")
+            .fontSize(10);
+
+        doc.text("Order ID", 45, y + 6);
+        doc.text("Customer", 120, y + 6);
+        doc.text("Payment", 235, y + 6);
+        doc.text("Status", 320, y + 6);
+        doc.text("Amount", 430, y + 6);
+
+        doc.font("Helvetica");
+
+        y += rowHeight;
+
+    }
+
+    doc
+        .rect(startX, y, 520, rowHeight)
+        .stroke();
+
+    doc.fontSize(9);
+
+    doc.text(sale.orderId, 45, y + 6, {
+        width: 70
     });
 
+    doc.text(sale.customer, 120, y + 6, {
+        width: 100
+    });
+
+    doc.text(sale.paymentMethod, 235, y + 6, {
+        width: 70
+    });
+
+    doc.text(sale.orderStatus, 320, y + 6, {
+        width: 70
+    });
+
+    doc.text(
+        "₹" + sale.totalAmount.toLocaleString("en-IN"),
+        430,
+        y + 6,
+        {
+            width: 80,
+            align: "right"
+        }
+    );
+
+    y += rowHeight;
+
+});
     doc.end();
 
 };
@@ -544,126 +881,212 @@ export const exportPdf = async (req, res) => {
 export const exportExcel = async (req, res) => {
 
     const {
-
         search,
-
         datePreset,
-
         fromDate,
-
         toDate
-
     } = req.query;
 
     const sales = await getExportData(
-
         search,
-
         datePreset,
-
         fromDate,
-
         toDate
+    );
 
+    const dateFilter = getDateFilter(
+    datePreset,
+    fromDate,
+    toDate
+);
+
+    let displayStart = "-";
+let displayEnd = "-";
+
+if (Object.keys(dateFilter).length) {
+
+    displayStart = dateFilter.$gte.toLocaleDateString("en-IN");
+
+    displayEnd = dateFilter.$lte.toLocaleDateString("en-IN");
+
+}
+
+    const summary = await getSalesSummary(
+        search,
+        datePreset,
+        fromDate,
+        toDate
     );
 
     const workbook = new ExcelJS.Workbook();
 
-    const sheet = workbook.addWorksheet("Sales");
+    const sheet = workbook.addWorksheet("Sales Report");
+
+    sheet.mergeCells("A1:G1");
+    sheet.getCell("A1").value = "PERFUMO SALES REPORT";
+    sheet.getCell("A1").font = {
+        bold: true,
+        size: 18
+    };
+    sheet.getCell("A1").alignment = {
+        horizontal: "center"
+    };
+
+    sheet.addRow([]);
+
+sheet.addRow(["Start Date", displayStart]);
+sheet.addRow(["End Date", displayEnd]);
+
+    sheet.addRow([
+        "Net Sales",
+        summary.netSales
+    ]);
+
+    sheet.addRow([
+        "Refund Amount",
+        summary.refundAmount
+    ]);
+
+    sheet.addRow([]);
 
     sheet.columns = [
 
         {
-
             header: "Order ID",
-
             key: "orderId",
-
-            width: 25
-
+            width: 24
         },
 
         {
-
             header: "Customer",
-
             key: "customer",
-
-            width: 25
-
+            width: 24
         },
-{
-    header: "Products",
-    key: "products",
-    width: 40
-},
-        {
 
+        {
+            header: "Products",
+            key: "products",
+            width: 40
+        },
+
+        {
             header: "Payment",
-
             key: "paymentMethod",
-
-            width: 20
-
-        },
-
-        {
-
-            header: "Amount",
-
-            key: "totalAmount",
-
             width: 18
-
         },
 
         {
+            header: "Status",
+            key: "orderStatus",
+            width: 18
+        },
 
+        {
+            header: "Amount",
+            key: "totalAmount",
+            width: 18
+        },
+
+        {
             header: "Date",
-
             key: "createdAt",
-
-            width: 20
-
+            width: 18
         }
 
     ];
 
+    const headerRow = sheet.getRow(7);
+
+    headerRow.font = {
+        bold: true
+    };
+
+    headerRow.alignment = {
+        horizontal: "center"
+    };
+
+    headerRow.eachCell((cell) => {
+        cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: {
+                argb: "D9D9D9"
+            }
+        };
+
+        cell.border = {
+            top: {
+                style: "thin"
+            },
+            left: {
+                style: "thin"
+            },
+            bottom: {
+                style: "thin"
+            },
+            right: {
+                style: "thin"
+            }
+        };
+    });
+
     sales.forEach((sale) => {
 
-        sheet.addRow({
+        const row = sheet.addRow({
 
             orderId: sale.orderId,
 
             customer: sale.customer,
 
-
-    products: sale.products.join(", "),
+            products: sale.products.join(", "),
 
             paymentMethod: sale.paymentMethod,
 
+            orderStatus: sale.orderStatus,
+
             totalAmount: sale.totalAmount,
 
-            createdAt: sale.createdAt.toLocaleDateString()
+            createdAt: sale.createdAt.toLocaleDateString("en-IN")
+
+        });
+
+        row.getCell("totalAmount").numFmt = '₹#,##0.00';
+
+        row.eachCell((cell) => {
+
+            cell.border = {
+                top: {
+                    style: "thin"
+                },
+                left: {
+                    style: "thin"
+                },
+                bottom: {
+                    style: "thin"
+                },
+                right: {
+                    style: "thin"
+                }
+            };
+
+            cell.alignment = {
+                vertical: "middle",
+                horizontal: "left",
+                wrapText: true
+            };
 
         });
 
     });
 
     res.setHeader(
-
         "Content-Type",
-
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-
     );
 
     res.setHeader(
-
         "Content-Disposition",
-
         "attachment; filename=sales-report.xlsx"
-
     );
 
     await workbook.xlsx.write(res);

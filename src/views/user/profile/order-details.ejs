@@ -265,12 +265,30 @@ Delivered
 
        <% if(item.itemStatus === "Delivered" && item.returnStatus === "None"){ %>
 
+<% if(hasCoupon){ %>
+
 <button
-    class="return-item-btn secondary-btn"
-    data-order="<%= order._id %>"
-    data-item="<%= item.variant._id %>">
-    Return Item
+class="return-btn disabled"
+disabled
+title="All promotional sales are final">
+
+Return Item
+
 </button>
+
+
+<% } else { %>
+
+
+<button
+class="secondary-btn return-item-btn"
+data-order="<%= order._id %>"
+data-item="<%= item.variant._id %>">
+Return Item
+</button>
+
+
+<% } %>
 
 <% } %>
 
@@ -459,7 +477,7 @@ Transaction ID :
 
 
 
-<div class="action-card">
+<div class="action-card  action-row">
 
  
 
@@ -472,13 +490,7 @@ Transaction ID :
     Download Order Summary
 </a>
 
-<% } else if (
-    order.orderStatus==="Shipped" ||
-    order.orderStatus==="Out For Delivery" ||
-    order.orderStatus==="Delivered" ||
-    order.orderStatus==="Partially Returned" ||
-    order.orderStatus==="Returned"
-){ %>
+<% } else if (typeof canDownloadInvoice !== "undefined" && canDownloadInvoice)  { %>
 
 <a href="/profile/orders/<%= order._id %>/invoice"
    class="primary-btn">
@@ -487,18 +499,71 @@ Transaction ID :
 
 <% } %>
 
-<a
-href="/shop"
+
+<% if(
+    ["Pending","Confirmed","Processing"].includes(order.orderStatus)
+){ %>
+
+<button
+class="danger-btn"
+id="cancelWholeOrderBtn"
+data-order="<%= order._id %>">
+
+Cancel Order
+
+</button>
+
+<% } %>
+
+<% if(canReturnWholeOrder){ %>
+
+<% if(order.returnStatus === "None"){ %>
+
+<button
+class="primary-btn"
+id="returnWholeOrderBtn"
+data-order="<%= order._id %>"
+data-total="<%= order.grandTotal %>"
+data-shipping="<%= order.shippingCharge %>">
+
+Return Whole Order
+
+</button>
+
+<% } else if(order.returnStatus === "Requested"){ %>
+
+<span class="return-request-badge">
+Return Requested
+</span>
+
+<% } else if(order.returnStatus === "Approved"){ %>
+
+<span class="return-approved-badge">
+Returned
+</span>
+
+<% } else if(order.returnStatus === "Rejected"){ %>
+
+<span class="return-rejected-badge">
+Return Rejected
+</span>
+
+<p><%= order.returnRejectedReason %></p>
+
+<% } %>
+<% } %>
+
+
+
+<button
+id="buyAgainBtn"
+data-order="<%= order._id %>"
 class="secondary-btn">
 
 Buy Again
 
-</a>
-
-
-
+</button>
 </div>
-
 
 
 </div>

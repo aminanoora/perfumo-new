@@ -23,7 +23,9 @@ import {
       loadWallet,
       loadReferralPage,
       applyReferralCode,
-      loadCoupons
+      loadCoupons,
+      cancelWholeOrder,
+      returnWholeOrder
 } from '../../controllers/user/profileController.js';
 
 import userAuth from '../../middleware/userAuth.js';
@@ -95,7 +97,17 @@ router.patch("/orders/:orderId/items/:variantId/cancel", userAuth, cancelItem);
 
 router.patch("/orders/:orderId/items/:variantId/return", userAuth, returnItem);
 
+router.patch(
+    "/orders/:orderId/cancel",
+    userAuth,
+    cancelWholeOrder
+);
 
+router.patch(
+    "/orders/:orderId/return",
+    userAuth,
+    returnWholeOrder
+);
 
 router.get("/profile/orders/:id/invoice", userAuth, downloadInvoice);
 

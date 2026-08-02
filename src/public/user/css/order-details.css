@@ -500,3 +500,10 @@ gap:15px;
 
     font-size:12px;
 }
+.return-btn.disabled{
+
+    opacity:0.5;
+
+    cursor:not-allowed;
+
+}

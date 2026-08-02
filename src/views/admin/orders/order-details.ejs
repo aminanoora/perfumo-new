@@ -692,10 +692,10 @@ const hasPendingReturn = order.items.some(
     action="/admin/orders/<%= order._id %>/status"
     method="POST">
 
-    <select
-        id="orderStatus"
-        name="orderStatus"
-        data-current="<%= order.orderStatus %>">
+   <select
+id="orderStatus"
+name="orderStatus"
+data-current="<%= currentStatus %>">
 
        <option value="Pending">Pending</option>
 <option value="Confirmed">Confirmed</option>

@@ -23,6 +23,21 @@ const orderItemSchema = new mongoose.Schema({
 
     salePrice: Number,
 
+    originalPrice: {
+    type: Number,
+    default: 0
+},
+
+allocatedCouponDiscount: {
+    type: Number,
+    default: 0
+},
+
+finalPricePaid: {
+    type: Number,
+    default: 0
+},
+
     total: Number,
 
     itemStatus: {
@@ -40,7 +55,7 @@ const orderItemSchema = new mongoose.Schema({
         default: "Pending"
     },
 
-    // Return request workflow
+   
     returnStatus: {
         type: String,
         enum: [
@@ -171,8 +186,23 @@ const orderSchema = new mongoose.Schema(
 
     cancelReason: String,
 
-    returnedReason: String,
+  returnStatus: {
+    type: String,
+    enum: [
+        "None",
+        "Requested",
+        "Approved",
+        "Rejected"
+    ],
+    default: "None"
+},
 
+returnedReason: String,
+
+returnRejectedReason: {
+    type: String,
+    default: ""
+},
     deliveredAt: Date,
 
     cancelledAt: Date,

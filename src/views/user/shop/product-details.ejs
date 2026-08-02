@@ -121,13 +121,21 @@
 
                     </h1>
 
-                    <button
-                        id="wishlistBtn"
-                        class="wishlist-btn">
+                  <button 
+    class="wishlist-btn <%= inWishlist ? 'active' : '' %>"
+    data-variant="<%= selectedVariant._id %>">
 
-                        <i class="fa-regular fa-heart"></i>
+    <% if(inWishlist){ %>
 
-                    </button>
+        <i class="fa-solid fa-heart"></i>
+
+    <% }else{ %>
+
+        <i class="fa-regular fa-heart"></i>
+
+    <% } %>
+
+</button>
 
                 </div>
 

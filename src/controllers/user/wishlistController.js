@@ -112,10 +112,13 @@ if (!variant) {
 });
         await wishlist.save();
 
+        const count = wishlist ? wishlist.products.length : 0;
+
         res.json({
 
             success: true,
-            message: "Added to wishlist"
+            message: "Added to wishlist",
+            wishlistCount: count
 
         });
 
@@ -142,7 +145,7 @@ export const removeFromWishlist = async (req, res) => {
 
         const { variantId } = req.body;
 
-       await Wishlist.findOneAndUpdate(
+   const wishlist = await Wishlist.findOneAndUpdate(
     { user: userId },
     {
         $pull: {
@@ -150,13 +153,15 @@ export const removeFromWishlist = async (req, res) => {
                 variant: variantId
             }
         }
-    }
+    },
+    { new: true }
 );
 
         res.json({
 
             success: true,
-            message: "Removed"
+            message: "Removed",
+           wishlistCount: wishlist ? wishlist.products.length : 0
 
         });
 
@@ -186,7 +191,7 @@ export const moveToCart = async (req, res) => {
 const variant = await Variant.findOne({
     _id: variantId,
     isDeleted: false
-});
+}).populate("product");
 
         if (!variant) {
 
@@ -212,6 +217,20 @@ const variant = await Variant.findOne({
                 user: userId,
                 items: []
 
+            });
+
+        }
+
+        if (
+            
+            variant.isDeleted ||
+            variant.product.isDeleted ||
+            !variant.product.isListed
+        ) {
+
+            return res.json({
+                success: false,
+                message: "Product unavailable."
             });
 
         }
@@ -250,7 +269,7 @@ const variant = await Variant.findOne({
 
         await cart.save();
 
-     await Wishlist.findOneAndUpdate(
+   const wishlist = await Wishlist.findOneAndUpdate(
     { user: userId },
     {
         $pull: {
@@ -258,14 +277,16 @@ const variant = await Variant.findOne({
                 variant: variantId
             }
         }
-    }
+    },
+    { new: true }
 );
 
 
         res.json({
 
             success: true,
-            message: "Moved to cart"
+            message: "Moved to cart",
+            wishlistCount: wishlist ? wishlist.products.length : 0
 
         });
 

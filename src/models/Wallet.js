@@ -33,7 +33,8 @@ const walletTransactionSchema = new mongoose.Schema({
             "Wallet Recharge",
             "Admin Credit",
             "Admin Debit",
-            "Order Cancelled"
+            "Order Cancelled",
+            "Return Refund" 
         ],
 
         required:true

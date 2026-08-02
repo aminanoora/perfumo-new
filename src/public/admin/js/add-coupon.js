@@ -154,7 +154,7 @@ isValid = false;
     return;
 }
 
-        const formData = Object.fromEntries(new FormData(form));
+const formData = Object.fromEntries(new FormData(form));
 
         const response = await fetch("/admin/coupons/add",{
 

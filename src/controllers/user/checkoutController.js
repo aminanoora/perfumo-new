@@ -439,14 +439,49 @@ if (paymentMethod === "COD") {
 
 
 
-const orderItems = cart.items.map(item => ({
-    product: item.variant.product._id,
-    variant: item.variant._id,
-    quantity: item.quantity,
-    price: item.variant.price,
-    salePrice: item.variant.salePrice,
-    total: item.variant.salePrice * item.quantity
-}));
+const orderItems = cart.items.map(item => {
+
+    const originalPrice =
+        item.variant.price * item.quantity;
+
+    const salePrice =
+        item.variant.salePrice * item.quantity;
+
+    let allocatedCouponDiscount = 0;
+
+    if (appliedCoupon && subtotal > 0) {
+
+        allocatedCouponDiscount =
+            (salePrice / subtotal) * discount;
+
+    }
+
+    const finalPricePaid =
+        salePrice - allocatedCouponDiscount;
+
+    return {
+
+        product: item.variant.product._id,
+
+        variant: item.variant._id,
+
+        quantity: item.quantity,
+
+        price: item.variant.price,
+
+        salePrice: item.variant.salePrice,
+
+        originalPrice,
+
+        allocatedCouponDiscount,
+
+        finalPricePaid,
+
+        total: finalPricePaid
+
+    };
+
+});
 
         const order = new Order({
     orderId: "ORD" + Date.now(),
@@ -630,15 +665,49 @@ const discount = appliedCoupon?.discount || 0;
 const grandTotal = subtotal + shipping - discount;
 
 
-const orderItems = cart.items.map(item => ({
-    product: item.variant.product._id,
-    variant: item.variant._id,
-    quantity: item.quantity,
-    price: item.variant.price,
-    salePrice: item.variant.salePrice,
-    total: item.variant.salePrice * item.quantity
-}));
+const orderItems = cart.items.map(item => {
 
+    const originalPrice =
+        item.variant.price * item.quantity;
+
+    const salePrice =
+        item.variant.salePrice * item.quantity;
+
+    let allocatedCouponDiscount = 0;
+
+    if (appliedCoupon && subtotal > 0) {
+
+        allocatedCouponDiscount =
+            (salePrice / subtotal) * discount;
+
+    }
+
+    const finalPricePaid =
+        salePrice - allocatedCouponDiscount;
+
+    return {
+
+        product: item.variant.product._id,
+
+        variant: item.variant._id,
+
+        quantity: item.quantity,
+
+        price: item.variant.price,
+
+        salePrice: item.variant.salePrice,
+
+        originalPrice,
+
+        allocatedCouponDiscount,
+
+        finalPricePaid,
+
+        total: finalPricePaid
+
+    };
+
+});
         const order = new Order({
     orderId: "ORD" + Date.now(),
 

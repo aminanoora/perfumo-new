@@ -34,9 +34,18 @@
     </div>
 
 </div>
-            <a href="/wishlist" class="icon-link">
-                <i class="fas fa-heart"></i>
-            </a>
+           <a href="/wishlist" class="icon-link wishlist-icon">
+    <i class="fas fa-heart"></i>
+
+    <span
+        id="wishlistBadge"
+        class="wishlist-badge"
+        style="<%= wishlistCount > 0 ? '' : 'display:none' %>">
+
+        <%= wishlistCount || 0 %>
+
+    </span>
+</a>
 
            <a href="/cart" class="icon-link cart-icon">
 

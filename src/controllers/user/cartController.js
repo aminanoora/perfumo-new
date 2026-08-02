@@ -258,9 +258,14 @@ export const updateCartQuantity = async (req, res) => {
             action
         } = req.body;
 
-        const cart = await Cart.findOne({
-            user: userId
-        }).populate("items.variant");
+    const cart = await Cart.findOne({
+    user: userId
+}).populate({
+    path: "items.variant",
+    populate: {
+        path: "product"
+    }
+});
 
         const item = cart.items.id(itemId);
         if (!cart) {
@@ -280,27 +285,51 @@ export const updateCartQuantity = async (req, res) => {
 
         }
 
-        if (action === "increase") {
+       if (action === "increase") {
 
-            if (
-                item.quantity >= 10 ||
-                item.quantity >= item.variant.stock
-            ) {
+   if (
+    item.variant.isDeleted ||
+    item.variant.product.isDeleted ||
+    !item.variant.product.isListed
+) {
 
-                return res.json({
+    return res.json({
+        success: false,
+        message: "This product is currently unavailable."
+    });
 
-                    success: false,
+}
 
-                    message: "Maximum quantity reached."
+    if (item.variant.stock <= 0) {
 
-                });
+        return res.json({
+            success: false,
+            message: "This product is out of stock."
+        });
 
-            }
+    }
 
-            item.quantity++;
+    if (item.quantity >= item.variant.stock) {
 
-        }
+        return res.json({
+            success: false,
+            message: `Only ${item.variant.stock} item(s) available in stock.`
+        });
 
+    }
+
+    if (item.quantity >= 10) {
+
+        return res.json({
+            success: false,
+            message: "Maximum quantity allowed is 10."
+        });
+
+    }
+
+    item.quantity++;
+
+}
         if (action === "decrease") {
 
             if (item.quantity > 1) {

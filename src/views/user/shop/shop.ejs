@@ -620,13 +620,17 @@
 
                             </a>
 
-                            <button
-                                class="wishlist-btn"
-                                data-variant="<%= product.variants._id %>">
+                           <button
+    class="wishlist-btn <%= wishlistVariantIds.includes(product.variants._id.toString()) ? 'active' : '' %>"
+    data-variant="<%= product.variants._id %>">
 
-                                <i class="fa-regular fa-heart"></i>
+    <% if (wishlistVariantIds.includes(product.variants._id.toString())) { %>
+        <i class="fa-solid fa-heart"></i>
+    <% } else { %>
+        <i class="fa-regular fa-heart"></i>
+    <% } %>
 
-                            </button>
+</button>
 
                         </div>
 

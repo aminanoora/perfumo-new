@@ -91,6 +91,9 @@ function renderTable(rows) {
                 </span>
             </td>
 
+          <td>${order.orderStatus}</td>
+
+
             <td class="amount">
                 ₹${Number(order.totalAmount).toLocaleString("en-IN")}
             </td>

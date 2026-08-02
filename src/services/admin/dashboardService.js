@@ -5,28 +5,45 @@ import Category from "../../models/Category.js";
 
  const loadDashboard = async () => {
 
-    const totalUsers = await User.countDocuments();
+   const totalUsers = await User.countDocuments();
+
 
     const totalOrders = await Order.countDocuments();
 
-    const revenueResult = await Order.aggregate([
-        {
-           $match: {
-    $or: [
-        { paymentStatus: "Paid" },
-        { orderStatus: "Delivered" }
-    ]
-}
-        },
-        {
-            $group: {
-                _id: null,
-                revenue: {
-                    $sum: "$grandTotal"
+   const revenueResult = await Order.aggregate([
+    {
+        $match: {
+            $or: [
+                { paymentStatus: "Paid" },
+                {
+                    paymentMethod: "COD",
+                    orderStatus: "Delivered"
                 }
+            ]
+        }
+    },
+    {
+        $unwind: "$items"
+    },
+    {
+        $match: {
+            "items.itemStatus": {
+                $nin: [
+                    "Cancelled",
+                    "Returned"
+                ]
             }
         }
-    ]);
+    },
+    {
+        $group: {
+            _id: null,
+            revenue: {
+                $sum: "$items.total"
+            }
+        }
+    }
+]);
 
     const totalRevenue =
         revenueResult.length
@@ -147,6 +164,19 @@ async function getTopProducts() {
         $unwind: "$items"
     },
 
+   {
+    $match:{
+        $or:[
+            {
+                paymentStatus:"Paid"
+            },
+            {
+                paymentMethod:"COD",
+                orderStatus:"Delivered"
+            }
+        ]
+    }
+},
         {
 
             $group: {
@@ -232,101 +262,94 @@ async function getTopProducts() {
 async function getTopCategories() {
 
     return await Order.aggregate([
-    {
-        $match: {
-            orderStatus: {
-                $nin: [
-                    "Cancelled",
-                    "Returned"
-                ]
-            }
-        }
-    },
-
-    {
-        $unwind: "$items"
-    },
 
         {
-
-            $lookup: {
-
-                from: "products",
-
-                localField: "items.product",
-
-                foreignField: "_id",
-
-                as: "product"
-
-            }
-
-        },
-
-        {
-
-            $unwind: "$product"
-
-        },
-
-        {
-
-            $lookup: {
-
-                from: "categories",
-
-                localField: "product.category",
-
-                foreignField: "_id",
-
-                as: "category"
-
-            }
-
-        },
-
-        {
-
-            $unwind: "$category"
-
-        },
-
-        {
-
-            $group: {
-
-                _id: "$category._id",
-
-                name: {
-
-                    $first: "$category.name"
-
-                },
-
-                quantity: {
-
-                    $sum: "$items.quantity"
-
+            $match: {
+                orderStatus: {
+                    $nin: [
+                        "Cancelled",
+                        "Returned"
+                    ]
                 }
-
             }
-
         },
 
         {
+            $unwind: "$items"
+        },
 
+       {
+    $match: {
+        $or: [
+            {
+                paymentStatus: "Paid"
+            },
+            {
+                paymentMethod: "COD",
+                orderStatus: "Delivered"
+            }
+        ]
+    }
+},
+
+        {
+            $group: {
+                _id: "$items.product",
+                unitsSold: {
+                    $sum: "$items.quantity"
+                },
+                revenue: {
+                    $sum: "$items.total"
+                }
+            }
+        },
+
+        {
+            $lookup: {
+                from: "products",
+                localField: "_id",
+                foreignField: "_id",
+                as: "product"
+            }
+        },
+
+        {
+            $unwind: "$product"
+        },
+
+        {
+            $lookup: {
+                from: "categories",
+                localField: "product.category",
+                foreignField: "_id",
+                as: "category"
+            }
+        },
+
+        {
+            $unwind: "$category"
+        },
+
+        {
+            $group: {
+                _id: "$category._id",
+                name: {
+                    $first: "$category.name"
+                },
+                quantity: {
+                    $sum: "$unitsSold"
+                }
+            }
+        },
+
+        {
             $sort: {
-
                 quantity: -1
-
             }
-
         },
 
         {
-
             $limit: 5
-
         }
 
     ]);
@@ -475,48 +498,50 @@ async function getRevenueChart(filter = "month", start, end) {
             break;
     }
 
-    const revenue = await Order.aggregate([
+   const revenue = await Order.aggregate([
 
-        {
-            $match: {
-
-                orderStatus: {
-                    $nin: [
-                        "Cancelled",
-                        "Returned"
-                    ]
-                },
-
-                $or: [
-                    { paymentStatus: "Paid" },
-                    { orderStatus: "Delivered" }
-                ],
-
-                createdAt: {
-                    $gte: from,
-                    $lte: to
+    {
+        $match: {
+            createdAt: {
+                $gte: from,
+                $lte: to
+            },
+            $or: [
+                { paymentStatus: "Paid" },
+                {
+                    paymentMethod: "COD",
+                    orderStatus: "Delivered"
                 }
-
-            }
-        },
-
-        {
-            $group: {
-
-                _id: groupId,
-
-                revenue: {
-                    $sum: "$grandTotal"
-                }
-
-            }
-        },
-
-        {
-            $sort: sortStage
+            ]
         }
+    },
 
-    ]);
+    {
+        $unwind: "$items"
+    },
+
+    {
+        $match: {
+            "items.itemStatus": {
+                $nin: ["Cancelled", "Returned"]
+            }
+        }
+    },
+
+    {
+        $group: {
+            _id: groupId,
+            revenue: {
+                $sum: "$items.total"
+            }
+        }
+    },
+
+    {
+        $sort: sortStage
+    }
+
+]);
 
     let labels = [];
 

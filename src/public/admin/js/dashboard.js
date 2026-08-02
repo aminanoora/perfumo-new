@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-
+console.log("dashboard.js loaded");
     const filter = document.getElementById("dashboardFilter");
     const customRange = document.getElementById("customDateRange");
     const applyBtn = document.getElementById("applyDateFilter");
@@ -64,6 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const result = await response.json();
 
+            console.log(result)
+
             if (!result.success) {
 
                 Swal.fire({
@@ -85,6 +87,10 @@ document.addEventListener("DOMContentLoaded", () => {
             updateCategoryChart(result.topCategories);
 
             updateProducts(result.topProducts);
+
+            console.log(result.revenueChart);
+console.log(result.orderStatus);
+console.log(result.topCategories);
 
         }
 

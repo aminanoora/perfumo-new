@@ -29,6 +29,7 @@ import orderRoutes  from "./src/routes/admin/orderRoutes.js"
 import inventoryRoutes from "./src/routes/admin/inventoryRoutes.js"
 import couponRoutes from "./src/routes/admin/couponRoutes.js";
 import analyticsRoute from "./src/routes/admin/analyticsRoutes.js";
+import wishlistCount from "./src/middleware/wishlistCount.js";
 
 const app = express();
 
@@ -84,6 +85,8 @@ app.use((req, res, next) => {
 });
 
 app.use(cartCount);
+
+app.use(wishlistCount);
 
 app.use('/auth', googleAuthRoutes);
 
