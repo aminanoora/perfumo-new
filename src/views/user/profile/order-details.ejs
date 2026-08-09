@@ -554,7 +554,20 @@ Return Rejected
 <% } %>
 
 
+<%
+const showRetry =
+    order.paymentMethod === "RAZORPAY" &&
+    order.paymentStatus === "Pending";
+%>
 
+<% if(showRetry){ %>
+
+<a href="/checkout?retryOrder=<%= order._id %>"
+   class="secondary-btn">
+    Retry Payment
+</a>
+
+<% } else { %>
 <button
 id="buyAgainBtn"
 data-order="<%= order._id %>"
@@ -563,6 +576,8 @@ class="secondary-btn">
 Buy Again
 
 </button>
+
+<% } %>
 </div>
 
 

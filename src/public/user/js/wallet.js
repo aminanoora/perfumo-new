@@ -20,4 +20,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
+
+    if(profileToggle){
+
+    profileToggle.addEventListener('click', (e) => {
+
+        e.preventDefault();
+
+        profileMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+
+        if(
+            !profileToggle.contains(e.target) &&
+            !profileMenu.contains(e.target)
+        ){
+            profileMenu.classList.remove('show');
+        }
+    });
+}
+
 });

@@ -142,6 +142,16 @@ const orderSchema = new mongoose.Schema(
       required: true
     },
 
+    refundAmount: {
+    type: Number,
+    default: 0
+},
+
+refundedAt: {
+    type: Date,
+    default: null
+},
+
     paymentMethod: {
       type: String,
       enum: ["COD", "RAZORPAY", "WALLET"],
@@ -197,6 +207,11 @@ const orderSchema = new mongoose.Schema(
     default: "None"
 },
 
+
+returnFeeCharged: {
+    type: Number,
+    default: 0
+},
 returnedReason: String,
 
 returnRejectedReason: {

@@ -540,6 +540,9 @@ catch (error) {
 
 };
 
+
+
+
 export const approveReturn = async (req, res) => {
 
     try {
@@ -552,42 +555,42 @@ export const approveReturn = async (req, res) => {
             .populate("items.variant");
 
         if (!order) {
-
             return res.json({
                 success: false,
                 message: "Order not found"
             });
-
         }
 
         const item = order.items.id(itemId);
 
         if (!item) {
-
             return res.json({
                 success: false,
                 message: "Item not found"
             });
-
         }
 
         if (item.returnStatus !== "Requested") {
-
             return res.json({
                 success: false,
                 message: "No return request found."
             });
-
         }
 
         if (item.itemStatus !== "Delivered") {
-
             return res.json({
                 success: false,
                 message: "Only delivered items can be returned."
             });
-
         }
+
+        const roundMoney = value =>
+            Math.round(
+                (Number(value) + Number.EPSILON) * 100
+            ) / 100;
+
+        const originalGrandTotal =
+            roundMoney(order.grandTotal || 0);
 
         item.returnStatus = "Approved";
         item.itemStatus = "Returned";
@@ -597,215 +600,281 @@ export const approveReturn = async (req, res) => {
 
         if (variant) {
 
-            variant.stock += item.quantity;
+            variant.stock += Number(item.quantity || 0);
 
             await variant.save();
-
         }
 
-        let refundAmount = item.finalPricePaid;
+        const remainingItems = order.items.filter(
+            i =>
+                i._id.toString() !== item._id.toString() &&
+                i.itemStatus !== "Cancelled" &&
+                i.itemStatus !== "Returned"
+        );
+
+        const allReturned =
+            remainingItems.length === 0;
+
+        let refundAmount;
+
+        if (allReturned) {
+
+            refundAmount = originalGrandTotal;
+
+        } else {
+
+            refundAmount = roundMoney(
+                Number(item.finalPricePaid || 0)
+            );
+
+        }
 
         if (order.paymentMethod !== "COD") {
 
             if (order.coupon) {
 
-                const remainingItems = order.items.filter(i =>
+                const remainingOriginalTotal =
+                    remainingItems.reduce(
+                        (sum, i) =>
+                            sum +
+                            Number(i.originalPrice || 0),
+                        0
+                    );
 
-                    i._id.toString() !== item._id.toString() &&
-                    i.itemStatus !== "Cancelled" &&
-                    i.itemStatus !== "Returned"
+                const minimumPurchase =
+                    Number(
+                        order.coupon.minimumPurchase || 0
+                    );
 
-                );
+                if (
+                    remainingOriginalTotal <
+                    minimumPurchase
+                ) {
 
-                const remainingOriginalTotal = remainingItems.reduce(
+                    const coupon =
+                        await Coupon.findById(
+                            order.coupon._id
+                        );
 
-                    (sum, i) => sum + i.originalPrice,
+                    const returnedItemCouponDiscount =
+                        Number(
+                            item.allocatedCouponDiscount || 0
+                        );
 
-                    0
+                    refundAmount = roundMoney(
+                        Math.max(
+                            0,
+                            refundAmount -
+                            returnedItemCouponDiscount
+                        )
+                    );
 
-                );
+                    if (coupon) {
 
-               if (remainingOriginalTotal < order.coupon.minimumPurchase) {
+                        coupon.usedCount = Math.max(
+                            0,
+                            Number(coupon.usedCount || 0) - 1
+                        );
 
-    const coupon = await Coupon.findById(order.coupon._id);
+                        coupon.usedBy =
+                            coupon.usedBy.filter(
+                                u =>
+                                    u.user.toString() !==
+                                    order.user.toString()
+                            );
 
-    const clawback = remainingItems.reduce(
+                        await coupon.save();
+                    }
 
-        (sum, i) => sum + i.allocatedCouponDiscount,
-
-        0
-
-    );
-
-    refundAmount = Math.max(
-        0,
-        item.finalPricePaid - clawback
-    );
-
-    if (coupon) {
-
-        coupon.usedCount = Math.max(0, coupon.usedCount - 1);
-
-        coupon.usedBy = coupon.usedBy.filter(
-            u => u.user.toString() !== order.user.toString()
-        );
-
-        await coupon.save();
-
-    }
-
-    order.discount = 0;
-    order.coupon = null;
-
-}
+                    order.discount = 0;
+                    order.coupon = null;
+                }
             }
 
+            const RETURN_FEE = 100;
+
+            let returnFee = 0;
+
+            if (
+                Number(order.returnFeeCharged || 0) === 0
+            ) {
+
+                returnFee = RETURN_FEE;
+
+                order.returnFeeCharged = RETURN_FEE;
+            }
+
+            refundAmount = roundMoney(
+                Math.max(
+                    0,
+                    refundAmount - returnFee
+                )
+            );
+
             let wallet = await Wallet.findOne({
-
                 user: order.user
-
             });
 
             if (!wallet) {
 
                 wallet = await Wallet.create({
-
                     user: order.user,
-
                     balance: 0,
-
                     transactions: []
-
                 });
 
             }
 
-            wallet.balance += refundAmount;
+            wallet.balance = roundMoney(
+                Number(wallet.balance || 0) +
+                refundAmount
+            );
 
             wallet.transactions.push({
-
                 type: "credit",
-
                 amount: refundAmount,
-
                 reason: "Return Refund",
-
                 order: order._id,
-
-                description: `Refund for ${item.product.name}`
-
+                description: allReturned
+                    ? "Refund for whole order return"
+                    : `Refund for ${item.product.name}`
             });
 
             await wallet.save();
 
+            order.refundAmount = roundMoney(
+                Number(order.refundAmount || 0) +
+                refundAmount
+            );
+
+            order.refundedAt = new Date();
+
+            order.paymentStatus =
+                allReturned
+                    ? "Refunded"
+                    : "Partially Refunded";
         }
 
-        const activeItems = order.items.filter(i =>
-
-            i.itemStatus !== "Cancelled" &&
-            i.itemStatus !== "Returned"
-
+        const activeItems = order.items.filter(
+            i =>
+                i.itemStatus !== "Cancelled" &&
+                i.itemStatus !== "Returned"
         );
 
-        order.subtotal = activeItems.reduce(
-    (sum, i) => sum + i.originalPrice,
-    0
-);
+        order.subtotal = roundMoney(
+            activeItems.reduce(
+                (sum, i) =>
+                    sum +
+                    Number(i.finalPricePaid || 0),
+                0
+            )
+        );
 
         if (order.coupon) {
 
-            order.discount = activeItems.reduce(
-
-                (sum, i) => sum + i.allocatedCouponDiscount,
-
-                0
-
+            order.discount = roundMoney(
+                activeItems.reduce(
+                    (sum, i) =>
+                        sum +
+                        Number(
+                            i.allocatedCouponDiscount || 0
+                        ),
+                    0
+                )
             );
 
+        } else {
+
+            order.discount = 0;
         }
-
-        order.shippingCharge = order.subtotal >= 999 ? 0 : 100;
-
-        order.grandTotal =
-
-            order.subtotal -
-            order.discount +
-            order.shippingCharge +
-            order.tax;
-
-        const allReturned = order.items.every(i =>
-
-            i.itemStatus === "Returned"
-
-        );
-
-        const returnedCount = order.items.filter(i =>
-
-            i.itemStatus === "Returned"
-
-        ).length;
 
         if (allReturned) {
 
+            order.shippingCharge = 0;
+            order.grandTotal = 0;
             order.orderStatus = "Returned";
 
             if (order.paymentMethod !== "COD") {
-
                 order.paymentStatus = "Refunded";
-
             }
 
-        }
+        } else {
 
-        else if (returnedCount > 0) {
+            order.shippingCharge =
+                order.subtotal >= 999
+                    ? 0
+                    : 100;
 
-            order.orderStatus = "Partially Returned";
+            order.grandTotal = roundMoney(
+                order.subtotal -
+                order.discount +
+                order.shippingCharge +
+                Number(order.tax || 0)
+            );
 
-            if (order.paymentMethod !== "COD") {
+            const returnedCount =
+                order.items.filter(
+                    i =>
+                        i.itemStatus === "Returned"
+                ).length;
 
-                order.paymentStatus = "Partially Refunded";
+            if (returnedCount > 0) {
 
+                order.orderStatus =
+                    "Partially Returned";
+
+                if (
+                    order.paymentMethod !== "COD"
+                ) {
+
+                    order.paymentStatus =
+                        "Partially Refunded";
+                }
             }
-
         }
-        order.returnStatus = "Approved";
+
+        const pendingItems =
+            order.items.filter(
+                i =>
+                    i.returnStatus === "Requested"
+            );
+
+        if (pendingItems.length === 0) {
+
+            order.returnStatus = "Approved";
+            order.returnedAt = new Date();
+
+        } else {
+
+            order.returnStatus = "Requested";
+        }
 
         await order.save();
 
-        const pendingItems = order.items.filter(
-    i => i.returnStatus === "Requested"
-);
-
-if (pendingItems.length === 0) {
-    order.returnedAt = new Date();
-}
-
-await order.save();
         return res.json({
-
             success: true,
-
             message: "Return approved successfully."
-
         });
 
-    }
+    } catch (error) {
 
-    catch (error) {
-
-        console.log(error);
+        console.log(
+            "approveReturn ERROR:",
+            error
+        );
 
         return res.json({
-
             success: false,
-
             message: "Something went wrong."
-
         });
-
     }
-
 };
+
+
+
+
+
+
 export const rejectReturn = async (req, res) => {
 
     try {

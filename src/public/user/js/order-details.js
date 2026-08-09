@@ -214,13 +214,15 @@ if (returnWholeBtn) {
 
     returnWholeBtn.addEventListener("click", async () => {
 
-        const totalPaid = Number(returnWholeBtn.dataset.total);
-        const shipping = Number(returnWholeBtn.dataset.shipping);
+        const totalPaid = Number(
+            returnWholeBtn.dataset.total
+        );
+
         const returnFee = 100;
 
         const refund = Math.max(
             0,
-            totalPaid - shipping - returnFee
+            totalPaid - returnFee
         );
 
         const confirm = await Swal.fire({
@@ -228,7 +230,6 @@ if (returnWholeBtn) {
             html: `
                 <div style="text-align:left">
                     <p>Total Paid : ₹${totalPaid}</p>
-                    <p>Less Shipping : -₹${shipping}</p>
                     <p>Less Return Fee : -₹${returnFee}</p>
                     <hr>
                     <h3>Estimated Refund : ₹${refund}</h3>
@@ -246,7 +247,9 @@ if (returnWholeBtn) {
             input: "textarea",
             inputLabel: "Reason",
             inputValidator: value => {
-                if (!value) return "Reason required";
+                if (!value || !value.trim()) {
+                    return "Reason required";
+                }
             },
             showCancelButton: true
         });
@@ -312,5 +315,7 @@ if(profileToggle){
         }
     });
 }
+
+
 
 });

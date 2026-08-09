@@ -78,7 +78,7 @@ export const loadCart = async (req, res) => {
 
         } else {
 
-            shipping = 80;
+            shipping = 100;
 
         }
 

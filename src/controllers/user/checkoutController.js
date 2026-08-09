@@ -25,306 +25,277 @@ const razorpay = new Razorpay({
 
 
 
-export const loadCheckout = async (req,res)=>{
-
-    try{
-
-        const userId=req.session.user.id;
-
+export const loadCheckout = async (req, res) => {
+    try {
+        const userId = req.session.user.id;
         const retryOrder = req.query.retryOrder || null;
 
         const wallet = await Wallet.findOne({ user: userId });
 
-        const addresses=await Address.find({
-
-           userId: userId
+        const addresses = await Address.find({
+            userId: userId
         });
 
         let cart = null;
-let subtotal = 0;
-let shipping = 0;
-let discount = 0;
-let grandTotal = 0;
+        let subtotal = 0;
+        let shipping = 0;
+        let discount = 0;
+        let grandTotal = 0;
+        let coupons = [];
 
+        coupons = await profileService.getAvailableCoupons(userId);
 
-    let coupons = [];
+        if (retryOrder) {
 
-if (!retryOrder) {
-
-    coupons = await profileService.getAvailableCoupons(userId);
-
-}
-if (retryOrder) {
-
-    const order = await Order.findOne({
-        _id: retryOrder,
-        user: userId
-    })
-    .populate({
-        path: "items.variant",
-        populate: {
-            path: "product",
-            populate: ["brand", "category"]
-        }
-    });
-
-    if (!order) {
-
-        req.session.message = {
-            type: "error",
-            text: "Order not found"
-        };
-
-        return res.redirect("/profile/orders");
-    }
-
-    cart = {
-        items: order.items
-    };
-
-    subtotal = order.subtotal;
-    shipping = order.shippingCharge;
-    discount = order.discount;
-    grandTotal = order.grandTotal;
-
-} else {
-
-    cart = await Cart.findOne({
-        user: userId
-    })
-    .populate({
-        path: "items.variant",
-        populate: {
-            path: "product",
-            populate: ["brand", "category"]
-        }
-    });
-
-    if (!cart || cart.items.length === 0) {
-
-        req.session.message = {
-            type: "warning",
-            text: "Your cart is empty"
-        };
-
-        return res.redirect("/cart");
-    }
-
-
-    const validation = await validateCartItems(cart.items);
-
-    if (!validation.valid) {
-
-        req.session.message = {
-            type: "error",
-            text: validation.message
-        };
-
-        return res.redirect("/cart");
-    }
-
-    cart.items.forEach(item => {
-        subtotal += item.variant.salePrice * item.quantity;
-    });
-
-    shipping = subtotal > 999 ? 0 : 100;
-    discount = req.session.coupon?.discount || 0;
-    grandTotal = subtotal + shipping - discount;
-}
-       
-const message = req.session.message;
-delete req.session.message;
-        res.render("user/cart/checkout",{
-
-  user: req.session.user,
-    addresses,
-    cart,
-    subtotal,
-    shipping,
-    discount,
-    grandTotal,
-    wallet,
-    razorpayKey: process.env.RAZORPAY_KEY_ID,
-    retryOrder,
-    coupons
-
-
-        });
-
-    }
-
-    catch(error){
-
-        console.log(error);
-
-        res.redirect("/cart");
-
-    }
-
-};
-
-
-export const applyCoupon=async(req,res)=>{
-
-    try{
-
-        const {code}=req.body;
-
-        const coupon = await Coupon.findOne({
-    code: code.trim().toUpperCase(),
-    isActive: true
-});
-
-        if(!coupon){
-
-            return res.json({
-
-                success:false,
-
-                message:"Invalid coupon"
-
+            const order = await Order.findOne({
+                _id: retryOrder,
+                user: userId,
+                paymentStatus: "Pending"
+            })
+            .populate({
+                path: "items.variant",
+                populate: {
+                    path: "product",
+                    populate: ["brand", "category"]
+                }
             });
 
+            if (!order) {
+                req.session.message = {
+                    type: "error",
+                    text: "Order not found"
+                };
+
+                return res.redirect("/profile/orders");
+            }
+
+            cart = {
+                items: order.items
+            };
+
+            subtotal = order.subtotal;
+            shipping = order.shippingCharge;
+            discount = 0;
+
+            grandTotal = subtotal + shipping;
+
+            delete req.session.coupon;
+
+        } else {
+
+            cart = await Cart.findOne({
+                user: userId
+            })
+            .populate({
+                path: "items.variant",
+                populate: {
+                    path: "product",
+                    populate: ["brand", "category"]
+                }
+            });
+
+            if (!cart || cart.items.length === 0) {
+                req.session.message = {
+                    type: "warning",
+                    text: "Your cart is empty"
+                };
+
+                return res.redirect("/cart");
+            }
+
+            const validation = await validateCartItems(cart.items);
+
+            if (!validation.valid) {
+                req.session.message = {
+                    type: "error",
+                    text: validation.message
+                };
+
+                return res.redirect("/cart");
+            }
+
+            cart.items.forEach(item => {
+                subtotal += item.variant.salePrice * item.quantity;
+            });
+
+            shipping = subtotal > 999 ? 0 : 100;
+
+            discount = req.session.coupon?.discount || 0;
+
+            grandTotal = subtotal + shipping - discount;
         }
 
-       const validUntil = new Date(coupon.validUntil);
-validUntil.setHours(23,59,59,999);
+        const message = req.session.message;
+        delete req.session.message;
 
-if (
-    new Date() < coupon.validFrom ||
-    new Date() > validUntil
-){
-    return res.json({
-        success:false,
-        message:"Coupon expired."
-    });
-}
-        const userId=req.session.user.id;
-
-        const cart=await Cart.findOne({
-
-            user:userId
-
-        })
-
-        .populate("items.variant");
-
-        let subtotal=0;
-
-        cart.items.forEach(item=>{
-
-            subtotal+=item.variant.salePrice*item.quantity;
-
+        res.render("user/cart/checkout", {
+            user: req.session.user,
+            addresses,
+            cart,
+            subtotal,
+            shipping,
+            discount,
+            grandTotal,
+            wallet,
+            razorpayKey: process.env.RAZORPAY_KEY_ID,
+            retryOrder,
+            coupons,
+            message
         });
-        if(subtotal < coupon.minimumPurchase){
 
-    return res.json({
-
-        success:false,
-
-        message:`Minimum purchase ₹${coupon.minimumPurchase}`
-
-    });
-
-}
-
-const alreadyUsed = coupon.usedBy.some(
-
-    item => item.user.toString() === userId
-
-);
-
-if(alreadyUsed){
-
-    return res.json({
-
-        success:false,
-
-        message:"You have already used this coupon."
-
-    });
-
-}
-
-if (coupon.usedCount >= coupon.usageLimit) {
-
-    return res.json({
-
-        success: false,
-
-        message: "Coupon usage limit reached."
-
-    });
-
-}
-let discount = 0;
-
-if(coupon.discountType === "percentage"){
-
-    discount = subtotal * coupon.discount / 100;
-
-}else{
-
-    discount = coupon.discount;
-
-}
-
-        if(coupon.maximumDiscount){
-
-    discount = Math.min(
-
-        discount,
-
-        coupon.maximumDiscount
-
-    );
-
-}
-        const shipping = subtotal > 999 ? 0 : 100;
-
-const total = subtotal + shipping - discount;
-
-req.session.coupon = {
-
-    couponId: coupon._id,
-
-    code: coupon.code,
-
-    discount
-
+    } catch (error) {
+        console.log("loadCheckout ERROR:", error);
+        res.redirect("/cart");
+    }
 };
 
 
-        res.json({
+export const applyCoupon = async (req, res) => {
+    try {
+        const { code, retryOrder } = req.body;
+        const userId = req.session.user.id;
 
-         success:true,
-
-    discount,
-
-    total,
-
-    message:"Coupon Applied"
-
-
-
+        const coupon = await Coupon.findOne({
+            code: code.trim().toUpperCase(),
+            isActive: true
         });
 
-    }
+        if (!coupon) {
+            return res.json({
+                success: false,
+                message: "Invalid coupon"
+            });
+        }
 
-    catch(error){
+        const now = new Date();
 
-        console.log(error);
+        const validUntil = new Date(coupon.validUntil);
+        validUntil.setHours(23, 59, 59, 999);
+
+        if (
+            now < coupon.validFrom ||
+            now > validUntil
+        ) {
+            return res.json({
+                success: false,
+                message: "Coupon expired."
+            });
+        }
+
+        const alreadyUsed = coupon.usedBy.some(
+            item =>
+                item.user.toString() === userId.toString()
+        );
+
+        if (alreadyUsed) {
+            return res.json({
+                success: false,
+                message: "You have already used this coupon."
+            });
+        }
+
+        if (coupon.usedCount >= coupon.usageLimit) {
+            return res.json({
+                success: false,
+                message: "Coupon usage limit reached."
+            });
+        }
+
+        let subtotal = 0;
+
+        if (retryOrder) {
+
+            const order = await Order.findOne({
+                _id: retryOrder,
+                user: userId,
+                paymentStatus: "Pending"
+            });
+
+            if (!order) {
+                return res.json({
+                    success: false,
+                    message: "Retry order not found"
+                });
+            }
+
+            subtotal = order.items.reduce(
+                (sum, item) =>
+                    sum + item.salePrice * item.quantity,
+                0
+            );
+
+        } else {
+
+            const cart = await Cart.findOne({
+                user: userId
+            }).populate("items.variant");
+
+            if (!cart || !cart.items.length) {
+                return res.json({
+                    success: false,
+                    message: "Cart is empty"
+                });
+            }
+
+            subtotal = cart.items.reduce(
+                (sum, item) =>
+                    sum + item.variant.salePrice * item.quantity,
+                0
+            );
+        }
+
+        if (subtotal < coupon.minimumPurchase) {
+            return res.json({
+                success: false,
+                message: `Minimum purchase ₹${coupon.minimumPurchase}`
+            });
+        }
+
+        let discount = 0;
+
+        if (coupon.discountType === "percentage") {
+            discount =
+                subtotal * coupon.discount / 100;
+        } else {
+            discount = coupon.discount;
+        }
+
+        if (coupon.maximumDiscount) {
+            discount = Math.min(
+                discount,
+                coupon.maximumDiscount
+            );
+        }
+
+        const shipping =
+            subtotal > 999 ? 0 : 100;
+
+        const total =
+            subtotal +
+            shipping -
+            discount;
+
+        req.session.coupon = {
+            couponId: coupon._id,
+            code: coupon.code,
+            discount
+        };
 
         res.json({
-
-            success:false,
-
-            message:"Unable to apply coupon"
-
+            success: true,
+            discount,
+            total,
+            message: "Coupon Applied"
         });
 
-    }
+    } catch (error) {
+        console.log("applyCoupon ERROR:", error);
 
+        res.json({
+            success: false,
+            message: "Unable to apply coupon"
+        });
+    }
 };
 
 
@@ -407,6 +378,46 @@ if (!validation.valid) {
     console.log("balidation error :",validation.message)
 
     return res.redirect("/checkout");
+
+}
+
+const updatedVariants = [];
+
+for (const item of cart.items) {
+
+    const updatedVariant = await Variant.findOneAndUpdate(
+
+        {
+            _id: item.variant._id,
+            stock: { $gte: item.quantity }
+        },
+
+        {
+            $inc: {
+                stock: -item.quantity
+            }
+        },
+
+        {
+            new: true
+        }
+
+    );
+
+    if (!updatedVariant) {
+
+        req.session.message = {
+            type: "error",
+            text: `${item.variant.product.name} is out of stock`
+        };
+
+        return res.redirect("/checkout");
+    }
+
+    updatedVariants.push({
+        variantId: item.variant._id,
+        quantity: item.quantity
+    });
 
 }
 
@@ -533,6 +544,7 @@ const orderItems = cart.items.map(item => {
     await wallet.save();
 }
        
+
         if(appliedCoupon){
 
     await Coupon.findByIdAndUpdate(
@@ -586,6 +598,22 @@ delete req.session.coupon;
     }
 
     catch(error){
+for (const item of updatedVariants) {
+
+    await Variant.findByIdAndUpdate(
+
+        item.variantId,
+
+        {
+            $inc: {
+                stock: item.quantity
+            }
+        }
+
+    );
+
+}
+
 
         console.log(error);
 
@@ -884,6 +912,41 @@ export const verifyPayment = async (req, res) => {
         order.orderStatus = "Pending";
 
         await order.save();
+
+     for (const item of order.items) {
+
+    const updatedVariant = await Variant.findOneAndUpdate(
+
+        {
+            _id: item.variant,
+            stock: { $gte: item.quantity }
+        },
+
+        {
+            $inc: {
+                stock: -item.quantity
+            }
+        },
+        {
+    returnDocument: "after"
+}
+
+    );
+
+    if (!updatedVariant) {
+
+        return res.json({
+
+            success: false,
+            message: "One or more products are out of stock."
+
+        });
+
+    }
+
+}
+
+
 
         if (order.coupon) {
 

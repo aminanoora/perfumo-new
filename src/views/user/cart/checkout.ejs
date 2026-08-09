@@ -335,7 +335,7 @@ value="false">
 
         </div>
 
-        <% if (!retryOrder) { %>
+     
     <div class="coupon-section">
 
     <h3>Coupons</h3>
@@ -454,7 +454,6 @@ value="false">
 
 </div>
 
-<% } %>
 
         <div class="price-details">
 
@@ -712,6 +711,26 @@ async function verifyPayment(response, mongoOrderId){
 
 }
 
+}
+
+if(profileToggle){
+
+    profileToggle.addEventListener('click', (e) => {
+
+        e.preventDefault();
+
+        profileMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+
+        if(
+            !profileToggle.contains(e.target) &&
+            !profileMenu.contains(e.target)
+        ){
+            profileMenu.classList.remove('show');
+        }
+    });
 }
 </script>
 </body>

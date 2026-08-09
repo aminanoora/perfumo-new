@@ -668,215 +668,442 @@ async function getSalesSummary(search, datePreset, fromDate, toDate) {
 }
 
 
+
 export const exportPdf = async (req, res) => {
 
-    const {
+    try {
 
-        search,
+        const {
+            search,
+            datePreset,
+            fromDate,
+            toDate
+        } = req.query;
 
-        datePreset,
+        const sales = await getExportData(
+            search,
+            datePreset,
+            fromDate,
+            toDate
+        );
 
-        fromDate,
+        const dateFilter = getDateFilter(
+            datePreset,
+            fromDate,
+            toDate
+        );
 
-        toDate
+        let displayStart = "-";
+        let displayEnd = "-";
 
-    } = req.query;
+        if (Object.keys(dateFilter).length) {
 
-    const sales = await getExportData(
+            displayStart =
+                dateFilter.$gte.toLocaleDateString("en-IN");
 
-        search,
+            displayEnd =
+                dateFilter.$lte.toLocaleDateString("en-IN");
 
-        datePreset,
+        }
 
-        fromDate,
+        const summary = await getSalesSummary(
+            search,
+            datePreset,
+            fromDate,
+            toDate
+        );
 
-        toDate
+        const doc = new PDFDocument({
+            size: "A4",
+            margins: {
+                top: 40,
+                bottom: 40,
+                left: 40,
+                right: 40
+            }
+        });
 
-    );
+        res.setHeader(
+            "Content-Type",
+            "application/pdf"
+        );
 
-    const dateFilter = getDateFilter(
-    datePreset,
-    fromDate,
-    toDate
-);
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=sales-report.pdf"
+        );
 
-    let displayStart = "-";
-let displayEnd = "-";
+        doc.pipe(res);
 
-if (Object.keys(dateFilter).length) {
+        const PAGE_WIDTH = 595.28;
+        const PAGE_HEIGHT = 841.89;
 
-    displayStart = dateFilter.$gte.toLocaleDateString("en-IN");
+        const LEFT = 40;
+        const RIGHT = 40;
+        const TABLE_WIDTH = PAGE_WIDTH - LEFT - RIGHT;
 
-    displayEnd = dateFilter.$lte.toLocaleDateString("en-IN");
-
-}
-    const summary = await getSalesSummary(
-
-    search,
-
-    datePreset,
-
-    fromDate,
-
-    toDate
-
-);
-
-    const doc = new PDFDocument({
-
-        margin: 40,
-
-        size: "A4"
-
-    });
-
-    res.setHeader(
-
-        "Content-Type",
-
-        "application/pdf"
-
-    );
-
-    res.setHeader(
-
-        "Content-Disposition",
-
-        "attachment; filename=sales-report.pdf"
-
-    );
-
-    doc.pipe(res);
-
-    doc
-
-        .fontSize(20)
-
-        .text(
-
-            "PERFUMO SALES REPORT",
-
+        const columns = [
             {
+                title: "Order ID",
+                width: 75
+            },
+            {
+                title: "Customer",
+                width: 95
+            },
+            {
+                title: "Products",
+                width: 150
+            },
+            {
+                title: "Payment",
+                width: 65
+            },
+            {
+                title: "Status",
+                width: 75
+            },
+            {
+                title: "Amount",
+                width: 55
+            }
+        ];
 
-                align: "center"
+        const columnTotal = columns.reduce(
+            (sum, column) => sum + column.width,
+            0
+        );
+
+        const scale = TABLE_WIDTH / columnTotal;
+
+        columns.forEach(column => {
+            column.width =
+                Math.floor(column.width * scale);
+        });
+
+        const adjustedWidth =
+            columns.reduce(
+                (sum, column) => sum + column.width,
+                0
+            );
+
+        columns[columns.length - 1].width +=
+            Math.round(TABLE_WIDTH - adjustedWidth);
+
+        const drawTableHeader = () => {
+
+            const headerY = doc.y;
+
+            const headerHeight = 28;
+
+            doc
+                .rect(
+                    LEFT,
+                    headerY,
+                    TABLE_WIDTH,
+                    headerHeight
+                )
+                .fillAndStroke(
+                    "#E5E5E5",
+                    "#000000"
+                );
+
+            doc
+                .fillColor("#000000")
+                .font("Helvetica-Bold")
+                .fontSize(8);
+
+            let x = LEFT;
+
+            columns.forEach(column => {
+
+                doc.text(
+                    column.title,
+                    x + 4,
+                    headerY + 9,
+                    {
+                        width: column.width - 8,
+                        align: "left",
+                        lineBreak: false
+                    }
+                );
+
+                x += column.width;
+
+            });
+
+            doc.font("Helvetica");
+
+            doc.y =
+                headerY + headerHeight;
+
+            return headerHeight;
+
+        };
+
+        const drawRow = sale => {
+
+            const productText =
+                Array.isArray(sale.products)
+                    ? sale.products.join(", ")
+                    : "";
+
+            const amount =
+                Number(sale.totalAmount || 0);
+
+            const values = [
+                sale.orderId || "-",
+                sale.customer || "-",
+                productText || "-",
+                sale.paymentMethod || "-",
+                sale.orderStatus || "-",
+                `₹${amount.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}`
+            ];
+
+            const fontSize = 8;
+
+            doc.font("Helvetica");
+            doc.fontSize(fontSize);
+
+            const padding = 4;
+
+            const lineHeights = values.map(
+                (value, index) => {
+
+                    return doc.heightOfString(
+                        String(value),
+                        {
+                            width:
+                                columns[index].width -
+                                padding * 2,
+                            lineGap: 1
+                        }
+                    );
+
+                }
+            );
+
+            const rowHeight = Math.max(
+                28,
+                Math.min(
+                    55,
+                    Math.max(...lineHeights) + 12
+                )
+            );
+
+            if (
+                doc.y + rowHeight >
+                PAGE_HEIGHT - 45
+            ) {
+
+                doc.addPage();
+
+                doc.y = 40;
+
+                drawTableHeader();
 
             }
 
+            const rowY = doc.y;
+
+            doc
+                .rect(
+                    LEFT,
+                    rowY,
+                    TABLE_WIDTH,
+                    rowHeight
+                )
+                .stroke("#000000");
+
+            let x = LEFT;
+
+            values.forEach(
+                (value, index) => {
+
+                    const column =
+                        columns[index];
+
+                    doc
+                        .font("Helvetica")
+                        .fontSize(fontSize)
+                        .fillColor("#000000")
+                        .text(
+                            String(value),
+                            x + padding,
+                            rowY + 7,
+                            {
+                                width:
+                                    column.width -
+                                    padding * 2,
+                                height:
+                                    rowHeight - 10,
+                                align:
+                                    index === 5
+                                        ? "right"
+                                        : "left",
+                                lineGap: 1,
+                                ellipsis: true
+                            }
+                        );
+
+                    x += column.width;
+
+                    if (index < values.length - 1) {
+
+                        doc
+                            .moveTo(
+                                x,
+                                rowY
+                            )
+                            .lineTo(
+                                x,
+                                rowY + rowHeight
+                            )
+                            .stroke("#000000");
+
+                    }
+
+                }
+            );
+
+            doc.y =
+                rowY + rowHeight;
+
+        };
+
+        doc
+            .font("Helvetica-Bold")
+            .fontSize(20)
+            .fillColor("#000000")
+            .text(
+                "PERFUMO SALES REPORT",
+                {
+                    align: "center",
+                    width: TABLE_WIDTH
+                }
+            );
+
+        doc.moveDown(0.8);
+
+        doc
+            .font("Helvetica")
+            .fontSize(10);
+
+        doc.text(
+            `Report Period: ${displayStart} - ${displayEnd}`,
+            {
+                align: "center",
+                width: TABLE_WIDTH
+            }
         );
 
-    doc.moveDown(2);
+        doc.moveDown(1);
 
-    doc.fontSize(12);
-doc.font("Helvetica-Bold");
+        const summaryY = doc.y;
 
-doc.text(`Start Date : ${displayStart}`);
-doc.text(`End Date   : ${displayEnd}`);
-
-doc.moveDown(0.5);
-
-doc.text(
-    `Net Sales : ₹${summary.netSales.toLocaleString("en-IN")}`
-);
-
-doc.text(
-    `Refund Amount : ₹${summary.refundAmount.toLocaleString("en-IN")}`
-);
-
-doc.moveDown(1.5);
-
-doc.font("Helvetica");
-
-const startX = 40;
-const rowHeight = 22;
-
-let y = doc.y;
-
-doc
-    .rect(startX, y, 520, rowHeight)
-    .fillAndStroke("#e5e5e5", "#000000");
-
-doc
-    .fillColor("black")
-    .font("Helvetica-Bold")
-    .fontSize(10);
-
-doc.text("Order ID", 45, y + 6);
-doc.text("Customer", 120, y + 6);
-doc.text("Payment", 235, y + 6);
-doc.text("Status", 320, y + 6);
-doc.text("Amount", 430, y + 6);
-
-doc.font("Helvetica");
-
-y += rowHeight;
-
-sales.forEach((sale) => {
-
-    if (y > 730) {
-
-        doc.addPage();
-
-        y = 40;
+        const summaryBoxHeight = 58;
 
         doc
-            .rect(startX, y, 520, rowHeight)
-            .fillAndStroke("#e5e5e5", "#000000");
+            .rect(
+                LEFT,
+                summaryY,
+                TABLE_WIDTH,
+                summaryBoxHeight
+            )
+            .stroke("#000000");
 
         doc
-            .fillColor("black")
             .font("Helvetica-Bold")
             .fontSize(10);
 
-        doc.text("Order ID", 45, y + 6);
-        doc.text("Customer", 120, y + 6);
-        doc.text("Payment", 235, y + 6);
-        doc.text("Status", 320, y + 6);
-        doc.text("Amount", 430, y + 6);
+        doc.text(
+            "SUMMARY",
+            LEFT + 10,
+            summaryY + 9
+        );
 
-        doc.font("Helvetica");
+        doc
+            .font("Helvetica")
+            .fontSize(9);
 
-        y += rowHeight;
+        doc.text(
+            `Net Sales: ₹${Number(
+                summary.netSales || 0
+            ).toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}`,
+            LEFT + 10,
+            summaryY + 27
+        );
+
+        doc.text(
+            `Refund Amount: ₹${Number(
+                summary.refundAmount || 0
+            ).toLocaleString("en-IN", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}`,
+            LEFT + 260,
+            summaryY + 27
+        );
+
+        doc.y =
+            summaryY +
+            summaryBoxHeight +
+            20;
+
+        drawTableHeader();
+
+        sales.forEach(sale => {
+
+            drawRow(sale);
+
+        });
+
+        if (sales.length === 0) {
+
+            doc
+                .font("Helvetica")
+                .fontSize(10)
+                .text(
+                    "No sales found for the selected period.",
+                    LEFT,
+                    doc.y + 15,
+                    {
+                        width: TABLE_WIDTH,
+                        align: "center"
+                    }
+                );
+
+        }
+
+        doc.end();
+
+    } catch (error) {
+
+        console.log(
+            "exportPdf ERROR:",
+            error
+        );
+
+        if (!res.headersSent) {
+
+            return res.status(500).json({
+                success: false,
+                message: "Failed to generate PDF"
+            });
+
+        }
 
     }
 
-    doc
-        .rect(startX, y, 520, rowHeight)
-        .stroke();
-
-    doc.fontSize(9);
-
-    doc.text(sale.orderId, 45, y + 6, {
-        width: 70
-    });
-
-    doc.text(sale.customer, 120, y + 6, {
-        width: 100
-    });
-
-    doc.text(sale.paymentMethod, 235, y + 6, {
-        width: 70
-    });
-
-    doc.text(sale.orderStatus, 320, y + 6, {
-        width: 70
-    });
-
-    doc.text(
-        "₹" + sale.totalAmount.toLocaleString("en-IN"),
-        430,
-        y + 6,
-        {
-            width: 80,
-            align: "right"
-        }
-    );
-
-    y += rowHeight;
-
-});
-    doc.end();
-
 };
+
+
 
 export const exportExcel = async (req, res) => {
 
