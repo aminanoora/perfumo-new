@@ -8,6 +8,10 @@ const router = express.Router();
 router.get("/", userAuth, checkoutController.loadCheckout);
 
 router.post("/apply-coupon", userAuth, checkoutController.applyCoupon);
+router.post(
+    "/remove-coupon",
+    checkoutController.removeCoupon
+);
 
 router.post("/place-order", userAuth, checkoutController.placeOrder);
 

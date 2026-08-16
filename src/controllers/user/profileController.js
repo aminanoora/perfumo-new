@@ -857,12 +857,13 @@ const canDownloadInvoice =
 
 const hasCoupon = !!order.coupon;
 
-const canReturnWholeOrder =
-    !hasCoupon &&
-    activeItems.length > 0 &&
-    activeItems.every(
-        item => item.itemStatus === "Delivered"
-    );
+   const canReturnWholeOrder =
+            activeItems.length > 0 &&
+            activeItems.every(
+                item =>
+                    item.itemStatus === "Delivered" &&
+                    item.returnStatus === "None"
+            );
 
         console.log("=== ORDER SENT TO EJS ===");
 console.log(order._id.toString());
@@ -1535,6 +1536,7 @@ export const returnWholeOrder = async (req, res) => {
         const { orderId } = req.params;
         const { reason } = req.body;
 
+
         if (!reason || !reason.trim()) {
 
             return res.json({
@@ -1544,6 +1546,7 @@ export const returnWholeOrder = async (req, res) => {
 
         }
 
+      
         const order = await Order.findOne({
             _id: orderId,
             user: req.session.user.id
@@ -1558,6 +1561,8 @@ export const returnWholeOrder = async (req, res) => {
 
         }
 
+        
+
         if (order.orderStatus === "Returned") {
 
             return res.json({
@@ -1567,16 +1572,42 @@ export const returnWholeOrder = async (req, res) => {
 
         }
 
-        if (order.orderStatus !== "Delivered") {
+
+        const activeItems = order.items.filter(
+            item =>
+                item.itemStatus !== "Cancelled" &&
+                item.itemStatus !== "Returned"
+        );
+
+
+
+        if (activeItems.length === 0) {
 
             return res.json({
                 success: false,
-                message: "Only delivered orders can be returned"
+                message: "No items are available for return"
             });
 
         }
 
-        const returnableItems = order.items.filter(
+
+        const allActiveItemsDelivered =
+            activeItems.every(
+                item =>
+                    item.itemStatus === "Delivered"
+            );
+
+        if (!allActiveItemsDelivered) {
+
+            return res.json({
+                success: false,
+                message: "Only delivered items can be returned"
+            });
+
+        }
+
+
+        const returnableItems = activeItems.filter(
             item =>
                 item.itemStatus === "Delivered" &&
                 item.returnStatus === "None"
@@ -1591,22 +1622,34 @@ export const returnWholeOrder = async (req, res) => {
 
         }
 
+     
+
         for (const item of returnableItems) {
 
             item.returnStatus = "Requested";
+
             item.returnedReason = reason.trim();
+
             item.returnRequestedAt = new Date();
 
         }
 
+     
         order.returnedReason = reason.trim();
+
         order.returnStatus = "Requested";
+
 
         await order.save();
 
+      
         return res.json({
+
             success: true,
-            message: "Return request submitted successfully"
+
+            message:
+                "Return request submitted successfully"
+
         });
 
     } catch (error) {
@@ -1617,8 +1660,12 @@ export const returnWholeOrder = async (req, res) => {
         );
 
         return res.json({
+
             success: false,
-            message: "Something went wrong"
+
+            message:
+                "Something went wrong"
+
         });
 
     }
@@ -1628,11 +1675,15 @@ export const returnWholeOrder = async (req, res) => {
 
 
 
-
-
 export const downloadInvoice = async (req, res) => {
 
     try {
+
+        const roundMoney = value =>
+            Math.round(
+                (Number(value || 0) + Number.EPSILON) * 100
+            ) / 100;
+
 
         const order = await Order.findOne({
             _id: req.params.id,
@@ -1641,25 +1692,40 @@ export const downloadInvoice = async (req, res) => {
         .populate("items.product")
         .populate("items.variant");
 
+
         if (!order) {
             return res.redirect("/profile/orders");
         }
 
-        const invoiceItems = order.items.filter(item =>
+
+      const invoiceItems = order.items
+    .filter(
+        item =>
             item.itemStatus !== "Cancelled" &&
             item.itemStatus !== "Returned"
+    )
+    .map(item => ({
+        ...item.toObject(),
+        total: roundMoney(item.total)
+    }));
+
+
+        const subtotal = roundMoney(
+            invoiceItems.reduce(
+                (sum, item) =>
+                    sum + Number(item.total || 0),
+                0
+            )
         );
 
-        const subtotal = invoiceItems.reduce(
-            (sum, item) => sum + item.total,
-            0
-        );
 
-        const grandTotal =
+        const grandTotal = roundMoney(
             subtotal -
-            order.discount +
-            order.shippingCharge +
-            order.tax;
+            Number(order.discount || 0) +
+            Number(order.shippingCharge || 0) +
+            Number(order.tax || 0)
+        );
+
 
         res.render("user/profile/order-document", {
 
@@ -1677,14 +1743,14 @@ export const downloadInvoice = async (req, res) => {
 
         });
 
+
     } catch (err) {
 
-        console.log(err);
+        console.log("downloadInvoice ERROR:", err);
 
     }
 
 };
-
 
 export const searchOrders = async (req, res) => {
 

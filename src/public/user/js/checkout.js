@@ -32,6 +32,8 @@ const retryOrder = params.get("retryOrder");
     const grandTotal =
         document.getElementById("grandTotal");
 
+        const removeCouponBtn =
+    document.getElementById("removeCoupon");
 
 
     function togglePaymentButtons() {
@@ -116,6 +118,11 @@ const retryOrder = params.get("retryOrder");
                 couponMessage.innerText =
                     data.message;
 
+                    
+removeCouponBtn.style.display = "inline-block";
+couponBtn.style.display = "none";
+couponInput.readOnly = true;
+
                 Swal.fire({
 
                     icon: "success",
@@ -158,7 +165,73 @@ const retryOrder = params.get("retryOrder");
         }
 
     });
+removeCouponBtn?.addEventListener("click", async () => {
 
+    try {
+
+        const response = await fetch(
+            "/checkout/remove-coupon",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            couponInput.value = "";
+
+            couponInput.readOnly = false;
+
+            couponBtn.style.display = "inline-block";
+
+            removeCouponBtn.style.display = "none";
+
+            couponDiscount.textContent = "- ₹0";
+
+            grandTotal.textContent =
+                "₹" + data.total.toLocaleString();
+
+            couponMessage.style.color = "green";
+
+            couponMessage.innerText =
+                data.message;
+
+            Swal.fire({
+                icon: "success",
+                title: "Coupon Removed",
+                timer: 1200,
+                showConfirmButton: false
+            });
+
+        } else {
+
+            Swal.fire({
+                icon: "error",
+                title: data.message
+            });
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Remove coupon error:",
+            error
+        );
+
+        Swal.fire({
+            icon: "error",
+            title: "Unable to remove coupon"
+        });
+
+    }
+
+});
 
 payNowBtn.addEventListener("click", async () => {
 

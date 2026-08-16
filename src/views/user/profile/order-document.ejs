@@ -101,30 +101,44 @@ button,
 
         <p>
             <strong>Subtotal :</strong>
-            ₹<%= subtotal %>
+           ₹<%= Number(subtotal || 0).toLocaleString("en-IN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+}) %>
         </p>
 
         <% if(documentType==="invoice"){ %>
 
-            <p>
-                <strong>Discount :</strong>
-                ₹<%= order.discount %>
-            </p>
+         <p>
+    <strong>Discount :</strong>
+    ₹<%= Number(order.discount || 0).toLocaleString("en-IN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    }) %>
+</p>
+          <p>
+    <strong>Shipping :</strong>
+    ₹<%= Number(order.shippingCharge || 0).toLocaleString("en-IN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    }) %>
+</p>
 
             <p>
-                <strong>Shipping :</strong>
-                ₹<%= order.shippingCharge %>
-            </p>
+    <strong>Tax :</strong>
+    ₹<%= Number(order.tax || 0).toLocaleString("en-IN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    }) %>
+</p>
 
-            <p>
-                <strong>Tax :</strong>
-                ₹<%= order.tax %>
-            </p>
-
-            <p class="grand-total">
-                Grand Total :
-                ₹<%= grandTotal %>
-            </p>
+           <p class="grand-total">
+    Grand Total :
+    ₹<%= Number(grandTotal || 0).toLocaleString("en-IN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    }) %>
+</p>
 
         <% } %>
 

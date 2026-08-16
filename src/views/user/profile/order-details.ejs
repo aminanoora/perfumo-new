@@ -263,35 +263,21 @@ Delivered
 
         <% } %>
 
-       <% if(item.itemStatus === "Delivered" && item.returnStatus === "None"){ %>
-
-<% if(hasCoupon){ %>
+    <% if (
+    item.itemStatus === "Delivered" &&
+    item.returnStatus === "None"
+) { %>
 
 <button
-class="return-btn disabled"
-disabled
-title="All promotional sales are final">
+    class="secondary-btn return-item-btn"
+    data-order="<%= order._id %>"
+    data-item="<%= item.variant._id %>">
 
-Return Item
+    Return Item
 
 </button>
 
-
-<% } else { %>
-
-
-<button
-class="secondary-btn return-item-btn"
-data-order="<%= order._id %>"
-data-item="<%= item.variant._id %>">
-Return Item
-</button>
-
-
 <% } %>
-
-<% } %>
-
 
 <% if(item.returnStatus === "Requested"){ %>
 

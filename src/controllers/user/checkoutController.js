@@ -299,6 +299,86 @@ export const applyCoupon = async (req, res) => {
 };
 
 
+export const removeCoupon = async (req, res) => {
+
+    try {
+
+   
+        req.session.coupon = null;
+
+        const userId = req.session.user.id;
+
+        const cart = await Cart.findOne({
+            user: userId
+        })
+        .populate("items.variant");
+
+        if (!cart) {
+
+            return res.json({
+                success: false,
+                message: "Cart not found"
+            });
+
+        }
+
+        const subtotal = cart.items.reduce(
+            (sum, item) =>
+                sum +
+                Number(item.variant.salePrice || 0) *
+                Number(item.quantity || 0),
+            0
+        );
+
+        const shipping =
+            subtotal >= 999
+                ? 0
+                : 100;
+
+       
+        const tax = 0;
+
+        const discount = 0;
+
+        const total =
+            subtotal -
+            discount +
+            shipping +
+            tax;
+
+        return res.json({
+
+            success: true,
+
+            message:
+                "Coupon removed successfully",
+
+            discount: 0,
+
+            total
+
+        });
+
+    } catch (error) {
+
+        console.log(
+            "removeCoupon ERROR:",
+            error
+        );
+
+        return res.json({
+
+            success: false,
+
+            message:
+                "Unable to remove coupon"
+
+        });
+
+    }
+
+};
+
 export const placeOrder=async(req,res)=>{
 
     try{

@@ -22,7 +22,7 @@ export const getProductsPage = async (req, res) => {
         const status = req.query.status || "";
         
         const query = {
-            isDeleted: false
+            isDeleted:false,
         };
         
    
