@@ -73,19 +73,22 @@
 
                     <div class="input-group">
                         <input type="text" name='firstName' placeholder="First Name">
+                         <small class="field-error" id="firstName-error"></small>
                     </div>
 
                     <div class="input-group">
                         <input type="text" name='lastName' placeholder="Last Name">
+                          <small class="field-error" id="lastName-error"></small>
                     </div>
 
                     <div class="input-group">
                         <input type="email" name="email" placeholder="Email Address">
-                         
+                          <small class="field-error" id="email-error"></small>
                     </div>
 
                     <div class="input-group">
                         <input type="text" name='phone' placeholder="Phone Number">
+                        <small class="field-error" id="phone-error"></small>
                     </div>
 
                     <div class="input-group password-group">
@@ -98,6 +101,7 @@
        >
 
     <i class="fa-solid fa-eye toggle-password"></i>
+     <small class="field-error" id="password-error"></small>
 
 </div>
                     <div class="input-group password-group">
@@ -111,7 +115,7 @@
     >
 
     <i class="fa-solid fa-eye toggle-confirm"></i>
-
+   <small class="field-error" id="confirmPassword-error"></small>
 </div>
 
                 </div>
@@ -140,32 +144,240 @@
 
 const form = document.getElementById('signup-form');
 
+
+function clearErrors() {
+
+    document.querySelectorAll(".field-error").forEach(error => {
+        error.textContent = "";
+    });
+
+    document.querySelectorAll(".signup-form input").forEach(input => {
+        input.classList.remove("input-error");
+    });
+}
+
+
+
+
+function showFieldError(field, message) {
+
+    const errorElement =
+        document.getElementById(`${field}-error`);
+
+    const inputElement =
+        document.querySelector(`[name="${field}"]`);
+
+    if (errorElement) {
+        errorElement.textContent = message;
+    }
+
+    if (inputElement) {
+        inputElement.classList.add("input-error");
+    }
+}
+
+
+
+
+document.querySelectorAll(".signup-form input").forEach(input => {
+
+    input.addEventListener("input", () => {
+
+        const field = input.name;
+
+        const errorElement =
+            document.getElementById(`${field}-error`);
+
+        if (errorElement) {
+            errorElement.textContent = "";
+        }
+
+        input.classList.remove("input-error");
+
+    });
+
+});
+
+
+
+
 form.addEventListener('submit', async (e) => {
 
     e.preventDefault();
 
-    const formData = {
+    clearErrors();
 
-        firstName:
-        document.querySelector('[name="firstName"]').value,
+    const firstName =
+        document.querySelector('[name="firstName"]').value.trim();
 
-        lastName:
-        document.querySelector('[name="lastName"]').value,
+    const lastName =
+        document.querySelector('[name="lastName"]').value.trim();
 
-        email:
-        document.querySelector('[name="email"]').value,
+    const email =
+        document.querySelector('[name="email"]').value.trim();
 
-        phone:
-        document.querySelector('[name="phone"]').value,
+    const phone =
+        document.querySelector('[name="phone"]').value.trim();
 
-        password:
-        document.querySelector('[name="password"]').value,
+    const password =
+        document.querySelector('[name="password"]').value;
 
-        confirmPassword:
-        document.querySelector('[name="confirmPassword"]').value
-    };
+    const confirmPassword =
+        document.querySelector('[name="confirmPassword"]').value;
+
+
+    let isValid = true;
+
+
+
+    if (!firstName) {
+
+        showFieldError(
+            "firstName",
+            "First name is required"
+        );
+
+        isValid = false;
+    }
+
+
+
+
+    if (!lastName) {
+
+        showFieldError(
+            "lastName",
+            "Last name is required"
+        );
+
+        isValid = false;
+    }
+
+
+
+
+    if (!email) {
+
+        showFieldError(
+            "email",
+            "Email address is required"
+        );
+
+        isValid = false;
+
+    } else {
+
+        const emailPattern =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(email)) {
+
+            showFieldError(
+                "email",
+                "Enter a valid email address"
+            );
+
+            isValid = false;
+        }
+    }
+
+
+
+    if (!phone) {
+
+        showFieldError(
+            "phone",
+            "Phone number is required"
+        );
+
+        isValid = false;
+
+    } else {
+
+        const phonePattern = /^[0-9]{10}$/;
+
+        if (!phonePattern.test(phone)) {
+
+            showFieldError(
+                "phone",
+                "Enter a valid 10-digit phone number"
+            );
+
+            isValid = false;
+        }
+    }
+
+
+  
+
+    if (!password) {
+
+        showFieldError(
+            "password",
+            "Password is required"
+        );
+
+        isValid = false;
+
+    } else if (password.length < 8) {
+
+        showFieldError(
+            "password",
+            "Password must be at least 8 characters"
+        );
+
+        isValid = false;
+    }
+
 
    
+
+    if (!confirmPassword) {
+
+        showFieldError(
+            "confirmPassword",
+            "Please confirm your password"
+        );
+
+        isValid = false;
+
+    } else if (password !== confirmPassword) {
+
+        showFieldError(
+            "confirmPassword",
+            "Passwords do not match"
+        );
+
+        isValid = false;
+    }
+
+
+
+    if (!isValid) {
+        return;
+    }
+
+
+
+
+    const formData = {
+
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+        confirmPassword,
+
+        referralCode:
+            document.querySelector(
+                '[name="referralCode"]'
+            ).value
+    };
+
+
+   
+
     try {
 
         const response = await fetch('/signup', {
@@ -175,22 +387,33 @@ form.addEventListener('submit', async (e) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-               credentials: 'same-origin',
+
+            credentials: 'same-origin',
+
             body: JSON.stringify(formData)
         });
+
 
         const data = await response.json();
 
         console.log(data);
 
+
+
         if (data.success) {
 
             Swal.fire({
+
                 icon: 'success',
+
                 title: 'OTP Sent',
+
                 text: 'Redirecting...',
+
                 timer: 1500,
+
                 showConfirmButton: false
+
             });
 
             setTimeout(() => {
@@ -199,37 +422,53 @@ form.addEventListener('submit', async (e) => {
 
             }, 1500);
 
-        } else {
-
-            Swal.fire({
-                icon: 'warning',
-                title: 'Signup Failed',
-                text: data.message
-            });
         }
+
+
+
+        else {
+
+            if (data.field) {
+
+                showFieldError(
+                    data.field,
+                    data.message
+                );
+
+            }
+        }
+
 
     } catch (error) {
 
-        console.log(error);
+        console.error(error);
 
         Swal.fire({
+
             icon: 'error',
+
             title: 'Error',
+
             text: 'Something went wrong'
+
         });
+
     }
 
 });
 
+
+
 const togglePassword =
-document.querySelector('.toggle-password');
+    document.querySelector('.toggle-password');
 
 const passwordInput =
-document.getElementById('password');
+    document.getElementById('password');
+
 
 togglePassword.addEventListener('click', () => {
 
-    if(passwordInput.type === 'password'){
+    if (passwordInput.type === 'password') {
 
         passwordInput.type = 'text';
 
@@ -246,19 +485,24 @@ togglePassword.addEventListener('click', () => {
             'fa-eye-slash',
             'fa-eye'
         );
+
     }
+
 });
 
 
+
+
 const toggleConfirm =
-document.querySelector('.toggle-confirm');
+    document.querySelector('.toggle-confirm');
 
 const confirmInput =
-document.getElementById('confirmPassword');
+    document.getElementById('confirmPassword');
+
 
 toggleConfirm.addEventListener('click', () => {
 
-    if(confirmInput.type === 'password'){
+    if (confirmInput.type === 'password') {
 
         confirmInput.type = 'text';
 
@@ -275,9 +519,10 @@ toggleConfirm.addEventListener('click', () => {
             'fa-eye-slash',
             'fa-eye'
         );
-    }
-});
 
+    }
+
+});
 
 </script>
 

@@ -394,6 +394,8 @@ export const loadProductDetails = async (req, res) => {
 
             return res.redirect("/shop");
         }
+     
+
 
         const variants = await Variant.find({
 

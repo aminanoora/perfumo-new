@@ -183,8 +183,27 @@
                     <%= status==="Returned"?"selected":"" %>>
                         Returned
                     </option>
-
+                 
                 </select>
+
+                 <select name="returnStatus">
+    <option value="">Return Requests</option>
+
+    <option value="Requested"
+        <%= returnStatus === "Requested" ? "selected" : "" %>>
+        Waiting for Approval
+    </option>
+
+    <option value="Approved"
+        <%= returnStatus === "Approved" ? "selected" : "" %>>
+        Approved
+    </option>
+
+    <option value="Rejected"
+        <%= returnStatus === "Rejected" ? "selected" : "" %>>
+        Rejected
+    </option>
+</select>
 
                 <select name="payment">
 

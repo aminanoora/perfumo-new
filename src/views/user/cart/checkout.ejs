@@ -342,10 +342,12 @@ value="false">
 
     <div class="coupon-box">
 
-        <input
-            type="text"
-            id="couponCode"
-            placeholder="Enter coupon code">
+       <input
+    type="text"
+    id="couponCode"
+    placeholder="Enter coupon code"
+    value="<%= appliedCoupon ? appliedCoupon.code : '' %>"
+    <%= appliedCoupon ? 'readonly' : '' %>>
 
         <button
             type="button"
@@ -354,21 +356,21 @@ value="false">
             Apply
 
         </button>
-        <button
-        type="button"
-        id="removeCoupon"
-        class="remove-coupon-btn"
-        style="display:none;">
-
-        Remove
-
-    </button>
-
+       <button
+    type="button"
+    id="removeCoupon"
+    class="remove-coupon-btn"
+    style="<%= appliedCoupon ? '' : 'display:none;' %>">
+    Remove
+</button>
 
     </div>
 
-    <small id="couponMessage"></small>
-
+ <small id="couponMessage">
+    <% if (appliedCoupon) { %>
+        Coupon <strong><%= appliedCoupon.code %></strong> applied successfully.
+    <% } %>
+</small>
     <% if(coupons && coupons.length){ %>
 
     <div class="available-coupons">

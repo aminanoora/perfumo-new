@@ -139,6 +139,16 @@ app.use(
 
 );
 
+app.use((req, res) => {
+    res.status(404).render("user/error/404");
+});
+
+app.use((err, req, res, next) => {
+
+    console.error("SERVER ERROR:", err);
+
+    res.status(500).render("user/error/500");
+});
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {

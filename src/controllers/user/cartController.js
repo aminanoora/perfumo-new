@@ -36,13 +36,9 @@ export const loadCart = async (req, res) => {
         }
 
         let subtotal = 0;
-
         let shipping = 0;
-
         let giftWrapAmount = cart.giftWrap ? 30 : 0;
-
         let discount = 0;
-
         let hasUnavailableProducts = false;
 
         cart.items.forEach(item => {
@@ -52,6 +48,7 @@ export const loadCart = async (req, res) => {
             if (
                 !variant ||
                 variant.isDeleted ||
+                !variant.product ||
                 variant.product.isDeleted ||
                 !variant.product.isListed ||
                 variant.stock <= 0
@@ -60,7 +57,6 @@ export const loadCart = async (req, res) => {
                 hasUnavailableProducts = true;
 
                 return;
-
             }
 
             const price =
@@ -73,13 +69,9 @@ export const loadCart = async (req, res) => {
         });
 
         if (subtotal >= 999) {
-
             shipping = 0;
-
         } else {
-
             shipping = 100;
-
         }
 
         const grandTotal =
@@ -88,19 +80,22 @@ export const loadCart = async (req, res) => {
             giftWrapAmount -
             discount;
 
-        res.render(
-            "user/cart/cart",
-            {
-                cart,
-                subtotal,
-                shipping,
-                giftWrapAmount,
-                discount,
-                grandTotal,
-                hasUnavailableProducts
-            }
-        );
 
+
+  const message = req.session.message;
+
+delete req.session.message;
+
+res.render("user/cart/cart", {
+    cart,
+    subtotal,
+    shipping,
+    giftWrapAmount,
+    discount,
+    grandTotal,
+    hasUnavailableProducts,
+    message
+});
     } catch (error) {
 
         console.log(error);
@@ -110,6 +105,7 @@ export const loadCart = async (req, res) => {
     }
 
 };
+
 
 export const addToCart = async (req, res) => {
 
@@ -258,79 +254,92 @@ export const updateCartQuantity = async (req, res) => {
             action
         } = req.body;
 
-    const cart = await Cart.findOne({
-    user: userId
-}).populate({
-    path: "items.variant",
-    populate: {
-        path: "product"
-    }
-});
+        const cart = await Cart.findOne({
+            user: userId
+        }).populate({
+            path: "items.variant",
+            populate: {
+                path: "product"
+            }
+        });
 
-        const item = cart.items.id(itemId);
         if (!cart) {
 
-    return res.json({
-        success:false,
-        message:"Cart not found"
-    });
-
-}
-
-        if (!item) {
-
             return res.json({
-                success: false
+                success: false,
+                message: "Cart not found"
             });
 
         }
 
-       if (action === "increase") {
+        const item = cart.items.id(itemId);
 
-   if (
-    item.variant.isDeleted ||
-    item.variant.product.isDeleted ||
-    !item.variant.product.isListed
-) {
+        if (!item) {
 
-    return res.json({
-        success: false,
-        message: "This product is currently unavailable."
-    });
+            return res.json({
+                success: false,
+                message: "Cart item not found"
+            });
 
-}
+        }
 
-    if (item.variant.stock <= 0) {
+        const variant = item.variant;
 
-        return res.json({
-            success: false,
-            message: "This product is out of stock."
-        });
+        if (
+            !variant ||
+            variant.isDeleted ||
+            !variant.product ||
+            variant.product.isDeleted ||
+            !variant.product.isListed
+        ) {
 
-    }
+            return res.json({
+                success: false,
+                message: "This product is currently unavailable."
+            });
 
-    if (item.quantity >= item.variant.stock) {
+        }
 
-        return res.json({
-            success: false,
-            message: `Only ${item.variant.stock} item(s) available in stock.`
-        });
 
-    }
+        
+        if (action === "increase") {
 
-    if (item.quantity >= 10) {
+            if (variant.stock <= 0) {
 
-        return res.json({
-            success: false,
-            message: "Maximum quantity allowed is 10."
-        });
+                return res.json({
+                    success: false,
+                    message: "This product is out of stock."
+                });
 
-    }
+            }
 
-    item.quantity++;
+            if (item.quantity >= variant.stock) {
 
-}
-        if (action === "decrease") {
+                return res.json({
+                    success: false,
+                    message:
+                        `Only ${variant.stock} item(s) available in stock.`
+                });
+
+            }
+
+            if (item.quantity >= 10) {
+
+                return res.json({
+                    success: false,
+                    message:
+                        "Maximum quantity allowed is 10."
+                });
+
+            }
+
+            item.quantity++;
+
+        }
+
+
+
+        else if (action === "decrease") {
 
             if (item.quantity > 1) {
 
@@ -340,31 +349,152 @@ export const updateCartQuantity = async (req, res) => {
 
         }
 
+
+
+        else {
+
+            return res.json({
+                success: false,
+                message: "Invalid quantity action."
+            });
+
+        }
+
+
         await cart.save();
+
 
         delete req.session.coupon;
 
-       const totalCount = cart.items.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-);
 
-res.json({
 
-    success: true,
 
-    quantity: item.quantity,
+        let subtotal = 0;
 
-    cartCount: totalCount
+        cart.items.forEach(cartItem => {
 
-});
+            const cartVariant = cartItem.variant;
+
+            if (
+                !cartVariant ||
+                cartVariant.isDeleted ||
+                !cartVariant.product ||
+                cartVariant.product.isDeleted ||
+                !cartVariant.product.isListed
+            ) {
+
+                return;
+
+            }
+
+            const price =
+                Number(cartVariant.salePrice) > 0
+                    ? Number(cartVariant.salePrice)
+                    : Number(cartVariant.price);
+
+            subtotal +=
+                price * Number(cartItem.quantity);
+
+        });
+
+
+        subtotal =
+            Math.round(
+                (subtotal + Number.EPSILON) * 100
+            ) / 100;
+
+
+
+        const shipping =
+            subtotal >= 999
+                ? 0
+                : 100;
+
+
+       
+
+        const giftWrapAmount =
+            cart.giftWrap ? 30 : 0;
+
+
+        const discount = 0;
+
+
+        
+        const grandTotal =
+            Math.round(
+                (
+                    subtotal +
+                    shipping +
+                    giftWrapAmount -
+                    discount +
+                    Number.EPSILON
+                ) * 100
+            ) / 100;
+
+
+        const totalCount =
+            cart.items.reduce(
+                (sum, cartItem) =>
+                    sum + Number(cartItem.quantity),
+                0
+            );
+
+
+ 
+        const itemPrice =
+            Number(variant.salePrice) > 0
+                ? Number(variant.salePrice)
+                : Number(variant.price);
+
+
+        const itemTotal =
+            Math.round(
+                (
+                    itemPrice *
+                    Number(item.quantity) +
+                    Number.EPSILON
+                ) * 100
+            ) / 100;
+
+
+        return res.json({
+
+            success: true,
+
+            quantity: item.quantity,
+
+            itemTotal,
+
+            itemPrice,
+
+            subtotal,
+
+            shipping,
+
+            giftWrapAmount,
+
+            discount,
+
+            grandTotal,
+
+            cartCount: totalCount
+
+        });
+
+
     } catch (error) {
 
-        console.log(error);
+        console.log(
+            "updateCartQuantity ERROR:",
+            error
+        );
 
-        res.json({
+        return res.json({
 
-            success: false
+            success: false,
+
+            message: "Something went wrong."
 
         });
 
@@ -381,41 +511,146 @@ export const removeCartItem = async (req, res) => {
             user: userId
         });
 
+        if (!cart) {
+
+            return res.json({
+                success: false,
+                message: "Cart not found."
+            });
+
+        }
+
         cart.items.pull(req.params.itemId);
 
         await cart.save();
 
         delete req.session.coupon;
+
+        let subtotal = 0;
+
+        const populatedCart = await Cart.findOne({
+            user: userId
+        }).populate({
+            path: "items.variant",
+            populate: {
+                path: "product"
+            }
+        });
+
+        if (populatedCart) {
+
+            populatedCart.items.forEach(item => {
+
+                const variant = item.variant;
+
+                if (
+                    !variant ||
+                    variant.isDeleted ||
+                    !variant.product ||
+                    variant.product.isDeleted ||
+                    !variant.product.isListed ||
+                    variant.stock <= 0
+                ) {
+                    return;
+                }
+
+                const price =
+                    variant.salePrice > 0
+                        ? Number(variant.salePrice)
+                        : Number(variant.price);
+
+                subtotal +=
+                    price *
+                    Number(item.quantity);
+
+            });
+
+        }
+
+        subtotal = Math.round(
+            (subtotal + Number.EPSILON) * 100
+        ) / 100;
+
+
         
-     const totalCount = cart.items.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-);
 
-res.json({
+        let shipping = 0;
 
-    success: true,
+        if (subtotal > 0 && subtotal < 999) {
 
-    message: "Item removed.",
+            shipping = 100;
 
-    cartCount: totalCount
+        }
 
-});
+
+        
+
+        const giftWrapAmount =
+            populatedCart?.giftWrap
+                ? 30
+                : 0;
+
+
+     
+        const grandTotal = Math.round(
+            (
+                subtotal +
+                shipping +
+                giftWrapAmount
+            ) * 100
+        ) / 100;
+
+
+      
+
+        const totalCount =
+            populatedCart?.items.reduce(
+                (sum, item) =>
+                    sum + Number(item.quantity),
+                0
+            ) || 0;
+
+
+        return res.json({
+
+            success: true,
+
+            message: "Item removed.",
+
+            cartCount: totalCount,
+
+            subtotal,
+
+            shipping,
+
+            giftWrapAmount,
+
+            grandTotal,
+
+            isEmpty:
+                totalCount === 0
+
+        });
+
 
     } catch (error) {
 
-        console.log(error);
+        console.log(
+            "removeCartItem ERROR:",
+            error
+        );
 
-        res.json({
+        return res.json({
 
-            success: false
+            success: false,
+
+            message: "Unable to remove item."
 
         });
 
     }
 
 };
-
 export const toggleGiftWrap = async (req, res) => {
 
     try {

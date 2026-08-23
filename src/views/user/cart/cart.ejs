@@ -49,7 +49,7 @@
 
             <% if(cart && cart.items.length>0){ %>
 
-            <div class="cart-table">
+            <div class="cart-table" id="cartTable">
 
                 <div class="cart-table-head">
 
@@ -184,6 +184,7 @@
 
                                 <input
                                     type="text"
+                                     class="qty-value"
                                     value="<%= item.quantity %>"
                                     readonly>
 
@@ -213,11 +214,17 @@
 
                         <div class="total-column">
 
-                            <% const price=item.variant.salePrice>0 ? item.variant.salePrice : item.variant.price %>
+    <% const price =
+        item.variant.salePrice > 0
+            ? item.variant.salePrice
+            : item.variant.price
+    %>
 
-                            ₹<%= (price*item.quantity).toLocaleString() %>
+    <span class="item-total">
+        ₹<%= (price * item.quantity).toLocaleString("en-IN") %>
+    </span>
 
-                        </div>
+</div>
 
                     </div>
 
@@ -235,7 +242,7 @@
 
                     </div>
 
-                    <div class="cart-summary">
+                    <div class="cart-summary" id="cartSummary">
 
                         <div class="summary-row">
 
@@ -245,12 +252,9 @@
 
                             </span>
 
-                            <span>
-
-                                <%= cart.items.length %>
-
-                            </span>
-
+                      <span id="cartItemCount">
+    <%= cart.items.length %>
+</span>
                         </div>
 
                         <div class="summary-row">
@@ -261,11 +265,9 @@
 
                             </span>
 
-                            <span>
-
-                                ₹<%= subtotal.toLocaleString() %>
-
-                            </span>
+                           <span id="cartSubtotal">
+    ₹<%= subtotal.toLocaleString("en-IN") %>
+</span>
 
                         </div>
 
@@ -277,12 +279,12 @@
 
                             </span>
 
-                            <span>
-
-                                <%= shipping===0 ? "Free" : "₹"+shipping.toLocaleString() %>
-
-                            </span>
-
+                            <span id="cartShipping">
+    <%= shipping === 0
+        ? "Free"
+        : "₹" + shipping.toLocaleString("en-IN")
+    %>
+</span>
                         </div>
 
                         <div class="summary-row">
@@ -329,11 +331,9 @@
 
                             </span>
 
-                            <span>
-
-                                ₹<%= grandTotal.toLocaleString() %>
-
-                            </span>
+                          <span id="cartGrandTotal">
+    ₹<%= grandTotal.toLocaleString("en-IN") %>
+</span>
 
                         </div>
 
@@ -375,7 +375,7 @@
 
             <% }else{ %>
 
-            <div class="empty-cart">
+            <div class="empty-cart"  id="emptyCart">
 
                 
                 <h2>
@@ -408,29 +408,19 @@
 
     <%- include("../partials/footer") %>
 
-    <script>
+  
+<script>
+    <% if (typeof message !== "undefined" && message) { %>
 
-        const flash = "<%= typeof message !== 'undefined' ? message : '' %>";
-        const type = "<%= typeof messageType !== 'undefined' ? messageType : '' %>";
+        Swal.fire({
+            icon: "<%= message.type %>",
+            title: "<%= message.text %>",
+            timer: 1800,
+            showConfirmButton: false
+        });
 
-        if (flash) {
-
-            Swal.fire({
-
-                icon: type || "success",
-
-                title: flash,
-
-                timer: 1800,
-
-                showConfirmButton: false
-
-            });
-
-        }
-
-    </script>
-
+    <% } %>
+</script>
     <script src="/user/js/cart.js"></script>
 
 </body>

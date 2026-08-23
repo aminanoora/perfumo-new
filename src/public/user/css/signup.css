@@ -21,7 +21,17 @@ body{
     padding: 126px 49px;
 }
 
+.field-error {
+    display: block;
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+    min-height: 16px;
+}
 
+.input-error {
+    border: 1px solid #e74c3c !important;
+}
 .signup-container{
     width: 100%;
     max-width: 1400px;

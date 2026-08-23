@@ -26,11 +26,16 @@ const razorpay = new Razorpay({
 
 
 export const loadCheckout = async (req, res) => {
+
     try {
+
         const userId = req.session.user.id;
+
         const retryOrder = req.query.retryOrder || null;
 
-        const wallet = await Wallet.findOne({ user: userId });
+        const wallet = await Wallet.findOne({
+            user: userId
+        });
 
         const addresses = await Address.find({
             userId: userId
@@ -45,6 +50,9 @@ export const loadCheckout = async (req, res) => {
 
         coupons = await profileService.getAvailableCoupons(userId);
 
+
+
+
         if (retryOrder) {
 
             const order = await Order.findOne({
@@ -58,9 +66,12 @@ export const loadCheckout = async (req, res) => {
                     path: "product",
                     populate: ["brand", "category"]
                 }
-            });
+            })
+            .populate("coupon");
+
 
             if (!order) {
+
                 req.session.message = {
                     type: "error",
                     text: "Order not found"
@@ -69,19 +80,54 @@ export const loadCheckout = async (req, res) => {
                 return res.redirect("/profile/orders");
             }
 
+
             cart = {
                 items: order.items
             };
 
-            subtotal = order.subtotal;
-            shipping = order.shippingCharge;
-            discount = 0;
 
-            grandTotal = subtotal + shipping;
+            subtotal = Number(order.subtotal || 0);
 
-            delete req.session.coupon;
+            shipping = Number(
+                order.shippingCharge || 0
+            );
 
-        } else {
+
+            if (order.coupon) {
+
+                discount = Number(
+                    order.discount || 0
+                );
+
+                req.session.coupon = {
+
+                    couponId: order.coupon._id,
+
+                    code: order.coupon.code,
+
+                    discount
+
+                };
+
+            } else {
+
+                discount = 0;
+
+                delete req.session.coupon;
+
+            }
+
+
+            grandTotal = Number(
+                order.grandTotal || 0
+            );
+
+        }
+
+
+ 
+
+        else {
 
             cart = await Cart.findOne({
                 user: userId
@@ -90,63 +136,137 @@ export const loadCheckout = async (req, res) => {
                 path: "items.variant",
                 populate: {
                     path: "product",
-                    populate: ["brand", "category"]
+                    populate: [
+                        "brand",
+                        "category"
+                    ]
                 }
             });
 
-            if (!cart || cart.items.length === 0) {
-                req.session.message = {
-                    type: "warning",
-                    text: "Your cart is empty"
-                };
+
+            if (!cart || !cart.items || cart.items.length === 0) {
 
                 return res.redirect("/cart");
+
             }
 
-            const validation = await validateCartItems(cart.items);
 
-            if (!validation.valid) {
-                req.session.message = {
-                    type: "error",
-                    text: validation.message
-                };
+  
 
-                return res.redirect("/cart");
-            }
+            subtotal = cart.items.reduce(
+                (sum, item) => {
 
-            cart.items.forEach(item => {
-                subtotal += item.variant.salePrice * item.quantity;
-            });
+                    return sum +
+                        Number(
+                            item.variant?.salePrice || 0
+                        ) *
+                        Number(
+                            item.quantity || 0
+                        );
 
-            shipping = subtotal > 999 ? 0 : 100;
+                },
+                0
+            );
 
-            discount = req.session.coupon?.discount || 0;
 
-            grandTotal = subtotal + shipping - discount;
+       
+            shipping =
+                subtotal > 999
+                    ? 0
+                    : 100;
+
+
+
+
+            const appliedCoupon =
+                req.session.coupon;
+
+
+            discount =
+                Number(
+                    appliedCoupon?.discount || 0
+                );
+
+
+
+
+            grandTotal =
+                subtotal +
+                shipping -
+                discount;
+
         }
 
+
+      
+
         const message = req.session.message;
+
         delete req.session.message;
 
-        res.render("user/cart/checkout", {
-            user: req.session.user,
-            addresses,
-            cart,
-            subtotal,
-            shipping,
-            discount,
-            grandTotal,
-            wallet,
-            razorpayKey: process.env.RAZORPAY_KEY_ID,
-            retryOrder,
-            coupons,
-            message
-        });
+
+     
+
+        if (
+            !cart ||
+            !cart.items ||
+            cart.items.length === 0
+        ) {
+
+            return res.redirect("/cart");
+
+        }
+
+
+    
+
+        return res.render(
+            "user/cart/checkout",
+            {
+
+                user: req.session.user,
+
+                addresses,
+
+                cart,
+
+                subtotal,
+
+                shipping,
+
+                discount,
+
+                grandTotal,
+
+                wallet,
+
+                razorpayKey:
+                    process.env.RAZORPAY_KEY_ID,
+
+                retryOrder,
+
+                coupons,
+
+                message,
+
+                appliedCoupon:
+                    req.session.coupon || null
+
+            }
+        );
+
 
     } catch (error) {
-        console.log("loadCheckout ERROR:", error);
-        res.redirect("/cart");
+
+        console.log(
+            "loadCheckout ERROR:",
+            error
+        );
+
+        return res.redirect("/cart");
+
     }
+
 };
 
 
@@ -303,55 +423,70 @@ export const removeCoupon = async (req, res) => {
 
     try {
 
-   
+        const { retryOrder } = req.body;
+
         req.session.coupon = null;
 
         const userId = req.session.user.id;
 
-        const cart = await Cart.findOne({
-            user: userId
-        })
-        .populate("items.variant");
+        let subtotal = 0;
 
-        if (!cart) {
+        if (retryOrder) {
 
-            return res.json({
-                success: false,
-                message: "Cart not found"
+            const order = await Order.findOne({
+                _id: retryOrder,
+                user: userId,
+                paymentStatus: "Pending"
             });
 
+            if (!order) {
+
+                return res.json({
+                    success: false,
+                    message: "Retry order not found"
+                });
+
+            }
+
+            subtotal = order.items.reduce(
+                (sum, item) =>
+                    sum + Number(item.salePrice || 0) * Number(item.quantity || 0),
+                0
+            );
+
+        } else {
+
+            const cart = await Cart.findOne({
+                user: userId
+            }).populate("items.variant");
+
+            if (!cart) {
+
+                return res.json({
+                    success: false,
+                    message: "Cart not found"
+                });
+
+            }
+
+            subtotal = cart.items.reduce(
+                (sum, item) =>
+                    sum +
+                    Number(item.variant.salePrice || 0) *
+                    Number(item.quantity || 0),
+                0
+            );
         }
 
-        const subtotal = cart.items.reduce(
-            (sum, item) =>
-                sum +
-                Number(item.variant.salePrice || 0) *
-                Number(item.quantity || 0),
-            0
-        );
+        const shipping = subtotal >= 999 ? 0 : 100;
 
-        const shipping =
-            subtotal >= 999
-                ? 0
-                : 100;
-
-       
-        const tax = 0;
-
-        const discount = 0;
-
-        const total =
-            subtotal -
-            discount +
-            shipping +
-            tax;
+        const total = subtotal + shipping;
 
         return res.json({
 
             success: true,
 
-            message:
-                "Coupon removed successfully",
+            message: "Coupon removed successfully",
 
             discount: 0,
 
@@ -370,8 +505,7 @@ export const removeCoupon = async (req, res) => {
 
             success: false,
 
-            message:
-                "Unable to remove coupon"
+            message: "Unable to remove coupon"
 
         });
 
@@ -739,12 +873,11 @@ const validation = await validateCartItems(cart.items);
 
 if (!validation.valid) {
 
-    req.session.message = {
-        type: "error",
-        text: validation.message
-    };
-
-    return res.redirect("/checkout");
+    return res.json({
+        success: false,
+        message: validation.message,
+        redirect: "/cart"
+    });
 
 }
 

@@ -25,8 +25,6 @@ export const signup = async (req, res) => {
 
     try {
 
-       
-
         const {
             firstName,
             lastName,
@@ -34,85 +32,123 @@ export const signup = async (req, res) => {
             phone,
             password,
             confirmPassword,
-              referralCode
+            referralCode
         } = req.body;
 
-      
-        if (
-            !firstName ||
-            !lastName ||
-            !email ||
-            !phone ||
-            !password ||
-            !confirmPassword
-        ) {
 
+        if (!firstName) {
             return res.json({
                 success: false,
-                message: 'All fields are required'
+                field: "firstName",
+                message: "First name is required"
+            });
+        }
+
+        if (!lastName) {
+            return res.json({
+                success: false,
+                field: "lastName",
+                message: "Last name is required"
+            });
+        }
+
+        if (!email) {
+            return res.json({
+                success: false,
+                field: "email",
+                message: "Email is required"
+            });
+        }
+
+        if (!phone) {
+            return res.json({
+                success: false,
+                field: "phone",
+                message: "Phone number is required"
+            });
+        }
+
+        if (!password) {
+            return res.json({
+                success: false,
+                field: "password",
+                message: "Password is required"
+            });
+        }
+
+        if (!confirmPassword) {
+            return res.json({
+                success: false,
+                field: "confirmPassword",
+                message: "Please confirm your password"
             });
         }
 
 
         if (password !== confirmPassword) {
-
             return res.json({
                 success: false,
-                message: 'Passwords do not match'
+                field: "confirmPassword",
+                message: "Passwords do not match"
             });
         }
 
-        
+
         const existingEmail = await User.findOne({ email });
 
         if (existingEmail) {
-
             return res.json({
                 success: false,
-                message: 'Email already exists'
+                field: "email",
+                message: "Email already exists"
             });
         }
 
-    
+
         const existingPhone = await User.findOne({ phone });
-       
-        if (existingPhone) {
 
+        if (existingPhone) {
             return res.json({
                 success: false,
-                message: 'Phone number already exists'
+                field: "phone",
+                message: "Phone number already exists"
             });
         }
+
 
         const hashedPassword =
             await bcrypt.hash(password, 10);
 
-       
+
         const otp =
             Math.floor(100000 + Math.random() * 900000);
 
         const otpExpiry =
             Date.now() + 60000;
-req.session.userData = {
 
-    firstName,
-    lastName,
-    email,
-    phone,
 
-    password: hashedPassword,
-       referralCode,
-    otp,
-    otpExpiry
-};
+        req.session.userData = {
 
-     console.log("OTP:", otp);
-console.log("EMAIL:", email);
-         sendOTP(email, otp);
+            firstName,
+            lastName,
+            email,
+            phone,
+            password: hashedPassword,
+            referralCode,
+            otp,
+            otpExpiry
+        };
+
+
+        console.log("OTP:", otp);
+        console.log("EMAIL:", email);
+
+        sendOTP(email, otp);
+
 
         return res.json({
             success: true,
-            next: '/verify-otp'
+            next: "/verify-otp"
         });
 
     } catch (error) {
@@ -121,7 +157,7 @@ console.log("EMAIL:", email);
 
         return res.status(500).json({
             success: false,
-            message: error.message
+            message: "Something went wrong"
         });
     }
 };

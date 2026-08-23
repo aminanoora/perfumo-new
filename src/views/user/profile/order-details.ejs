@@ -252,7 +252,10 @@ Delivered
 
     <div class="item-actions">
 
-        <% if(["Pending","Confirmed","Processing"].includes(item.itemStatus)){ %>
+       <% if (
+    ["Pending", "Confirmed", "Processing"].includes(item.itemStatus) &&
+    !isRetryPaymentOrder
+) { %>
 
             <button
                 class="cancel-item-btn danger-btn"

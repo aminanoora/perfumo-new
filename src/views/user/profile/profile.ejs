@@ -233,23 +233,24 @@ form.addEventListener('submit', async(e)=>{
             return;
         }
 
-        Swal.fire({
-            icon:'success',
-            title:'Success',
-            text:data.message,
-            timer:2000,
-            showConfirmButton:false
-        });
+        if (data.success) {
 
-        if(data.requiresOTP){
+    if (data.requiresPasswordConfirmation) {
 
-            setTimeout(()=>{
+        window.location.href =
+            data.redirectUrl;
 
-                window.location.href =
-                '/profile/verifyemail';
+        return;
 
-            },2000);
-        }
+    }
+
+    Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: data.message
+    });
+
+}
 
     }catch(error){
 

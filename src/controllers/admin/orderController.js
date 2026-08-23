@@ -40,6 +40,8 @@ export const loadOrders = async (req, res) => {
 
         const status = req.query.status || "";
 
+        const returnStatus = req.query.returnStatus || "";
+
         const sort = req.query.sort || "newest";
 
         const dateRange = req.query.dateRange || "";
@@ -129,6 +131,15 @@ if (dateRange === "year") {
             });
 
         }
+        if (returnStatus) {
+
+    orders = orders.filter(order =>
+        order.items.some(
+            item => item.returnStatus === returnStatus
+        )
+    );
+
+}
 
         const totalOrders = orders.length;
 
@@ -194,6 +205,8 @@ delete req.session.message;
             totalOrders,
 
             search,
+
+            returnStatus,
 
             message,
 

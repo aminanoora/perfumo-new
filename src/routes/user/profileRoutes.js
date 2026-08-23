@@ -25,7 +25,9 @@ import {
       applyReferralCode,
       loadCoupons,
       cancelWholeOrder,
-      returnWholeOrder
+      returnWholeOrder,
+      loadConfirmEmailPassword,
+      confirmEmailPassword
 } from '../../controllers/user/profileController.js';
 
 import userAuth from '../../middleware/userAuth.js';
@@ -43,6 +45,19 @@ router.get('/profile/verifyemail', userAuth,noCache, (req, res) => {
 });
 
 router.post('/profile/verifyemail', verifyProfileOTP);
+
+router.get(
+    "/profile/confirm-email-password",
+    userAuth,
+    noCache,
+    loadConfirmEmailPassword
+);
+
+router.post(
+    "/profile/confirm-email-password",
+    userAuth,
+    confirmEmailPassword
+);
 
 router.post('/profile/resend-otp', resendProfileOTP);
 

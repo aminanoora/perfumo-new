@@ -106,41 +106,51 @@ if (!nameRegex.test(lastName.trim())) {
             });
         }
 
-        const existingEmail = await User.findOne({ email });
+      const normalizedEmail = email.trim().toLowerCase();
 
-        if (existingEmail) {
 
-            return res.json({
-                success: false,
-                message: 'Email already exists'
-            });
-        }
 
-        const otp =
-            Math.floor(100000 + Math.random() * 900000);
 
-        req.session.pendingProfileUpdate = {
+const existingEmail = await User.findOne({
+    email: normalizedEmail,
+    _id: { $ne: user._id }
+});
 
-            userId: user._id,
+if (existingEmail) {
 
-            firstName,
-            lastName,
+    return res.json({
+        success: false,
+        message: 'Email already exists'
+    });
 
-            email,
+}
 
-            otp,
 
-            otpExpiry: Date.now() + 300000
-        };
 
-         sendOTP(email, otp);
+req.session.pendingEmailChange = {
 
-        console.log("PROFILE OTP:", otp);
+    userId: user._id.toString(),
 
-        return res.json({
-            success: true,
-            requiresOTP: true
-        });
+    firstName: firstName.trim(),
+
+    lastName: lastName.trim(),
+
+    email: normalizedEmail,
+
+    createdAt: Date.now()
+
+};
+
+
+return res.json({
+
+    success: true,
+
+    requiresPasswordConfirmation: true,
+
+    redirectUrl: "/profile/confirm-email-password"
+
+});
 
     } catch (error) {
 
@@ -151,6 +161,261 @@ if (!nameRegex.test(lastName.trim())) {
             message: 'Something went wrong'
         });
     }
+};
+
+
+export const loadConfirmEmailPassword = async (req, res) => {
+
+    try {
+
+        const user =
+            await User.findById(req.session.user.id);
+
+        if (!user) {
+
+            return res.redirect("/login");
+
+        }
+
+
+        
+
+        if (!req.session.pendingEmailChange) {
+
+            return res.redirect("/profile");
+
+        }
+
+
+        res.render(
+            "user/profile/confirm-email-password",
+            {
+                user
+            }
+        );
+
+
+    } catch (error) {
+
+        console.log(
+            "loadConfirmEmailPassword ERROR:",
+            error
+        );
+
+        res.redirect("/profile");
+
+    }
+
+};
+
+export const confirmEmailPassword = async (req, res) => {
+
+    try {
+
+        const {
+            password,
+            confirmPassword
+        } = req.body;
+
+
+        const pending =
+            req.session.pendingEmailChange;
+
+        if (!pending) {
+
+            return res.json({
+                success: false,
+                message: "Email change session expired"
+            });
+
+        }
+
+
+
+        if (
+            pending.userId.toString() !==
+            req.session.user.id.toString()
+        ) {
+
+            delete req.session.pendingEmailChange;
+
+            return res.json({
+                success: false,
+                message: "Invalid request"
+            });
+
+        }
+
+
+        
+
+        if (!password || !confirmPassword) {
+
+            return res.json({
+                success: false,
+                message: "Password is required"
+            });
+
+        }
+
+
+        if (password !== confirmPassword) {
+
+            return res.json({
+                success: false,
+                message: "Passwords do not match"
+            });
+
+        }
+
+
+       
+        const user =
+            await User.findById(
+                req.session.user.id
+            );
+
+
+        if (!user) {
+
+            return res.json({
+                success: false,
+                message: "User not found"
+            });
+
+        }
+
+
+       
+
+        if (user.googleId) {
+
+            return res.json({
+                success: false,
+                message:
+                    "Google accounts cannot change email using a password."
+            });
+
+        }
+
+
+      
+        const isMatch =
+            await bcrypt.compare(
+                password,
+                user.password
+            );
+
+
+        if (!isMatch) {
+
+            return res.json({
+                success: false,
+                message: "Incorrect password"
+            });
+
+        }
+
+
+
+        const existingEmail =
+            await User.findOne({
+                email: pending.email,
+                _id: {
+                    $ne: user._id
+                }
+            });
+
+
+        if (existingEmail) {
+
+            delete req.session.pendingEmailChange;
+
+            return res.json({
+                success: false,
+                message: "Email already exists"
+            });
+
+        }
+
+
+      
+
+        const otp =
+            Math.floor(
+                100000 +
+                Math.random() * 900000
+            );
+
+
+    
+        req.session.pendingProfileUpdate = {
+
+            userId: user._id.toString(),
+
+            firstName: pending.firstName,
+
+            lastName: pending.lastName,
+
+            email: pending.email,
+
+            otp,
+
+            otpExpiry: Date.now() + 300000
+
+        };
+
+
+       
+
+        delete req.session.pendingEmailChange;
+
+
+       
+
+        await sendOTP(
+            pending.email,
+            otp
+        );
+
+
+        console.log(
+            "EMAIL CHANGE OTP:",
+            otp
+        );
+
+
+        return res.json({
+
+            success: true,
+
+            message:
+                "OTP sent to your new email address",
+
+            redirectUrl:
+                "/profile/verifyemail"
+
+        });
+
+
+    } catch (error) {
+
+        console.log(
+            "confirmEmailPassword ERROR:",
+            error
+        );
+
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: "Something went wrong"
+
+        });
+
+    }
+
 };
 
 export const verifyProfileOTP = async (req, res) => {
@@ -865,6 +1130,10 @@ const hasCoupon = !!order.coupon;
                     item.returnStatus === "None"
             );
 
+            const isRetryPaymentOrder =
+    order.paymentMethod === "RAZORPAY" &&
+    order.paymentStatus === "Pending";
+
         console.log("=== ORDER SENT TO EJS ===");
 console.log(order._id.toString());
 
@@ -893,8 +1162,8 @@ console.log(
 
     hasCoupon: !!order.coupon,
      canDownloadInvoice,
-    canReturnWholeOrder
-
+    canReturnWholeOrder,
+     isRetryPaymentOrder
         });
 
     }

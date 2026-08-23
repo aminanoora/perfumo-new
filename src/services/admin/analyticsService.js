@@ -268,6 +268,12 @@ export const getAnalyticsData = async ({
 
     orderStatus: 1,
 
+    discount: {
+    $ifNull: ["$discount", 0]
+},
+
+createdAt: 1,
+
   totalAmount: {
     $sum: {
         $map: {
@@ -439,6 +445,10 @@ async function getExportData(search, datePreset, fromDate, toDate) {
             paymentMethod: 1,
 
             orderStatus: 1,
+
+            discount: {
+    $ifNull: ["$discount", 0]
+},
 
             totalAmount: {
 
@@ -763,10 +773,19 @@ export const exportPdf = async (req, res) => {
                 title: "Status",
                 width: 75
             },
+             {
+        title: "Discount",
+        width: 65
+    },
             {
                 title: "Amount",
                 width: 55
             }
+            ,
+            {
+        title: "Date",
+        width: 65
+    }
         ];
 
         const columnTotal = columns.reduce(
@@ -851,17 +870,32 @@ export const exportPdf = async (req, res) => {
             const amount =
                 Number(sale.totalAmount || 0);
 
-            const values = [
-                sale.orderId || "-",
-                sale.customer || "-",
-                productText || "-",
-                sale.paymentMethod || "-",
-                sale.orderStatus || "-",
-                `₹${amount.toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                })}`
-            ];
+                const discount =
+    Number(sale.discount || 0);
+
+    const orderDate = sale.createdAt
+    ? new Date(sale.createdAt).toLocaleDateString("en-IN")
+    : "-";
+
+          const values = [
+    sale.orderId || "-",
+    sale.customer || "-",
+    productText || "-",
+    sale.paymentMethod || "-",
+    sale.orderStatus || "-",
+
+    `₹${discount.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })}`,
+
+    `₹${amount.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })}`,
+
+    orderDate
+];
 
             const fontSize = 8;
 
@@ -941,9 +975,9 @@ export const exportPdf = async (req, res) => {
                                 height:
                                     rowHeight - 10,
                                 align:
-                                    index === 5
-                                        ? "right"
-                                        : "left",
+    index >= 5 && index <= 6
+        ? "right"
+        : "left",
                                 lineGap: 1,
                                 ellipsis: true
                             }
@@ -1209,6 +1243,13 @@ sheet.addRow(["End Date", displayEnd]);
         },
 
         {
+        header: "Discount",
+        key: "discount",
+        width: 18
+    },
+
+
+        {
             header: "Amount",
             key: "totalAmount",
             width: 18
@@ -1259,26 +1300,31 @@ sheet.addRow(["End Date", displayEnd]);
 
     sales.forEach((sale) => {
 
-        const row = sheet.addRow({
+       const row = sheet.addRow({
 
-            orderId: sale.orderId,
+    orderId: sale.orderId,
 
-            customer: sale.customer,
+    customer: sale.customer,
 
-            products: sale.products.join(", "),
+    products: sale.products.join(", "),
 
-            paymentMethod: sale.paymentMethod,
+    paymentMethod: sale.paymentMethod,
 
-            orderStatus: sale.orderStatus,
+    orderStatus: sale.orderStatus,
 
-            totalAmount: sale.totalAmount,
+    discount: Number(sale.discount || 0),
 
-            createdAt: sale.createdAt.toLocaleDateString("en-IN")
+    totalAmount: sale.totalAmount,
 
-        });
+    createdAt: sale.createdAt
+        ? new Date(sale.createdAt).toLocaleDateString("en-IN")
+        : "-"
 
-        row.getCell("totalAmount").numFmt = '₹#,##0.00';
+});
 
+       row.getCell("discount").numFmt = '₹#,##0.00';
+
+row.getCell("totalAmount").numFmt = '₹#,##0.00';
         row.eachCell((cell) => {
 
             cell.border = {

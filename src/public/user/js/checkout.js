@@ -97,7 +97,8 @@ const retryOrder = params.get("retryOrder");
 
                 body: JSON.stringify({
 
-                    code
+                    code,
+                     retryOrder: retryOrder || null
 
                 })
 
@@ -175,7 +176,10 @@ removeCouponBtn?.addEventListener("click", async () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
-                }
+                },
+                 body: JSON.stringify({
+            retryOrder: retryOrder || null
+        })
             }
         );
 
@@ -295,13 +299,21 @@ if (retryOrder) {
 
 if (!pendingData.success) {
 
-    return Swal.fire({
+    await Swal.fire({
 
         icon: "error",
 
-        title: "Unable to create order"
+        title: "Product Unavailable",
+        text: pendingData.message,
+        confirmButtonText: "Go to Cart"
 
     });
+
+    if (pendingData.redirect) {
+        window.location.href = pendingData.redirect;
+    }
+
+    return;
 
 }
 

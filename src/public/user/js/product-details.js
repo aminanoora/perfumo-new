@@ -4,8 +4,8 @@ const isLoggedIn = window.isLoggedIn;
 const thumbnails = document.querySelectorAll(".thumb-image");
     const selectedVariantId = window.selectedVariantId;
     const qtyInput = document.getElementById("quantity");
-
- 
+  const unavailable = document.getElementsByClassName("unavailable");
+  
     thumbnails.forEach((thumb) => {
 
         thumb.addEventListener("click", () => {
@@ -108,6 +108,10 @@ if (wishlistBtn) {
 
     });
 
+}
+
+if(product.status==='unlisted'){
+    unavailable.text = "product currently unavailable";
 }
 
  
