@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,7 @@
     <link rel="stylesheet" href="/admin/css/admin.css">
     <link rel="stylesheet" href="/admin/css/coupon-add.css">
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
@@ -18,234 +18,188 @@
 
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<div class="page">
+        <div class="page">
 
-<%- include('../partials/sidebar') %>
+            <%- include('../partials/sidebar') %>
 
-<div class="content">
+                <div class="content">
 
-<div class="page-header">
+                    <div class="page-header">
 
-    <div>
+                        <div>
 
-        <h2>Add Coupon</h2>
+                            <h2>Add Coupon</h2>
 
-        <p>Create a new coupon for customers.</p>
+                            <p>Create a new coupon for customers.</p>
 
-    </div>
+                        </div>
 
-    <a href="/admin/coupons" class="btn btn-secondary">
+                        <a href="/admin/coupons" class="btn btn-secondary">
 
-        <i class="fa-solid fa-arrow-left"></i>
+                            <i class="fa-solid fa-arrow-left"></i>
 
-        Back
+                            Back
 
-    </a>
+                        </a>
 
-</div>
+                    </div>
 
-<div class="card">
+                    <div class="card">
 
-<form id="couponForm">
+                        <form id="couponForm">
 
-<div class="form-grid">
+                            <div class="form-grid">
 
-<div class="form-group">
+                                <div class="form-group">
 
-<label>Coupon Code *</label>
+                                    <label>Coupon Code *</label>
 
-<input
-type="text"
-name="code"
-placeholder="WELCOME50"
+                                    <input type="text" name="code" placeholder="WELCOME50">
+                                    <small class="error-text"></small>
+                                </div>
 
->
-<small class="error-text"></small>
-</div>
+                                <div class="form-group">
 
-<div class="form-group">
+                                    <label>Description *</label>
 
-<label>Description *</label>
+                                    <input type="text" name="description" placeholder="Coupon description">
+                                    <small class="error-text"></small>
 
-<input
-type="text"
-name="description"
-placeholder="Coupon description"
+                                </div>
 
->
-<small class="error-text"></small>
+                                <div class="form-group">
 
-</div>
+                                    <label>Discount Type *</label>
 
-<div class="form-group">
+                                    <select name="discountType" id="discountType">
 
-<label>Discount Type *</label>
 
-<select
-name="discountType"
-id="discountType"
+                                        <option value="">Select</option>
 
->
+                                        <option value="percentage">
 
+                                            Percentage
 
-<option value="">Select</option>
+                                        </option>
 
-<option value="percentage">
 
-Percentage
+                                        <option value="fixed">
 
-</option>
+                                            Fixed Amount
 
+                                        </option>
 
-<option value="fixed">
 
-Fixed Amount
+                                    </select>
+                                    <small class="error-text"></small>
 
-</option>
+                                </div>
 
+                                <div class="form-group">
 
-</select>
-<small class="error-text"></small>
+                                    <label>Discount *</label>
 
-</div>
+                                    <input type="number" name="discount" min="1">
+                                    <small class="error-text"></small>
 
-<div class="form-group">
+                                </div>
 
-<label>Discount *</label>
+                                <div class="form-group">
 
-<input
-type="number"
-name="discount"
-min="1"
+                                    <label>Minimum Purchase</label>
 
->
-<small class="error-text"></small>
+                                    <input type="number" name="minimumPurchase" min="0" value="0">
+                                    <small class="error-text"></small>
 
-</div>
+                                </div>
 
-<div class="form-group">
+                                <div class="form-group">
 
-<label>Minimum Purchase</label>
+                                    <label>Maximum Discount</label>
 
-<input
-type="number"
-name="minimumPurchase"
-min="0"
-value="0"
->
-<small class="error-text"></small>
+                                    <input type="number" name="maximumDiscount" min="0" value="0" id="maximumDiscount">
+                                    <small class="error-text"></small>
 
-</div>
+                                </div>
 
-<div class="form-group">
+                                <div class="form-group">
 
-<label>Maximum Discount</label>
+                                    <label>Usage Limit</label>
 
-<input
-type="number"
-name="maximumDiscount"
-min="0"
-value="0"
-id="maximumDiscount"
->
-<small class="error-text"></small>
+                                    <input type="number" name="usageLimit" min="0" value="0">
+                                    <small class="error-text"></small>
 
-</div>
+                                </div>
 
-<div class="form-group">
+                                <div class="form-group">
 
-<label>Usage Limit</label>
+                                    <label>Status</label>
 
-<input
-type="number"
-name="usageLimit"
-min="0"
-value="0"
->
-<small class="error-text"></small>
+                                    <select name="isActive">
 
-</div>
+                                        <option value="true">
 
-<div class="form-group">
+                                            Active
 
-<label>Status</label>
+                                        </option>
 
-<select name="isActive">
+                                        <option value="false">
 
-<option value="true">
+                                            Disabled
 
-Active
+                                        </option>
 
-</option>
+                                    </select>
 
-<option value="false">
+                                </div>
 
-Disabled
+                                <div class="form-group">
 
-</option>
+                                    <label>Valid From *</label>
 
-</select>
+                                    <input type="date" name="validFrom">
+                                    <small class="error-text"></small>
 
-</div>
+                                </div>
 
-<div class="form-group">
+                                <div class="form-group">
 
-<label>Valid From *</label>
+                                    <label>Valid Until *</label>
 
-<input
-type="date"
-name="validFrom"
+                                    <input type="date" name="validUntil">
+                                    <small class="error-text"></small>
 
->
-<small class="error-text"></small>
+                                </div>
 
-</div>
+                            </div>
 
-<div class="form-group">
+                            <div class="form-footer">
 
-<label>Valid Until *</label>
+                                <button type="submit" class="btn btn-primary">
 
-<input
-type="date"
-name="validUntil"
+                                    <i class="fa-solid fa-plus"></i>
 
->
-<small class="error-text"></small>
+                                    Create Coupon
 
-</div>
+                                </button>
 
-</div>
+                            </div>
 
-<div class="form-footer">
+                        </form>
 
-<button
-type="submit"
-class="btn btn-primary"
->
+                    </div>
 
-<i class="fa-solid fa-plus"></i>
+                </div>
 
-Create Coupon
+        </div>
 
-</button>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-</div>
 
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/admin/js/add-coupon.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/admin/js/add-coupon.js"></script>
 
 </body>
 

@@ -1,105 +1,89 @@
 import mongoose from "mongoose";
 
-const reviewSchema = new mongoose.Schema({
+const reviewSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
 
-    user:{
+      ref: "User",
 
-        type:mongoose.Schema.Types.ObjectId,
-
-        ref:"User",
-
-        required:true
-
+      required: true,
     },
 
-    product:{
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
 
-        type:mongoose.Schema.Types.ObjectId,
+      ref: "Product",
 
-        ref:"Product",
-
-        required:true
-
+      required: true,
     },
 
-    order:{
+    order: {
+      type: mongoose.Schema.Types.ObjectId,
 
-        type:mongoose.Schema.Types.ObjectId,
-
-        ref:"Order"
-
+      ref: "Order",
     },
 
-    rating:{
+    rating: {
+      type: Number,
 
-        type:Number,
+      required: true,
 
-        required:true,
+      min: 1,
 
-        min:1,
-
-        max:5
-
+      max: 5,
     },
 
-    title:{
+    title: {
+      type: String,
 
-        type:String,
+      trim: true,
 
-        trim:true,
-
-        maxlength:100
-
+      maxlength: 100,
     },
 
-    review:{
+    review: {
+      type: String,
 
-        type:String,
+      required: true,
 
-        required:true,
+      trim: true,
 
-        trim:true,
-
-        maxlength:1000
-
+      maxlength: 1000,
     },
 
-    images:[{
+    images: [
+      {
+        type: String,
+      },
+    ],
 
-        type:String
+    isVerifiedPurchase: {
+      type: Boolean,
 
-    }],
-
-    isVerifiedPurchase:{
-
-        type:Boolean,
-
-        default:false
-
+      default: false,
     },
 
-    isHidden:{
+    isHidden: {
+      type: Boolean,
 
-        type:Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
-        default:false
+reviewSchema.index(
+  {
+    user: 1,
 
-    }
+    product: 1,
+  },
+  {
+    unique: true,
+  },
+);
 
-},
-{
-    timestamps:true
-});
-
-reviewSchema.index({
-
-    user:1,
-
-    product:1
-
-},
-{
-    unique:true
-});
-
-export default mongoose.model("Review",reviewSchema);
+export default mongoose.model("Review", reviewSchema);

@@ -1,419 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfumo Signup</title>
 
     <link rel="stylesheet" href="/user/css/signin.css">
-    <link    rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Volkhov:wght@700&display=swap"
+        rel="stylesheet">
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/user/js/block-check.js"></script>
 <script src="https://google.com" async defer></script>
+
 <body>
 
-<section class="signup-section">
+    <section class="signup-section">
 
-    <div class="signup-container">
+        <div class="signup-container">
 
-        <!-- LEFT IMAGE -->
-        <div class="signup-image">
+            <!-- LEFT IMAGE -->
+            <div class="signup-image">
 
-            <img src="/user/images/e8ba27fa85b6bf897ee5d80d4dad5a22.jpg" alt="Perfume">
+                <img src="/user/images/e8ba27fa85b6bf897ee5d80d4dad5a22.jpg" alt="Perfume">
 
-        </div>
-
-        <div class="signup-content">
-
-            <h1 class="logo">PERFUMO</h1>
-
-            <h2>Create Account</h2>
-
-           <div class="social-buttons">
-
-  <button class="social-btn">
-
-    <i class="fa-brands fa-google"></i>
-     <a href="/auth/google" class="google-btn"   id="googleBtn">
-    <span>Sign up with Google</span>
-    </a>
-
-  </button>
-
-
-  <button class="social-btn">
-
-    <i class="fa-solid fa-envelope"></i>
-
-    <span>Sign up with Email</span>
-
-  </button>
-
-</div>
-
-            <div class="divider">
-                <span></span>
-                <p>OR</p>
-                <span></span>
             </div>
 
-           
-            <form class="signup-form" id="signin-form">
+            <div class="signup-content">
 
-    <div class="form-grid">
+                <h1 class="logo">PERFUMO</h1>
 
-        <div class="input-group">
-            <input 
-                type="email"
-                id="email"
-                placeholder="Email Address"
-             
-            >
-                <small
-                class="field-error"
-                id="emailError">
-            </small>
+                <h2>Create Account</h2>
+
+                <div class="social-buttons">
+
+                    <button class="social-btn">
+
+                        <i class="fa-brands fa-google"></i>
+                        <a href="/auth/google" class="google-btn" id="googleBtn">
+                            <span>Sign up with Google</span>
+                        </a>
+
+                    </button>
+
+
+                    <button class="social-btn">
+
+                        <i class="fa-solid fa-envelope"></i>
+
+                        <span>Sign up with Email</span>
+
+                    </button>
+
+                </div>
+
+                <div class="divider">
+                    <span></span>
+                    <p>OR</p>
+                    <span></span>
+                </div>
+
+
+                <form class="signup-form" id="signin-form">
+
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <input type="email" id="email" placeholder="Email Address">
+                            <small class="field-error" id="emailError">
+                            </small>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="password" id="password" placeholder="Password">
+                            <small class="field-error" id="passwordError">
+                            </small>
+
+                            <i class="fa-regular fa-eye toggle-password"></i>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="create-btn">
+                        Sign In
+                    </button>
+
+                </form>
+
+                <button class="register-button"> <a href="/signup">Register now</a></button>
+                <a class='forgot-password' href="/forgot-password">Forgot password?</a>
+
+
+                <p class="terms">
+                    PERFUMO Terms & Conditions
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="input-group">
-            <input 
-                type="password"
-                id="password"
-                placeholder="Password"
-              
-            >
-                 <small
-                class="field-error"
-                id="passwordError">
-            </small>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            <i class="fa-regular fa-eye toggle-password"></i>
-        </div>
+    <script>
 
-    </div>
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect");
 
-    <button type="submit" class="create-btn">
-        Sign In
-    </button>
+        const form = document.getElementById("signin-form");
 
-</form>
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
 
-         <button class="register-button"> <a href="/signup">Register now</a></button>
-               <a class='forgot-password' href="/forgot-password">Forgot password?</a>
-            
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
 
-            <p class="terms">
-                PERFUMO Terms & Conditions
-            </p>
+        const googleBtn = document.getElementById("googleBtn");
 
-        </div>
+        if (redirect && googleBtn) {
 
-    </div>
+            googleBtn.href =
+                "/auth/google?redirect=" +
+                encodeURIComponent(redirect);
 
-</section>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        }
 
-<script>
 
-const params = new URLSearchParams(window.location.search);
-const redirect = params.get("redirect");
 
-const form = document.getElementById("signin-form");
+        function showError(input, errorElement, message) {
 
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
+            errorElement.textContent = message;
 
-const emailError = document.getElementById("emailError");
-const passwordError = document.getElementById("passwordError");
+            input.classList.add("input-error");
 
-const googleBtn = document.getElementById("googleBtn");
+        }
 
-if (redirect && googleBtn) {
 
-    googleBtn.href =
-        "/auth/google?redirect=" +
-        encodeURIComponent(redirect);
+        function clearError(input, errorElement) {
 
-}
+            errorElement.textContent = "";
 
+            input.classList.remove("input-error");
 
+        }
 
-function showError(input, errorElement, message) {
 
-    errorElement.textContent = message;
 
-    input.classList.add("input-error");
+        emailInput.addEventListener("input", () => {
 
-}
+            clearError(emailInput, emailError);
 
+        });
 
-function clearError(input, errorElement) {
 
-    errorElement.textContent = "";
+        passwordInput.addEventListener("input", () => {
 
-    input.classList.remove("input-error");
+            clearError(passwordInput, passwordError);
 
-}
+        });
 
 
 
-emailInput.addEventListener("input", () => {
 
-    clearError(emailInput, emailError);
+        form.addEventListener("submit", async (e) => {
 
-});
+            e.preventDefault();
 
 
-passwordInput.addEventListener("input", () => {
+            const email = emailInput.value.trim();
 
-    clearError(passwordInput, passwordError);
+            const password = passwordInput.value.trim();
 
-});
 
+            clearError(emailInput, emailError);
 
+            clearError(passwordInput, passwordError);
 
 
-form.addEventListener("submit", async (e) => {
 
-    e.preventDefault();
 
+            if (!email && !password) {
 
-    const email = emailInput.value.trim();
+                showError(
+                    emailInput,
+                    emailError,
+                    "Email is required."
+                );
 
-    const password = passwordInput.value.trim();
+                showError(
+                    passwordInput,
+                    passwordError,
+                    "Password is required."
+                );
 
+                emailInput.focus();
 
-    clearError(emailInput, emailError);
+                return;
+            }
+            if (!email) {
 
-    clearError(passwordInput, passwordError);
+                showError(
+                    emailInput,
+                    emailError,
+                    "Email is required."
+                );
 
+                emailInput.focus();
 
- 
+                return;
+            }
 
-    if (!email && !password) {
 
-    showError(
-        emailInput,
-        emailError,
-        "Email is required."
-    );
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    showError(
-        passwordInput,
-        passwordError,
-        "Password is required."
-    );
 
-    emailInput.focus();
+            if (!emailPattern.test(email)) {
 
-    return;
-}
-if (!email) {
+                showError(
+                    emailInput,
+                    emailError,
+                    "Please enter a valid email address."
+                );
 
-    showError(
-        emailInput,
-        emailError,
-        "Email is required."
-    );
+                emailInput.focus();
 
-    emailInput.focus();
+                return;
+            }
 
-    return;
-}
 
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!password) {
 
+                showError(
+                    passwordInput,
+                    passwordError,
+                    "Password is required."
+                );
 
-    if (!emailPattern.test(email)) {
+                passwordInput.focus();
 
-        showError(
-            emailInput,
-            emailError,
-            "Please enter a valid email address."
-        );
+                return;
+            }
 
-        emailInput.focus();
 
-        return;
-    }
 
+            if (password.length < 6) {
 
-    
-    if (!password) {
+                showError(
+                    passwordInput,
+                    passwordError,
+                    "Password must be at least 6 characters."
+                );
 
-        showError(
-            passwordInput,
-            passwordError,
-            "Password is required."
-        );
+                passwordInput.focus();
 
-        passwordInput.focus();
+                return;
+            }
 
-        return;
-    }
 
 
+            try {
 
-    if (password.length < 6) {
+                const response = await fetch(
+                    "/signin" +
+                    (
+                        redirect
+                            ? "?redirect=" +
+                            encodeURIComponent(redirect)
+                            : ""
+                    ),
+                    {
 
-        showError(
-            passwordInput,
-            passwordError,
-            "Password must be at least 6 characters."
-        );
+                        method: "POST",
 
-        passwordInput.focus();
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
 
-        return;
-    }
+                        credentials: "same-origin",
 
+                        body: JSON.stringify({
+                            email,
+                            password
+                        })
 
+                    }
+                );
 
-    try {
 
-        const response = await fetch(
-            "/signin" +
-            (
-                redirect
-                    ? "?redirect=" +
-                      encodeURIComponent(redirect)
-                    : ""
-            ),
-            {
+                const data = await response.json();
 
-                method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                if (!data.success) {
 
-                credentials: "same-origin",
+                    showError(
+                        passwordInput,
+                        passwordError,
+                        data.message || "Invalid email or password."
+                    );
 
-                body: JSON.stringify({
-                    email,
-                    password
-                })
+                    return;
+                }
+
+
+
+                Swal.fire({
+
+                    icon: "success",
+
+                    title: "Success",
+
+                    text: data.message,
+
+                    timer: 1500,
+
+                    showConfirmButton: false
+
+                });
+
+
+                setTimeout(() => {
+
+                    window.location.href = data.next;
+
+                }, 1500);
+
+
+            } catch (error) {
+
+                console.error("Signin error:", error);
+
+                Swal.fire({
+
+                    icon: "error",
+
+                    title: "Error",
+
+                    text: "Something went wrong. Please try again."
+
+                });
 
             }
-        );
-
-
-        const data = await response.json();
-
-        
-        if (!data.success) {
-
-            showError(
-                passwordInput,
-                passwordError,
-                data.message || "Invalid email or password."
-            );
-
-            return;
-        }
-
-
-     
-        Swal.fire({
-
-            icon: "success",
-
-            title: "Success",
-
-            text: data.message,
-
-            timer: 1500,
-
-            showConfirmButton: false
 
         });
 
 
-        setTimeout(() => {
 
-            window.location.href = data.next;
-
-        }, 1500);
+        const toggleBtns =
+            document.querySelectorAll(".toggle-password");
 
 
-    } catch (error) {
+        toggleBtns.forEach((btn) => {
 
-        console.error("Signin error:", error);
+            btn.addEventListener("click", () => {
+                const input = document.getElementById("password");
 
-        Swal.fire({
 
-            icon: "error",
+                if (input.type === "password") {
 
-            title: "Error",
+                    input.type = "text";
 
-            text: "Something went wrong. Please try again."
+                    btn.classList.remove("fa-eye");
+
+                    btn.classList.add("fa-eye-slash");
+
+                } else {
+
+                    input.type = "password";
+
+                    btn.classList.remove("fa-eye-slash");
+
+                    btn.classList.add("fa-eye");
+
+                }
+
+            });
 
         });
 
-    }
-
-});
 
 
 
-const toggleBtns =
-    document.querySelectorAll(".toggle-password");
+        const queryParams =
+            new URLSearchParams(window.location.search);
 
 
-toggleBtns.forEach((btn) => {
+        if (queryParams.get("message") === "blocked") {
 
-    btn.addEventListener("click", () => {
-const input = document.getElementById("password");
+            Swal.fire({
 
+                icon: "error",
 
-        if (input.type === "password") {
+                title: "Account Blocked",
 
-            input.type = "text";
+                text: "Your account has been blocked by admin"
 
-            btn.classList.remove("fa-eye");
-
-            btn.classList.add("fa-eye-slash");
-
-        } else {
-
-            input.type = "password";
-
-            btn.classList.remove("fa-eye-slash");
-
-            btn.classList.add("fa-eye");
+            });
 
         }
 
-    });
-
-});
-
-
-
-
-const queryParams =
-    new URLSearchParams(window.location.search);
-
-
-if (queryParams.get("message") === "blocked") {
-
-    Swal.fire({
-
-        icon: "error",
-
-        title: "Account Blocked",
-
-        text: "Your account has been blocked by admin"
-
-    });
-
-}
-
-</script>
+    </script>
 </body>
+
 </html>

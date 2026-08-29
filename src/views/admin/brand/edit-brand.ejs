@@ -3,362 +3,242 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Edit Brand</title>
+    <title>Edit Brand</title>
 
-<link rel="stylesheet" href="/admin/css/admin.css">
-<link rel="stylesheet" href="/admin/css/edit-brand.css">
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/edit-brand.css">
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
 
-<%- include("../partials/header") %>
+    <%- include("../partials/header") %>
 
-<div class="page">
+        <div class="page">
 
-<%- include("../partials/sidebar") %>
+            <%- include("../partials/sidebar") %>
 
-<main class="content">
+                <main class="content">
 
-<div class="page-header">
+                    <div class="page-header">
 
-<div>
+                        <div>
 
-<h2>Edit Brand</h2>
+                            <h2>Edit Brand</h2>
 
-<p>Update perfume brand information</p>
+                            <p>Update perfume brand information</p>
 
-</div>
+                        </div>
 
-</div>
+                    </div>
 
-<div class="form-card">
+                    <div class="form-card">
 
-<form
+                        <form id="brandForm" action="/admin/brand/edit/<%= brand._id %>" method="POST"
+                            enctype="multipart/form-data">
 
-id="brandForm"
+                            <div class="form-layout">
 
-action="/admin/brand/edit/<%= brand._id %>"
+                                <div class="left-section">
 
-method="POST"
+                                    <div class="form-group">
 
-enctype="multipart/form-data">
+                                        <label>Brand Name</label>
 
-<div class="form-layout">
+                                        <input type="text" id="name" name="name" value="<%= brand.name %>"
+                                            autocomplete="off">
 
-<div class="left-section">
+                                        <small class="error" id="nameError"></small>
 
-<div class="form-group">
+                                    </div>
 
-<label>Brand Name</label>
+                                    <div class="form-group">
 
-<input
+                                        <label>Slug</label>
 
-type="text"
+                                        <input type="text" id="slug" name="slug" value="<%= brand.slug %>"
+                                            autocomplete="off">
 
-id="name"
+                                        <small class="error" id="slugError"></small>
 
-name="name"
+                                    </div>
 
-value="<%= brand.name %>"
+                                    <div class="form-group">
 
-autocomplete="off">
+                                        <label>Description</label>
 
-<small class="error" id="nameError"></small>
+                                        <textarea id="description" name="description"
+                                            rows="6"><%= brand.description %></textarea>
 
-</div>
+                                        <small class="error" id="descriptionError"></small>
 
-<div class="form-group">
+                                    </div>
 
-<label>Slug</label>
+                                </div>
 
-<input
+                                <div class="right-section">
 
-type="text"
+                                    <h3>Brand Logo</h3>
 
-id="slug"
+                                    <div class="logo-upload">
 
-name="slug"
+                                        <input type="file" id="logo" name="logo" accept="image/*" hidden>
 
-value="<%= brand.slug %>"
+                                        <div class="upload-box" id="uploadBox">
 
-autocomplete="off">
+                                            <div class="upload-preview" id="previewContainer">
 
-<small class="error" id="slugError"></small>
+                                                <% if(brand.logo){ %>
 
-</div>
+                                                    <img id="previewImage" src="<%= brand.logo %>" class="show-image">
 
-<div class="form-group">
+                                                    <div class="upload-placeholder" id="placeholder"
+                                                        style="display:none;">
 
-<label>Description</label>
+                                                        <i class="fa-solid fa-cloud-arrow-up"></i>
 
-<textarea
+                                                        <h4>Upload Brand Logo</h4>
 
-id="description"
+                                                        <p>PNG, JPG or WEBP</p>
 
-name="description"
+                                                        <button type="button" id="browseBtn" class="browse-btn">
 
-rows="6"><%= brand.description %></textarea>
+                                                            Browse Files
 
-<small class="error" id="descriptionError"></small>
+                                                        </button>
 
-</div>
+                                                    </div>
 
-</div>
+                                                    <% } else { %>
 
-<div class="right-section">
+                                                        <img id="previewImage" src="" class="hide-image">
 
-<h3>Brand Logo</h3>
+                                                        <div class="upload-placeholder" id="placeholder">
 
-<div class="logo-upload">
+                                                            <i class="fa-solid fa-cloud-arrow-up"></i>
 
-<input
+                                                            <h4>Upload Brand Logo</h4>
 
-type="file"
+                                                            <p>PNG, JPG or WEBP</p>
 
-id="logo"
+                                                            <button type="button" id="browseBtn" class="browse-btn">
 
-name="logo"
+                                                                Browse Files
 
-accept="image/*"
+                                                            </button>
 
-hidden>
+                                                        </div>
 
-<div
+                                                        <% } %>
 
-class="upload-box"
+                                            </div>
 
-id="uploadBox">
+                                        </div>
 
-<div
+                                        <small class="error" id="logoError"></small>
 
-class="upload-preview"
+                                    </div>
 
-id="previewContainer">
+                                    <div class="logo-actions" id="logoActions" <% if(!brand.logo){ %>
 
-<% if(brand.logo){ %>
+                                        style="display:none;"
 
-<img
+                                        <% } %>>
 
-id="previewImage"
+                                            <button type="button" class="change-logo" id="changeLogo">
 
-src="<%= brand.logo %>"
+                                                <i class="fa-solid fa-rotate"></i>
 
-class="show-image">
+                                                Change Logo
 
-<div
+                                            </button>
 
-class="upload-placeholder"
+                                            <button type="button" class="remove-logo" id="removeLogo">
 
-id="placeholder"
+                                                <i class="fa-solid fa-trash"></i>
 
-style="display:none;">
+                                                Remove Logo
 
-<i class="fa-solid fa-cloud-arrow-up"></i>
+                                            </button>
 
-<h4>Upload Brand Logo</h4>
+                                            <input type="hidden" name="removeLogo" id="removeLogoInput" value="false">
 
-<p>PNG, JPG or WEBP</p>
+                                    </div>
 
-<button
+                                </div>
 
-type="button"
+                            </div>
 
-id="browseBtn"
+                            <div class="button-group">
 
-class="browse-btn">
+                                <a href="/admin/brand" class="cancel-btn">
 
-Browse Files
+                                    Cancel
 
-</button>
+                                </a>
 
-</div>
+                                <button type="submit" class="save-btn">
 
-<% } else { %>
+                                    Update Brand
 
-<img
+                                </button>
 
-id="previewImage"
+                            </div>
 
-src=""
+                        </form>
 
-class="hide-image">
+                    </div>
 
-<div
+                </main>
 
-class="upload-placeholder"
+        </div>
 
-id="placeholder">
+        <script src="/admin/js/edit-brand.js"></script>
 
-<i class="fa-solid fa-cloud-arrow-up"></i>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<h4>Upload Brand Logo</h4>
+        <% if(typeof message !=="undefined" && message){ %>
 
-<p>PNG, JPG or WEBP</p>
+            <script>
 
-<button
+                Swal.fire({
 
-type="button"
+                    icon: "<%= message.type %>",
 
-id="browseBtn"
-
-class="browse-btn">
-
-Browse Files
-
-</button>
-
-</div>
-
-<% } %>
-
-</div>
-
-</div>
-
-<small
-
-class="error"
-
-id="logoError"></small>
-
-</div>
-
-<div
-
-class="logo-actions"
-
-id="logoActions"
-
-<% if(!brand.logo){ %>
-
-style="display:none;"
-
-<% } %>>
-
-<button
-
-type="button"
-
-class="change-logo"
-
-id="changeLogo">
-
-<i class="fa-solid fa-rotate"></i>
-
-Change Logo
-
-</button>
-
-<button
-
-type="button"
-
-class="remove-logo"
-
-id="removeLogo">
-
-<i class="fa-solid fa-trash"></i>
-
-Remove Logo
-
-</button>
-
-<input
-
-type="hidden"
-
-name="removeLogo"
-
-id="removeLogoInput"
-
-value="false">
-
-</div>
-
-</div>
-
-</div>
-
-<div class="button-group">
-
-<a
-
-href="/admin/brand"
-
-class="cancel-btn">
-
-Cancel
-
-</a>
-
-<button
-
-type="submit"
-
-class="save-btn">
-
-Update Brand
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-</main>
-
-</div>
-
-<script src="/admin/js/edit-brand.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<% if(typeof message !== "undefined" && message){ %>
-
-<script>
-
-Swal.fire({
-
-icon: "<%= message.type %>",
-
-title:
-"<%= message.type === 'success'
-? 'Success'
-: message.type === 'warning'
-? 'Warning'
-: 'Error' %>",
+                    title:
+                        "<%= message.type === 'success'
+                            ? 'Success'
+                            : message.type === 'warning'
+                                ? 'Warning'
+                                : 'Error' %> ",
 
 text: "<%= message.text %>",
 
-confirmButtonColor:
-"<%= message.type === 'success'
-? '#2563eb'
-: message.type === 'warning'
-? '#f59e0b'
-: '#dc2626' %>"
+                    confirmButtonColor:
+                        "<%= message.type === 'success'
+                            ? '#2563eb'
+                            : message.type === 'warning'
+                                ? '#f59e0b'
+                                : '#dc2626' %> "
 
-}).then(() => {
+                }).then(() => {
 
-<% if(message.type === "success"){ %>
+<% if (message.type === "success") { %>
 
-window.location.href="/admin/brand";
+                        window.location.href="/admin/brand";
 
 <% } %>
 
 });
 
-</script>
+            </script>
 
-<% } %>
+            <% } %>
 
 </body>
 

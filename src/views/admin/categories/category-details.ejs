@@ -4,450 +4,435 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Category Details</title>
 
     <link rel="stylesheet" href="/admin/css/admin.css">
     <link rel="stylesheet" href="/admin/css/category-details.css">
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<div class="page">
+        <div class="page">
 
-<%- include('../partials/sidebar') %>
+            <%- include('../partials/sidebar') %>
 
-<main class="content">
+                <main class="content">
 
 
 
-<div class="page-header">
+                    <div class="page-header">
 
-    <div>
+                        <div>
 
-        <h2>Category Details</h2>
+                            <h2>Category Details</h2>
 
-        <p>View and manage category information</p>
+                            <p>View and manage category information</p>
 
-    </div>
+                        </div>
 
-    <div class="header-actions">
+                        <div class="header-actions">
 
-        <a
-            href="/admin/categories/edit/<%= category._id %>"
-            class="btn edit-btn">
+                            <a href="/admin/categories/edit/<%= category._id %>" class="btn edit-btn">
 
-            <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-pen"></i>
 
-            Edit
+                                Edit
 
-        </a>
+                            </a>
 
-        <% if(category.isListed){ %>
+                            <% if(category.isListed){ %>
 
-        <a
-            href="/admin/categories/unlist/<%= category._id %>"
-            class="btn warning-btn">
+                                <a href="/admin/categories/unlist/<%= category._id %>" class="btn warning-btn">
 
-            <i class="fa-solid fa-eye-slash"></i>
+                                    <i class="fa-solid fa-eye-slash"></i>
 
-            Unlist
+                                    Unlist
 
-        </a>
+                                </a>
 
-        <% } else { %>
+                                <% } else { %>
 
-        <a
-            href="/admin/categories/list/<%= category._id %>"
-            class="btn success-btn">
+                                    <a href="/admin/categories/list/<%= category._id %>" class="btn success-btn">
 
-            <i class="fa-solid fa-eye"></i>
+                                        <i class="fa-solid fa-eye"></i>
 
-            List
+                                        List
 
-        </a>
+                                    </a>
 
-        <% } %>
+                                    <% } %>
 
-        <button
-            class="btn delete-btn"
-            onclick="deleteCategory('<%= category._id %>')">
+                                        <button class="btn delete-btn" onclick="deleteCategory('<%= category._id %>')">
 
-            <i class="fa-solid fa-trash"></i>
+                                            <i class="fa-solid fa-trash"></i>
 
-            Delete
+                                            Delete
 
-        </button>
+                                        </button>
 
-    </div>
+                        </div>
 
-</div>
+                    </div>
 
 
 
-<div class="category-card">
+                    <div class="category-card">
 
-<div class="category-image">
+                        <div class="category-image">
 
-<% if(category.image){ %>
+                            <% if(category.image){ %>
 
-<img
-src="<%= category.image %>"
-alt="Category">
+                                <img src="<%= category.image %>" alt="Category">
 
-<% }else{ %>
+                                <% }else{ %>
 
-<div class="image-placeholder">
+                                    <div class="image-placeholder">
 
-<i class="fa-solid fa-spray-can-sparkles"></i>
+                                        <i class="fa-solid fa-spray-can-sparkles"></i>
 
-</div>
+                                    </div>
 
-<% } %>
+                                    <% } %>
 
-</div>
+                        </div>
 
 
-<div class="category-info">
+                        <div class="category-info">
 
-<div class="info-row">
+                            <div class="info-row">
 
-<label>Name</label>
+                                <label>Name</label>
 
-<span><%= category.name %></span>
+                                <span>
+                                    <%= category.name %>
+                                </span>
 
-</div>
+                            </div>
 
 
-<div class="info-row">
+                            <div class="info-row">
 
-<label>Slug</label>
+                                <label>Slug</label>
 
-<span><%= category.slug %></span>
+                                <span>
+                                    <%= category.slug %>
+                                </span>
 
-</div>
+                            </div>
 
 
-<div class="info-row">
+                            <div class="info-row">
 
-<label>Parent Category</label>
+                                <label>Parent Category</label>
 
-<span>
+                                <span>
 
-<%= category.parentCategory ? category.parentCategory.name : "Top Level Category" %>
+                                    <%= category.parentCategory ? category.parentCategory.name : "Top Level Category" %>
 
-</span>
+                                </span>
 
-</div>
+                            </div>
 
 
-<div class="info-row">
+                            <div class="info-row">
 
-<label>Status</label>
+                                <label>Status</label>
 
-<% if(category.isListed){ %>
+                                <% if(category.isListed){ %>
 
-<span class="status listed">
+                                    <span class="status listed">
 
-Listed
+                                        Listed
 
-</span>
+                                    </span>
 
-<% }else{ %>
+                                    <% }else{ %>
 
-<span class="status unlisted">
+                                        <span class="status unlisted">
 
-Unlisted
+                                            Unlisted
 
-</span>
+                                        </span>
 
-<% } %>
+                                        <% } %>
 
-</div>
+                            </div>
 
 
-<div class="info-row description">
+                            <div class="info-row description">
 
-<label>Description</label>
+                                <label>Description</label>
 
-<p>
+                                <p>
 
-<%= category.description || "No description available." %>
+                                    <%= category.description || "No description available." %>
 
-</p>
+                                </p>
 
-</div>
+                            </div>
 
-</div>
+                        </div>
 
-</div>
+                    </div>
 
 
 
-<div class="products-card">
+                    <div class="products-card">
 
-<div class="table-header">
+                        <div class="table-header">
 
-<div>
+                            <div>
 
-<h3>
+                                <h3>
 
-Products Under
+                                    Products Under
 
-"<%= category.name %>"
+                                    "<%= category.name %>"
 
-</h3>
+                                </h3>
 
-<p>
+                                <p>
 
-<%= totalProducts %> Products
+                                    <%= totalProducts %> Products
 
-</p>
+                                </p>
 
-</div>
+                            </div>
 
-<form method="GET" action="/admin/categories/<%= category._id %>">
-<div class="search-box">
+                            <form method="GET" action="/admin/categories/<%= category._id %>">
+                                <div class="search-box">
 
-    <button type="submit" class="search-btn">
-        <i class="fa-solid fa-magnifying-glass"></i>
-    </button>
+                                    <button type="submit" class="search-btn">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </button>
 
-    <input
-        type="text"
-        id="searchInput"
-        name="search"
-        placeholder="Search product..."
-        value="<%= search %>">
+                                    <input type="text" id="searchInput" name="search" placeholder="Search product..."
+                                        value="<%= search %>">
 
-    <% if(search){ %>
-    <button
-        type="button"
-        id="clearSearch"
-        class="clear-btn">
-        <i class="fa-solid fa-xmark"></i>
-    </button>
-    <% } %>
+                                    <% if(search){ %>
+                                        <button type="button" id="clearSearch" class="clear-btn">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                        <% } %>
 
-</div>
+                                </div>
 
-</form>
-</div>
+                            </form>
+                        </div>
 
-<div class="table-wrapper">
+                        <div class="table-wrapper">
 
-<table>
+                            <table>
 
-<thead>
+                                <thead>
 
-<tr>
+                                    <tr>
 
-<th>Image</th>
+                                        <th>Image</th>
 
-<th>Product Name</th>
+                                        <th>Product Name</th>
 
-<th>Brand</th>
+                                        <th>Brand</th>
 
-<th>Stock</th>
+                                        <th>Stock</th>
 
-<th>Status</th>
+                                        <th>Status</th>
 
-</tr>
+                                    </tr>
 
-</thead>
+                                </thead>
 
-<tbody>
+                                <tbody>
 
-<% if(products.length){ %>
+                                    <% if(products.length){ %>
 
-<% products.forEach(product=>{ %>
+                                        <% products.forEach(product=>{ %>
 
-<tr>
+                                            <tr>
 
-<td>
+                                                <td>
 
-<img
-class="product-image"
-src="<%= product.images && product.images.length ? product.images[0] : '/admin/images/no-image.png' %>">
+                                                    <img class="product-image"
+                                                        src="<%= product.images && product.images.length ? product.images[0] : '/admin/images/no-image.png' %>">
 
-</td>
+                                                </td>
 
-<td>
+                                                <td>
 
-<%= product.name %>
+                                                    <%= product.name %>
 
-</td>
+                                                </td>
 
-<td>
+                                                <td>
 
-<%= product.brand %>
+                                                    <%= product.brand %>
 
-</td>
+                                                </td>
 
-<td>
+                                                <td>
 
-<%= product.stock %>
+                                                    <%= product.stock %>
 
-</td>
+                                                </td>
 
-<td>
+                                                <td>
 
-<% if(product.isListed){ %>
+                                                    <% if(product.isListed){ %>
 
-<span class="status listed">
+                                                        <span class="status listed">
 
-Listed
+                                                            Listed
 
-</span>
+                                                        </span>
 
-<% }else{ %>
+                                                        <% }else{ %>
 
-<span class="status unlisted">
+                                                            <span class="status unlisted">
 
-Hidden
+                                                                Hidden
 
-</span>
+                                                            </span>
 
-<% } %>
+                                                            <% } %>
 
-</td>
+                                                </td>
 
-</tr>
+                                            </tr>
 
-<% }) %>
+                                            <% }) %>
 
-<% }else{ %>
+                                                <% }else{ %>
 
-<tr>
+                                                    <tr>
 
-<td colspan="5" class="empty">
+                                                        <td colspan="5" class="empty">
 
-No Products Found
+                                                            No Products Found
 
-</td>
+                                                        </td>
 
-</tr>
+                                                    </tr>
 
-<% } %>
+                                                    <% } %>
 
-</tbody>
+                                </tbody>
 
-</table>
+                            </table>
 
-</div>
+                        </div>
 
 
 
-<div class="pagination-wrapper">
+                        <div class="pagination-wrapper">
 
-<nav>
+                            <nav>
 
-<ul class="pagination">
+                                <ul class="pagination">
 
-<% for(let i=1;i<=totalPages;i++){ %>
+                                    <% for(let i=1;i<=totalPages;i++){ %>
 
-<li class="<%= page===i ? 'active':'' %>">
+                                        <li class="<%= page===i ? 'active':'' %>">
 
-<a href="/admin/categories/<%= category._id %>?page=<%= i %>&search=<%= search %>">
+                                            <a
+                                                href="/admin/categories/<%= category._id %>?page=<%= i %>&search=<%= search %>">
 
-<%= i %>
+                                                <%= i %>
 
-</a>
+                                            </a>
 
-</li>
+                                        </li>
 
-<% } %>
+                                        <% } %>
 
-</ul>
+                                </ul>
 
-</nav>
+                            </nav>
 
-</div>
+                        </div>
 
-</div>
+                    </div>
 
-</main>
+                </main>
 
-</div>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
+        <script>
 
-function deleteCategory(id){
+            function deleteCategory(id) {
 
-Swal.fire({
+                Swal.fire({
 
-title:"Delete Category?",
+                    title: "Delete Category?",
 
-text:"This will soft delete the category.",
+                    text: "This will soft delete the category.",
 
-icon:"warning",
+                    icon: "warning",
 
-showCancelButton:true,
+                    showCancelButton: true,
 
-confirmButtonColor:"#d33",
+                    confirmButtonColor: "#d33",
 
-confirmButtonText:"Delete"
+                    confirmButtonText: "Delete"
 
-}).then(result=>{
+                }).then(result => {
 
-if(result.isConfirmed){
+                    if (result.isConfirmed) {
 
-fetch("/admin/categories/delete/"+id,{
+                        fetch("/admin/categories/delete/" + id, {
 
-method:"POST"
+                            method: "POST"
 
-})
-.then(res=>res.json())
-.then(data=>{
+                        })
+                            .then(res => res.json())
+                            .then(data => {
 
-Swal.fire({
+                                Swal.fire({
 
-icon:"success",
+                                    icon: "success",
 
-title:"Deleted",
+                                    title: "Deleted",
 
-text:data.message
+                                    text: data.message
 
-}).then(()=>{
+                                }).then(() => {
 
-window.location="/admin/categories";
+                                    window.location = "/admin/categories";
 
-});
+                                });
 
-});
+                            });
 
-}
+                    }
 
-});
+                });
 
-}
-const searchInput = document.getElementById("searchInput");
+            }
+            const searchInput = document.getElementById("searchInput");
 
-const clearBtn = document.getElementById("clearSearch");
+            const clearBtn = document.getElementById("clearSearch");
 
-if (clearBtn) {
+            if (clearBtn) {
 
-    clearBtn.addEventListener("click", () => {
+                clearBtn.addEventListener("click", () => {
 
-        searchInput.value = "";
+                    searchInput.value = "";
 
-        window.location = "/admin/categories/<%= category._id %>";
+                    window.location = "/admin/categories/<%= category._id %>";
 
-    });
+                });
 
-}
+            }
 
-</script>
+        </script>
 
 </body>
 

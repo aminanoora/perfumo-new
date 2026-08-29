@@ -1,39 +1,27 @@
-if(!window.isLoggedIn) 
-{
-    console.log("Guest user");
-}else{
+if (!window.isLoggedIn) {
+  console.log("Guest user");
+} else {
   const interval = setInterval(async () => {
+    try {
+      const res = await fetch("/check-block-status");
 
-  try {
+      const data = await res.json();
 
-    const res = await fetch("/check-block-status");
+      if (data.isBlocked === true) {
+        clearInterval(interval);
 
-    const data = await res.json();
+        await Swal.fire({
+          icon: "error",
+          title: "Account Blocked",
+          text: "Your account has been blocked by admin",
+          confirmButtonText: "OK",
+          allowOutsideClick: false,
+        });
 
-    
-
-    if (data.isBlocked === true) {
-
-      clearInterval(interval);
-
-      await Swal.fire({
-        icon: "error",
-        title: "Account Blocked",
-        text: "Your account has been blocked by admin",
-        confirmButtonText: "OK",
-        allowOutsideClick: false
-      });
-
-      window.location.href = "/logout";
-
+        window.location.href = "/logout";
+      }
+    } catch (err) {
+      console.log(err);
     }
-
-  } catch (err) {
-
-    console.log(err);
-
-  }
-
-}, 3000);
+  }, 3000);
 }
-

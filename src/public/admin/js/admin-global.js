@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   const logoutBtn = document.getElementById("logoutBtn");
 
   if (!logoutBtn) return;
@@ -13,12 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Logout",
-      cancelButtonText: "Cancel"
+      cancelButtonText: "Cancel",
     });
 
     if (!result.isConfirmed) return;
 
     window.location.href = "/admin/logout";
   });
-
 });

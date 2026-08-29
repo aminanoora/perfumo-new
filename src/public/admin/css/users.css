@@ -9,7 +9,6 @@
   padding: 20px;
 }
 
-
 .users-topbar {
   display: flex;
   align-items: center;
@@ -26,7 +25,7 @@
   display: flex;
   align-items: center;
   background: #fff;
- 
+
   border-radius: 8px;
   width: 289px;
 }
@@ -37,7 +36,6 @@
   margin-left: 8px;
   width: 100%;
 }
-
 
 .status-filters {
   display: flex;
@@ -50,15 +48,12 @@
   border-radius: 6px;
   cursor: pointer;
   background: #fff;
-
-
 }
 
 .status-filters button.active {
-  background: #2F80ED;
+  background: #2f80ed;
   color: white;
 }
-
 
 .table-wrapper {
   background: white;
@@ -80,7 +75,6 @@
   border-bottom: 1px solid #eee;
 }
 
-
 .user-cell {
   display: flex;
   align-items: center;
@@ -96,7 +90,6 @@
   align-items: center;
   justify-content: center;
 }
-
 
 .status {
   padding: 4px 8px;
@@ -114,7 +107,6 @@
   color: #d43131;
 }
 
-
 .actions {
   position: relative;
 }
@@ -124,7 +116,6 @@
   background: transparent;
   cursor: pointer;
 }
-
 
 .dropdown {
   display: none;
@@ -147,7 +138,6 @@
   text-decoration: none;
   color: #333;
 }
-
 
 @media (max-width: 768px) {
   .users-topbar {
@@ -180,7 +170,7 @@
   border: 1px solid #eee;
   border-radius: 8px;
   min-width: 140px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   display: none;
   z-index: 9999;
 }
@@ -200,45 +190,42 @@
 .actions:hover .dropdown {
   display: block;
 }
-.add-user-btn{
-  height:44px;
-  padding:0 18px;
-  border-radius:10px;
-  background:#2F80ED;
-  color:#fff;
-  text-decoration:none;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:14px;
-  font-weight:500;
-  transition:0.3s;
-  white-space:nowrap;
+.add-user-btn {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  background: #2f80ed;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.3s;
+  white-space: nowrap;
 }
 
-.add-user-btn:hover{
-  background:#1f6fe0;
+.add-user-btn:hover {
+  background: #1f6fe0;
 }
 
-.add-user-btn i{
-  font-size:13px;
+.add-user-btn i {
+  font-size: 13px;
 }
 
-@media(max-width:768px){
-
-  .add-user-btn{
-    width:100%;
-    justify-content:center;
+@media (max-width: 768px) {
+  .add-user-btn {
+    width: 100%;
+    justify-content: center;
   }
-
 }
-.active-link{
+.active-link {
   text-decoration: none;
 }
-.block-link{
+.block-link {
   text-decoration: none;
 }
-.button{
-  border:#1f6fe0
+.button {
+  border: #1f6fe0;
 }
-

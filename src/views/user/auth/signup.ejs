@@ -1,531 +1,521 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfumo Signup</title>
 
     <link rel="stylesheet" href="/user/css/signup.css">
-    <link rel="stylesheet"
-     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Volkhov:wght@700&display=swap"
+        rel="stylesheet">
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/user/js/block-check.js"></script>
 <script src="https://google.com" async defer></script>
+
 <body>
 
-<section class="signup-section">
+    <section class="signup-section">
 
-    <div class="signup-container">
-
-      
-        <div class="signup-image">
-
-            <img src="/user/images/083f447c73d631d4a3a709353b03e581.jpg" alt="Perfume">
-
-        </div>
-
-        <div class="signup-content">
-
-            <h1 class="logo">PERFUMO</h1>
-
-            <h2>Create Account</h2>
-
-           <div class="social-buttons">
-
-  <button class="social-btn">
-
-    <i class="fa-brands fa-google"></i>
-      <a href="/auth/google" class="google-btn">
-    <span>Sign up with Google</span>
-</a>
-  </button>
+        <div class="signup-container">
 
 
-  <button class="social-btn">
+            <div class="signup-image">
 
-    <i class="fa-solid fa-envelope"></i>
+                <img src="/user/images/083f447c73d631d4a3a709353b03e581.jpg" alt="Perfume">
 
-    <span>Sign up with Email</span>
-
-  </button>
-
-</div>
-
-            <div class="divider">
-                <span></span>
-                <p>OR</p>
-                <span></span>
             </div>
 
-            
-            <form class="signup-form" id="signup-form" action='/signup' method="POST" >
+            <div class="signup-content">
 
-                <input
-    type="hidden"
-    name="referralCode"
-    value="<%= referralCode %>"
->
+                <h1 class="logo">PERFUMO</h1>
 
-                <div class="form-grid">
+                <h2>Create Account</h2>
 
-                    <div class="input-group">
-                        <input type="text" name='firstName' placeholder="First Name">
-                         <small class="field-error" id="firstName-error"></small>
-                    </div>
+                <div class="social-buttons">
 
-                    <div class="input-group">
-                        <input type="text" name='lastName' placeholder="Last Name">
-                          <small class="field-error" id="lastName-error"></small>
-                    </div>
+                    <button class="social-btn">
 
-                    <div class="input-group">
-                        <input type="email" name="email" placeholder="Email Address">
-                          <small class="field-error" id="email-error"></small>
-                    </div>
+                        <i class="fa-brands fa-google"></i>
+                        <a href="/auth/google" class="google-btn">
+                            <span>Sign up with Google</span>
+                        </a>
+                    </button>
 
-                    <div class="input-group">
-                        <input type="text" name='phone' placeholder="Phone Number">
-                        <small class="field-error" id="phone-error"></small>
-                    </div>
 
-                    <div class="input-group password-group">
+                    <button class="social-btn">
 
-    <input
-        type="password"
-        name="password"
-        id="password"
-        placeholder="Password"
-       >
+                        <i class="fa-solid fa-envelope"></i>
 
-    <i class="fa-solid fa-eye toggle-password"></i>
-     <small class="field-error" id="password-error"></small>
+                        <span>Sign up with Email</span>
 
-</div>
-                    <div class="input-group password-group">
-
-    <input
-        type="password"
-        name="confirmPassword"
-        id="confirmPassword"
-        placeholder="Confirm Password"
-       
-    >
-
-    <i class="fa-solid fa-eye toggle-confirm"></i>
-   <small class="field-error" id="confirmPassword-error"></small>
-</div>
+                    </button>
 
                 </div>
 
-                <button type="submit" class="create-btn" >
-                    Create Account
-                </button>
+                <div class="divider">
+                    <span></span>
+                    <p>OR</p>
+                    <span></span>
+                </div>
 
-            </form>
 
-            <p class="login-text">
-                Already have an account?
-                <a href="/signin">Signin</a>
-            </p>
+                <form class="signup-form" id="signup-form" action='/signup' method="POST">
 
-            <p class="terms">
-                PERFUMO Terms & Conditions
-            </p>
+                    <input type="hidden" name="referralCode" value="<%= referralCode %>">
+
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <input type="text" name='firstName' placeholder="First Name">
+                            <small class="field-error" id="firstName-error"></small>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="text" name='lastName' placeholder="Last Name">
+                            <small class="field-error" id="lastName-error"></small>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="email" name="email" placeholder="Email Address">
+                            <small class="field-error" id="email-error"></small>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="text" name='phone' placeholder="Phone Number">
+                            <small class="field-error" id="phone-error"></small>
+                        </div>
+
+                        <div class="input-group password-group">
+
+                            <input type="password" name="password" id="password" placeholder="Password">
+
+                            <i class="fa-solid fa-eye toggle-password"></i>
+                            <small class="field-error" id="password-error"></small>
+
+                        </div>
+                        <div class="input-group password-group">
+
+                            <input type="password" name="confirmPassword" id="confirmPassword"
+                                placeholder="Confirm Password">
+
+                            <i class="fa-solid fa-eye toggle-confirm"></i>
+                            <small class="field-error" id="confirmPassword-error"></small>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="create-btn">
+                        Create Account
+                    </button>
+
+                </form>
+
+                <p class="login-text">
+                    Already have an account?
+                    <a href="/signin">Signin</a>
+                </p>
+
+                <p class="terms">
+                    PERFUMO Terms & Conditions
+                </p>
+
+            </div>
 
         </div>
 
-    </div>
+    </section>
+    <script>
 
-</section>
-<script>
+        const form = document.getElementById('signup-form');
 
-const form = document.getElementById('signup-form');
 
+        function clearErrors() {
 
-function clearErrors() {
-
-    document.querySelectorAll(".field-error").forEach(error => {
-        error.textContent = "";
-    });
-
-    document.querySelectorAll(".signup-form input").forEach(input => {
-        input.classList.remove("input-error");
-    });
-}
-
-
-
-
-function showFieldError(field, message) {
-
-    const errorElement =
-        document.getElementById(`${field}-error`);
-
-    const inputElement =
-        document.querySelector(`[name="${field}"]`);
-
-    if (errorElement) {
-        errorElement.textContent = message;
-    }
-
-    if (inputElement) {
-        inputElement.classList.add("input-error");
-    }
-}
-
-
-
-
-document.querySelectorAll(".signup-form input").forEach(input => {
-
-    input.addEventListener("input", () => {
-
-        const field = input.name;
-
-        const errorElement =
-            document.getElementById(`${field}-error`);
-
-        if (errorElement) {
-            errorElement.textContent = "";
-        }
-
-        input.classList.remove("input-error");
-
-    });
-
-});
-
-
-
-
-form.addEventListener('submit', async (e) => {
-
-    e.preventDefault();
-
-    clearErrors();
-
-    const firstName =
-        document.querySelector('[name="firstName"]').value.trim();
-
-    const lastName =
-        document.querySelector('[name="lastName"]').value.trim();
-
-    const email =
-        document.querySelector('[name="email"]').value.trim();
-
-    const phone =
-        document.querySelector('[name="phone"]').value.trim();
-
-    const password =
-        document.querySelector('[name="password"]').value;
-
-    const confirmPassword =
-        document.querySelector('[name="confirmPassword"]').value;
-
-
-    let isValid = true;
-
-
-
-    if (!firstName) {
-
-        showFieldError(
-            "firstName",
-            "First name is required"
-        );
-
-        isValid = false;
-    }
-
-
-
-
-    if (!lastName) {
-
-        showFieldError(
-            "lastName",
-            "Last name is required"
-        );
-
-        isValid = false;
-    }
-
-
-
-
-    if (!email) {
-
-        showFieldError(
-            "email",
-            "Email address is required"
-        );
-
-        isValid = false;
-
-    } else {
-
-        const emailPattern =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!emailPattern.test(email)) {
-
-            showFieldError(
-                "email",
-                "Enter a valid email address"
-            );
-
-            isValid = false;
-        }
-    }
-
-
-
-    if (!phone) {
-
-        showFieldError(
-            "phone",
-            "Phone number is required"
-        );
-
-        isValid = false;
-
-    } else {
-
-        const phonePattern = /^[0-9]{10}$/;
-
-        if (!phonePattern.test(phone)) {
-
-            showFieldError(
-                "phone",
-                "Enter a valid 10-digit phone number"
-            );
-
-            isValid = false;
-        }
-    }
-
-
-  
-
-    if (!password) {
-
-        showFieldError(
-            "password",
-            "Password is required"
-        );
-
-        isValid = false;
-
-    } else if (password.length < 8) {
-
-        showFieldError(
-            "password",
-            "Password must be at least 8 characters"
-        );
-
-        isValid = false;
-    }
-
-
-   
-
-    if (!confirmPassword) {
-
-        showFieldError(
-            "confirmPassword",
-            "Please confirm your password"
-        );
-
-        isValid = false;
-
-    } else if (password !== confirmPassword) {
-
-        showFieldError(
-            "confirmPassword",
-            "Passwords do not match"
-        );
-
-        isValid = false;
-    }
-
-
-
-    if (!isValid) {
-        return;
-    }
-
-
-
-
-    const formData = {
-
-        firstName,
-        lastName,
-        email,
-        phone,
-        password,
-        confirmPassword,
-
-        referralCode:
-            document.querySelector(
-                '[name="referralCode"]'
-            ).value
-    };
-
-
-   
-
-    try {
-
-        const response = await fetch('/signup', {
-
-            method: 'POST',
-
-            headers: {
-                'Content-Type': 'application/json'
-            },
-
-            credentials: 'same-origin',
-
-            body: JSON.stringify(formData)
-        });
-
-
-        const data = await response.json();
-
-        console.log(data);
-
-
-
-        if (data.success) {
-
-            Swal.fire({
-
-                icon: 'success',
-
-                title: 'OTP Sent',
-
-                text: 'Redirecting...',
-
-                timer: 1500,
-
-                showConfirmButton: false
-
+            document.querySelectorAll(".field-error").forEach(error => {
+                error.textContent = "";
             });
 
-            setTimeout(() => {
-
-                window.location.href = data.next;
-
-            }, 1500);
-
+            document.querySelectorAll(".signup-form input").forEach(input => {
+                input.classList.remove("input-error");
+            });
         }
 
 
 
-        else {
 
-            if (data.field) {
+        function showFieldError(field, message) {
 
-                showFieldError(
-                    data.field,
-                    data.message
-                );
+            const errorElement =
+                document.getElementById(`${field}-error`);
 
+            const inputElement =
+                document.querySelector(`[name="${field}"]`);
+
+            if (errorElement) {
+                errorElement.textContent = message;
+            }
+
+            if (inputElement) {
+                inputElement.classList.add("input-error");
             }
         }
 
 
-    } catch (error) {
 
-        console.error(error);
 
-        Swal.fire({
+        document.querySelectorAll(".signup-form input").forEach(input => {
 
-            icon: 'error',
+            input.addEventListener("input", () => {
 
-            title: 'Error',
+                const field = input.name;
 
-            text: 'Something went wrong'
+                const errorElement =
+                    document.getElementById(`${field}-error`);
+
+                if (errorElement) {
+                    errorElement.textContent = "";
+                }
+
+                input.classList.remove("input-error");
+
+            });
 
         });
 
-    }
-
-});
 
 
 
-const togglePassword =
-    document.querySelector('.toggle-password');
+        form.addEventListener('submit', async (e) => {
 
-const passwordInput =
-    document.getElementById('password');
+            e.preventDefault();
+
+            clearErrors();
+
+            const firstName =
+                document.querySelector('[name="firstName"]').value.trim();
+
+            const lastName =
+                document.querySelector('[name="lastName"]').value.trim();
+
+            const email =
+                document.querySelector('[name="email"]').value.trim();
+
+            const phone =
+                document.querySelector('[name="phone"]').value.trim();
+
+            const password =
+                document.querySelector('[name="password"]').value;
+
+            const confirmPassword =
+                document.querySelector('[name="confirmPassword"]').value;
 
 
-togglePassword.addEventListener('click', () => {
-
-    if (passwordInput.type === 'password') {
-
-        passwordInput.type = 'text';
-
-        togglePassword.classList.replace(
-            'fa-eye',
-            'fa-eye-slash'
-        );
-
-    } else {
-
-        passwordInput.type = 'password';
-
-        togglePassword.classList.replace(
-            'fa-eye-slash',
-            'fa-eye'
-        );
-
-    }
-
-});
+            let isValid = true;
 
 
 
+            if (!firstName) {
 
-const toggleConfirm =
-    document.querySelector('.toggle-confirm');
+                showFieldError(
+                    "firstName",
+                    "First name is required"
+                );
 
-const confirmInput =
-    document.getElementById('confirmPassword');
+                isValid = false;
+            }
 
 
-toggleConfirm.addEventListener('click', () => {
 
-    if (confirmInput.type === 'password') {
 
-        confirmInput.type = 'text';
+            if (!lastName) {
 
-        toggleConfirm.classList.replace(
-            'fa-eye',
-            'fa-eye-slash'
-        );
+                showFieldError(
+                    "lastName",
+                    "Last name is required"
+                );
 
-    } else {
+                isValid = false;
+            }
 
-        confirmInput.type = 'password';
 
-        toggleConfirm.classList.replace(
-            'fa-eye-slash',
-            'fa-eye'
-        );
 
-    }
 
-});
+            if (!email) {
 
-</script>
+                showFieldError(
+                    "email",
+                    "Email address is required"
+                );
+
+                isValid = false;
+
+            } else {
+
+                const emailPattern =
+                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (!emailPattern.test(email)) {
+
+                    showFieldError(
+                        "email",
+                        "Enter a valid email address"
+                    );
+
+                    isValid = false;
+                }
+            }
+
+
+
+            if (!phone) {
+
+                showFieldError(
+                    "phone",
+                    "Phone number is required"
+                );
+
+                isValid = false;
+
+            } else {
+
+                const phonePattern = /^[0-9]{10}$/;
+
+                if (!phonePattern.test(phone)) {
+
+                    showFieldError(
+                        "phone",
+                        "Enter a valid 10-digit phone number"
+                    );
+
+                    isValid = false;
+                }
+            }
+
+
+
+
+            if (!password) {
+
+                showFieldError(
+                    "password",
+                    "Password is required"
+                );
+
+                isValid = false;
+
+            } else if (password.length < 8) {
+
+                showFieldError(
+                    "password",
+                    "Password must be at least 8 characters"
+                );
+
+                isValid = false;
+            }
+
+
+
+
+            if (!confirmPassword) {
+
+                showFieldError(
+                    "confirmPassword",
+                    "Please confirm your password"
+                );
+
+                isValid = false;
+
+            } else if (password !== confirmPassword) {
+
+                showFieldError(
+                    "confirmPassword",
+                    "Passwords do not match"
+                );
+
+                isValid = false;
+            }
+
+
+
+            if (!isValid) {
+                return;
+            }
+
+
+
+
+            const formData = {
+
+                firstName,
+                lastName,
+                email,
+                phone,
+                password,
+                confirmPassword,
+
+                referralCode:
+                    document.querySelector(
+                        '[name="referralCode"]'
+                    ).value
+            };
+
+
+
+
+            try {
+
+                const response = await fetch('/signup', {
+
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    credentials: 'same-origin',
+
+                    body: JSON.stringify(formData)
+                });
+
+
+                const data = await response.json();
+
+                console.log(data);
+
+
+
+                if (data.success) {
+
+                    Swal.fire({
+
+                        icon: 'success',
+
+                        title: 'OTP Sent',
+
+                        text: 'Redirecting...',
+
+                        timer: 1500,
+
+                        showConfirmButton: false
+
+                    });
+
+                    setTimeout(() => {
+
+                        window.location.href = data.next;
+
+                    }, 1500);
+
+                }
+
+
+
+                else {
+
+                    if (data.field) {
+
+                        showFieldError(
+                            data.field,
+                            data.message
+                        );
+
+                    }
+                }
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                Swal.fire({
+
+                    icon: 'error',
+
+                    title: 'Error',
+
+                    text: 'Something went wrong'
+
+                });
+
+            }
+
+        });
+
+
+
+        const togglePassword =
+            document.querySelector('.toggle-password');
+
+        const passwordInput =
+            document.getElementById('password');
+
+
+        togglePassword.addEventListener('click', () => {
+
+            if (passwordInput.type === 'password') {
+
+                passwordInput.type = 'text';
+
+                togglePassword.classList.replace(
+                    'fa-eye',
+                    'fa-eye-slash'
+                );
+
+            } else {
+
+                passwordInput.type = 'password';
+
+                togglePassword.classList.replace(
+                    'fa-eye-slash',
+                    'fa-eye'
+                );
+
+            }
+
+        });
+
+
+
+
+        const toggleConfirm =
+            document.querySelector('.toggle-confirm');
+
+        const confirmInput =
+            document.getElementById('confirmPassword');
+
+
+        toggleConfirm.addEventListener('click', () => {
+
+            if (confirmInput.type === 'password') {
+
+                confirmInput.type = 'text';
+
+                toggleConfirm.classList.replace(
+                    'fa-eye',
+                    'fa-eye-slash'
+                );
+
+            } else {
+
+                confirmInput.type = 'password';
+
+                toggleConfirm.classList.replace(
+                    'fa-eye-slash',
+                    'fa-eye'
+                );
+
+            }
+
+        });
+
+    </script>
 
 
 </body>
+
 </html>

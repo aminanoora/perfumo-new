@@ -1,58 +1,38 @@
-const dots=document.querySelectorAll(".dots");
+const dots = document.querySelectorAll(".dots");
 
-dots.forEach(dot=>{
+dots.forEach((dot) => {
+  dot.addEventListener("click", (e) => {
+    e.stopPropagation();
 
-dot.addEventListener("click",(e)=>{
+    document.querySelectorAll(".dropdown").forEach((menu) => {
+      if (menu !== dot.nextElementSibling) {
+        menu.classList.remove("show");
+      }
+    });
 
-e.stopPropagation();
-
-document.querySelectorAll(".dropdown")
-.forEach(menu=>{
-
-if(menu!==dot.nextElementSibling){
-
-menu.classList.remove("show");
-
-}
-
+    dot.nextElementSibling.classList.toggle("show");
+  });
 });
 
-dot.nextElementSibling.classList.toggle("show");
-
-});
-
-});
-
-document.addEventListener("click",()=>{
-
-document.querySelectorAll(".dropdown")
-.forEach(menu=>menu.classList.remove("show"));
-
+document.addEventListener("click", () => {
+  document
+    .querySelectorAll(".dropdown")
+    .forEach((menu) => menu.classList.remove("show"));
 });
 const searchInput = document.getElementById("searchInput");
 const clearBtn = document.getElementById("clearSearch");
 const searchForm = document.getElementById("searchForm");
 
 if (searchInput) {
-
-    searchInput.addEventListener("keypress", function(e){
-
-        if(e.key === "Enter"){
-
-            searchForm.submit();
-
-        }
-
-    });
-
+  searchInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      searchForm.submit();
+    }
+  });
 }
 
-if(clearBtn){
-
-    clearBtn.addEventListener("click", function(){
-
-        window.location.href="/admin/categories";
-
-    });
-
+if (clearBtn) {
+  clearBtn.addEventListener("click", function () {
+    window.location.href = "/admin/categories";
+  });
 }

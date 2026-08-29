@@ -1,332 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Product Details</title>
+    <title>Product Details</title>
 
-<link rel="stylesheet" href="/admin/css/admin.css">
-<link rel="stylesheet" href="/admin/css/product-details.css">
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/product-details.css">
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
 
-<%- include("../partials/header") %>
+    <%- include("../partials/header") %>
 
-<div class="page">
+        <div class="page">
 
-<%- include("../partials/sidebar") %>
+            <%- include("../partials/sidebar") %>
 
-<main class="content">
+                <main class="content">
 
-<div class="page-header">
+                    <div class="page-header">
 
-<div>
+                        <div>
 
-<h2>Product Details</h2>
+                            <h2>Product Details</h2>
 
-<p>Edit product information and manage variants.</p>
+                            <p>Edit product information and manage variants.</p>
 
-</div>
+                        </div>
 
-<div class="header-actions">
+                        <div class="header-actions">
 
-<button
-type="submit"
-form="productForm"
-class="save-btn">
+                            <button type="submit" form="productForm" class="save-btn">
 
 
-Save Product
+                                Save Product
 
-</button>
+                            </button>
 
 
 
-</div>
+                        </div>
 
-</div>
+                    </div>
 
-<form
-id="productForm"
-action="/admin/product/<%= product._id %>/update"
-method="POST">
+                    <form id="productForm" action="/admin/product/<%= product._id %>/update" method="POST">
 
-<div class="product-card">
+                        <div class="product-card">
 
 
 
-<div class="product-info">
+                            <div class="product-info">
 
-<div class="form-group">
+                                <div class="form-group">
 
-   
-<label>Product Name</label>
 
-<input
-type="text"
-name="productName"
-value="<%= product.name %>">
+                                    <label>Product Name</label>
 
-  <small id="productNameError" class="error"></small>
-</div>
-<div class="form-group">
+                                    <input type="text" name="productName" value="<%= product.name %>">
 
-<label>Brand</label>
+                                    <small id="productNameError" class="error"></small>
+                                </div>
+                                <div class="form-group">
 
-<select name="brand">
+                                    <label>Brand</label>
 
-<% brands.forEach(brand=>{ %>
+                                    <select name="brand">
 
-<option
-value="<%= brand._id %>"
-<%= String(product.brand)==String(brand._id) ? "selected":"" %>>
+                                        <% brands.forEach(brand=>{ %>
 
-<%= brand.name %>
+                                            <option value="<%= brand._id %>" <%=String(product.brand)==String(brand._id)
+                                                ? "selected" :"" %>>
 
-</option>
+                                                <%= brand.name %>
 
-<% }) %>
+                                            </option>
 
-</select>
- <small id="brandError" class="error"></small>
+                                            <% }) %>
 
-</div>
+                                    </select>
+                                    <small id="brandError" class="error"></small>
 
-<div class="form-group">
+                                </div>
 
-<label>Category</label>
+                                <div class="form-group">
+
+                                    <label>Category</label>
 
 
 
-<select name="category">
+                                    <select name="category">
 
-<% categories.forEach(category=>{ %>
+                                        <% categories.forEach(category=>{ %>
 
-<option
-value="<%= category._id %>"
-<%= String(product.category)==String(category._id) ? "selected":"" %>>
+                                            <option value="<%= category._id %>"
+                                                <%=String(product.category)==String(category._id) ? "selected" :"" %>>
 
-<%= category.name %>
-</option>
+                                                <%= category.name %>
+                                            </option>
 
-<% }) %>
+                                            <% }) %>
 
-</select>
-    <small id="categoryError" class="error"></small>
+                                    </select>
+                                    <small id="categoryError" class="error"></small>
 
-</div>
-<div class="form-group">
+                                </div>
+                                <div class="form-group">
 
-<label>Featured Type</label>
+                                    <label>Featured Type</label>
 
-<select name="featuredType">
-    <% featuredTypes.forEach(item => { %>
-        <option
-            value="<%= item.value %>"
-            <%= product.featuredType === item.value ? "selected" : "" %>>
-            <%= item.label %>
-        </option>
-    <% }) %>
-</select>
+                                    <select name="featuredType">
+                                        <% featuredTypes.forEach(item=> { %>
+                                            <option value="<%= item.value %>" <%=product.featuredType===item.value
+                                                ? "selected" : "" %>>
+                                                <%= item.label %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
 
-</div>
+                                </div>
 
 
-<div class="form-group full">
+                                <div class="form-group full">
 
-<label>Description</label>
+                                    <label>Description</label>
 
-<textarea
-name="description"
-rows="6"><%= product.description %></textarea>
-  <small id="descriptionError" class="error"></small>
-</div>
+                                    <textarea name="description" rows="6"><%= product.description %></textarea>
+                                    <small id="descriptionError" class="error"></small>
+                                </div>
 
-<div class="status-row">
+                                <div class="status-row">
 
-<span class="status
+                                    <span class="status
 <%= product.isListed ? 'listed':'unlisted' %>">
 
-<%= product.isListed ? "Listed":"Unlisted" %>
+                                        <%= product.isListed ? "Listed" :"Unlisted" %>
 
-</span>
+                                    </span>
 
-<div class="action-buttons">
+                                    <div class="action-buttons">
 
-<button
-type="submit"
-formaction="/admin/product/<%= product._id %>/toggle-list"
-class="list-btn">
+                                        <button type="submit" formaction="/admin/product/<%= product._id %>/toggle-list"
+                                            class="list-btn">
 
-<%= product.isListed ? "Unlist":"List" %>
+                                            <%= product.isListed ? "Unlist" :"List" %>
 
-</button>
+                                        </button>
 
-<button
-type="submit"
-formaction="/admin/product/<%= product._id %>/delete"
-class="delete-btn">
+                                        <button type="submit" formaction="/admin/product/<%= product._id %>/delete"
+                                            class="delete-btn">
 
-Delete
+                                            Delete
 
-</button>
+                                        </button>
 
-</div>
+                                    </div>
 
-</div>
+                                </div>
 
-</div>
+                            </div>
 
-</div>
+                        </div>
 
-</form>
+                    </form>
 
-<div class="table-card">
+                    <div class="table-card">
 
-<div class="table-header">
+                        <div class="table-header">
 
-<h3>Variants</h3>
+                            <h3>Variants</h3>
 
-<a
-href="/admin/product/<%= product._id %>/add-variant"
-class="table-add">
+                            <a href="/admin/product/<%= product._id %>/add-variant" class="table-add">
 
 
-Add Variant
+                                Add Variant
 
-</a>
+                            </a>
 
-</div>
+                        </div>
 
-<table>
+                        <table>
 
-<thead>
+                            <thead>
 
-<tr>
+                                <tr>
 
-<th>SKU</th>
+                                    <th>SKU</th>
 
-<th>Size</th>
+                                    <th>Size</th>
 
-<th>Concentration</th>
+                                    <th>Concentration</th>
 
-<th>Stock</th>
+                                    <th>Stock</th>
 
-<th>Price</th>
+                                    <th>Price</th>
 
-<th>Status</th>
+                                    <th>Status</th>
 
-<th></th>
+                                    <th></th>
 
-</tr>
+                                </tr>
 
-</thead>
+                            </thead>
 
-<tbody>
+                            <tbody>
 
-<% variants.forEach(variant=>{ %>
+                                <% variants.forEach(variant=>{ %>
 
-<tr>
+                                    <tr>
 
-<td><%= variant.sku %></td>
+                                        <td>
+                                            <%= variant.sku %>
+                                        </td>
 
-<td><%= variant.size %> ml</td>
+                                        <td>
+                                            <%= variant.size %> ml
+                                        </td>
 
-<td><%= variant.concentration %></td>
+                                        <td>
+                                            <%= variant.concentration %>
+                                        </td>
 
-<td><%= variant.stock %></td>
+                                        <td>
+                                            <%= variant.stock %>
+                                        </td>
 
-<td>₹<%= variant.price %></td>
+                                        <td>₹<%= variant.price %>
+                                        </td>
 
-<td>
+                                        <td>
 
-<span class="<%= variant.stock>0 ? 'instock':'outstock' %>">
+                                            <span class="<%= variant.stock>0 ? 'instock':'outstock' %>">
 
-<%= variant.stock>0 ? "In Stock":"Out of Stock" %>
+                                                <%= variant.stock>0 ? "In Stock":"Out of Stock" %>
 
-</span>
+                                            </span>
 
-</td>
+                                        </td>
 
-<td>
+                                        <td>
 
-<div class="dropdown">
+                                            <div class="dropdown">
 
-<button class="menu-btn">
+                                                <button class="menu-btn">
 
-<i class="fa-solid fa-ellipsis"></i>
+                                                    <i class="fa-solid fa-ellipsis"></i>
 
-</button>
+                                                </button>
 
-<div class="dropdown-menu">
+                                                <div class="dropdown-menu">
 
 
 
-<a href="/admin/variant/<%= variant._id %>/edit">
+                                                    <a href="/admin/variant/<%= variant._id %>/edit">
 
-View Details
+                                                        View Details
 
-</a>
+                                                    </a>
 
-<button
-class="deleteVariant"
-data-id="<%= variant._id %>">
+                                                    <button class="deleteVariant" data-id="<%= variant._id %>">
 
-Delete
+                                                        Delete
 
-</button>
+                                                    </button>
 
-</div>
+                                                </div>
 
-</div>
+                                            </div>
 
-</td>
+                                        </td>
 
-</tr>
+                                    </tr>
 
-<% }) %>
+                                    <% }) %>
 
-</tbody>
+                            </tbody>
 
-</table>
+                        </table>
 
-</div>
+                    </div>
 
-</main>
+                </main>
 
-</div>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/admin/js/product-details.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/admin/js/product-details.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
+        <script>
 
-const message=<%- JSON.stringify(message || null) %>;
+            const message =<% - JSON.stringify(message || null) %>;
 
-if(message){
+            if (message) {
 
-    Swal.fire({
+                Swal.fire({
 
-        icon:message.type,
+                    icon: message.type,
 
-        title:message.text,
+                    title: message.text,
 
-        timer:2000,
+                    timer: 2000,
 
-        showConfirmButton:false
+                    showConfirmButton: false
 
-    });
+                });
 
-}
+            }
 
-</script>
+        </script>
 
 </body>
 

@@ -2,347 +2,269 @@ import Variant from "../../models/Variant.js";
 import Product from "../../models/Product.js";
 
 export const loadInventory = async (req, res) => {
-    try {
+  try {
+    const search = req.query.search?.trim() || "";
+    const page = Number(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+    const status = req.query.status || "";
+    let query = {};
 
-        const search = req.query.search?.trim() || "";
-        const page = Number(req.query.page) || 1;
-        const limit = 10;
-        const skip = (page - 1) * limit;
-        const status = req.query.status || "";
-        let query = {};
+    if (search) {
+      const products = await Product.find({
+        name: { $regex: search, $options: "i" },
+      }).select("_id");
 
-if (search) {
+      const productIds = products.map((p) => p._id);
 
-    const products = await Product.find({
-        name: { $regex: search, $options: "i" }
-    }).select("_id");
-
-    const productIds = products.map(p => p._id);
-
-    const orConditions = [
-
+      const orConditions = [
         {
-            sku: {
-                $regex: search,
-                $options: "i"
-            }
+          sku: {
+            $regex: search,
+            $options: "i",
+          },
         },
 
         {
-            concentration: {
-                $regex: search,
-                $options: "i"
-            }
+          concentration: {
+            $regex: search,
+            $options: "i",
+          },
         },
 
         {
-            product: {
-                $in: productIds
-            }
-        }
+          product: {
+            $in: productIds,
+          },
+        },
+      ];
 
-    ];
-
-    if (!isNaN(search)) {
-
+      if (!isNaN(search)) {
         orConditions.push({
-            size: Number(search)
+          size: Number(search),
         });
+      }
 
+      query.$or = orConditions;
     }
 
-    query.$or = orConditions;
-
-}
-
-if (status === "instock") {
-
-    query.stock = { $gt: 10 };
-
-} else if (status === "lowstock") {
-
-    query.stock = { $gt: 0, $lte: 10 };
-
-} else if (status === "outofstock") {
-
-    query.stock = 0;
-
-}
-
-        const variants = await Variant.find(query)
-            .populate({
-                path: "product",
-                select: "name brand category"
-            })
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
-
-        const totalVariants = await Variant.countDocuments(query);
-
-        const totalPages = Math.ceil(totalVariants / limit);
-
-        const inStock = await Variant.countDocuments({ stock: { $gt: 0 } });
-
-        const lowStock = await Variant.countDocuments({
-            stock: { $gt: 0, $lte: 10 }
-        });
-
-        const outOfStock = await Variant.countDocuments({
-            stock: 0
-        });
-
-       
-
-        res.render("admin/inventory/inventory", {
-            variants,
-            search,
-            status,
-            currentPage: page,
-            totalPages,
-            totalVariants,
-            active: "inventory",
-            stats: {
-                totalVariants,
-                inStock,
-                lowStock,
-                outOfStock
-            }
-        });
-
-    } catch (error) {
-        console.log(error);
-        res.redirect("/admin/dashboard");
+    if (status === "instock") {
+      query.stock = { $gt: 10 };
+    } else if (status === "lowstock") {
+      query.stock = { $gt: 0, $lte: 10 };
+    } else if (status === "outofstock") {
+      query.stock = 0;
     }
+
+    const variants = await Variant.find(query)
+      .populate({
+        path: "product",
+        select: "name brand category",
+      })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalVariants = await Variant.countDocuments(query);
+
+    const totalPages = Math.ceil(totalVariants / limit);
+
+    const inStock = await Variant.countDocuments({ stock: { $gt: 0 } });
+
+    const lowStock = await Variant.countDocuments({
+      stock: { $gt: 0, $lte: 10 },
+    });
+
+    const outOfStock = await Variant.countDocuments({
+      stock: 0,
+    });
+
+    res.render("admin/inventory/inventory", {
+      variants,
+      search,
+      status,
+      currentPage: page,
+      totalPages,
+      totalVariants,
+      active: "inventory",
+      stats: {
+        totalVariants,
+        inStock,
+        lowStock,
+        outOfStock,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.redirect("/admin/dashboard");
+  }
 };
 
 export const loadEditVariant = async (req, res) => {
+  try {
+    const { variantId } = req.params;
 
-    try {
+    const variant = await Variant.findById(variantId);
 
-        const { variantId } = req.params;
+    if (!variant || variant.isDeleted) {
+      req.session.adminMessage = {
+        type: "error",
+        text: "Variant not found.",
+      };
 
-        const variant = await Variant.findById(variantId);
-
-        if (!variant || variant.isDeleted) {
-
-            req.session.adminMessage = {
-                type: "error",
-                text: "Variant not found."
-            };
-
-            return res.redirect("/admin/product");
-
-        }
-
-        const product = await Product.findById(variant.product)
-            .populate("brand")
-            .populate("category");
-
-       const message = req.session.adminMessage || null;
-req.session.adminMessage = null;
-
-
-        res.render("admin/product/edit-variant", {
-
-            product,
-
-            variant,
-
-            active: "product",
-
-            message
-
-        });
-
+      return res.redirect("/admin/product");
     }
 
-    catch (error) {
+    const product = await Product.findById(variant.product)
+      .populate("brand")
+      .populate("category");
 
-        console.log(error);
+    const message = req.session.adminMessage || null;
+    req.session.adminMessage = null;
 
-        req.session.adminMessage = {
+    res.render("admin/product/edit-variant", {
+      product,
 
-            type: "error",
+      variant,
 
-            text: "Unable to load variant.",
+      active: "product",
 
-            readOnly: true
+      message,
+    });
+  } catch (error) {
+    console.log(error);
 
-        };
+    req.session.adminMessage = {
+      type: "error",
 
-        res.redirect("/admin/product");
+      text: "Unable to load variant.",
 
-    }
+      readOnly: true,
+    };
 
+    res.redirect("/admin/product");
+  }
 };
 
-
 export const updateVariant = async (req, res) => {
+  try {
+    const { variantId } = req.params;
 
-    try {
+    const {
+      sku,
 
-        const { variantId } = req.params;
+      size,
 
-        const {
+      concentration,
 
-            sku,
+      stock,
 
-            size,
+      price,
 
-            concentration,
+      salePrice,
 
-            stock,
+      weight,
 
-            price,
+      existingImages,
+    } = req.body;
 
-            salePrice,
+    const variant = await Variant.findById(variantId);
 
-            weight,
+    if (!variant || variant.isDeleted) {
+      req.session.adminMessage = {
+        type: "error",
 
-            existingImages
+        text: "Variant not found.",
+      };
 
-        } = req.body;
+      return res.redirect("/admin/product");
+    }
 
-        const variant = await Variant.findById(variantId);
+    const skuExists = await Variant.findOne({
+      sku: sku.toUpperCase(),
 
-        if (!variant || variant.isDeleted) {
+      _id: { $ne: variantId },
+    });
 
-            req.session.adminMessage = {
+    if (skuExists) {
+      req.session.adminMessage = {
+        type: "error",
 
-                type: "error",
+        text: "SKU already exists.",
+      };
 
-                text: "Variant not found."
+      return res.redirect(`/admin/variant/${variantId}/edit`);
+    }
 
-            };
+    let images = [];
 
-            return res.redirect("/admin/product");
+    if (existingImages) {
+      images = Array.isArray(existingImages)
+        ? existingImages
+        : [existingImages];
+    }
 
-        }
+    if (req.files && req.files.length > 0) {
+      req.files.forEach((file) => {
+        images.push(file.filename);
+      });
+    }
+    const removedImages = variant.images.filter((img) => !images.includes(img));
 
-        const skuExists = await Variant.findOne({
+    removedImages.forEach((img) => {
+      const filePath = path.join("public", "uploads", "products", img);
 
-            sku: sku.toUpperCase(),
-
-            _id: { $ne: variantId }
-
-        });
-
-        if (skuExists) {
-
-            req.session.adminMessage = {
-
-                type: "error",
-
-                text: "SKU already exists."
-
-            };
-
-            return res.redirect(`/admin/variant/${variantId}/edit`);
-
-        }
-
-        let images = [];
-
-        if (existingImages) {
-
-            images = Array.isArray(existingImages)
-
-                ? existingImages
-
-                : [existingImages];
-
-        }
-
-        if (req.files && req.files.length > 0) {
-
-            req.files.forEach(file => {
-
-                images.push(file.filename);
-
-            });
-
-        }
-        const removedImages = variant.images.filter(
-    img => !images.includes(img)
-);
-
-removedImages.forEach(img => {
-
-    const filePath = path.join(
-        "public",
-        "uploads",
-        "products",
-        img
-    );
-
-    if (fs.existsSync(filePath)) {
-
+      if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
+      }
+    });
 
+    if (images.length < 3 || images.length > 5) {
+      req.session.adminMessage = {
+        type: "error",
+
+        text: "Variant must have between 3 and 5 images.",
+      };
+
+      return res.redirect(`/admin/variant/${variantId}/edit`);
     }
 
-});
+    variant.sku = sku.toUpperCase();
 
-        if (images.length < 3 || images.length > 5) {
+    variant.size = Number(size);
 
-            req.session.adminMessage = {
+    variant.concentration = concentration;
 
-                type: "error",
+    variant.stock = Number(stock);
 
-                text: "Variant must have between 3 and 5 images."
+    variant.price = Number(price);
 
-            };
+    variant.salePrice = Number(salePrice) || 0;
 
-            return res.redirect(`/admin/variant/${variantId}/edit`);
+    variant.weight = Number(weight);
 
-        }
+    variant.images = images;
 
-        variant.sku = sku.toUpperCase();
+    await variant.save();
 
-        variant.size = Number(size);
+    req.session.adminMessage = {
+      type: "success",
 
-        variant.concentration = concentration;
+      text: "Variant updated successfully.",
+    };
 
-        variant.stock = Number(stock);
+    res.redirect(`/admin/inventory/${variant._id}`);
+  } catch (error) {
+    console.log(error);
 
-        variant.price = Number(price);
+    req.session.adminMessage = {
+      type: "error",
 
-        variant.salePrice = Number(salePrice) || 0;
+      text: "Unable to update variant.",
 
-        variant.weight = Number(weight);
+      readOnly: false,
+    };
 
-        variant.images = images;
-
-        await variant.save();
-
-        req.session.adminMessage = {
-
-            type: "success",
-
-            text: "Variant updated successfully."
-
-        };
-
-res.redirect(`/admin/inventory/${variant._id}`);
-    }
-
-    catch (error) {
-
-        console.log(error);
-
-        req.session.adminMessage = {
-
-            type: "error",
-
-            text: "Unable to update variant.",
-
-            readOnly: false
-
-        };
-
-        res.redirect('/admin/inventory');
-
-    }
-
+    res.redirect("/admin/inventory");
+  }
 };

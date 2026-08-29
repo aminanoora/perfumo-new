@@ -5,864 +5,754 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Perfumes | Perfumo</title>
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@400;700&display=swap"
         rel="stylesheet">
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-  
-
-    <link
-        rel="stylesheet"
-        href="/user/css/footer.css">
-           
-        <link
-        rel="stylesheet"
-        href="/user/css/headers.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 
-    <link
-        rel="stylesheet"
-        href="/user/css/shop.css">
+
+    <link rel="stylesheet" href="/user/css/footer.css">
+
+    <link rel="stylesheet" href="/user/css/headers.css">
+
+
+    <link rel="stylesheet" href="/user/css/shop.css">
 
 </head>
 
 <body>
 
-<%- include("../partials/header") %>
+    <%- include("../partials/header") %>
 
 
 
-<section class="shop-hero">
+        <section class="shop-hero">
 
-    <div class="shop-hero-content">
+            <div class="shop-hero-content">
 
-       
 
-        <div class="breadcrumb">
 
-            <a href="/">Home</a>
+                <div class="breadcrumb">
 
-            <span>/</span>
+                    <a href="/">Home</a>
 
-            <span>Shop</span>
+                    <span>/</span>
 
-        </div>
-
-    </div>
-
-</section>
-
-<section class="shop-search">
-
-    <form action="/shop" method="GET" class="search-form">
-
-        <div class="search-box">
-        
-            <i class="fa-solid fa-magnifying-glass"></i>
-   
-            <input
-                type="text"
-                name="search"
-                value="<%= search || '' %>"
-                placeholder="Search perfumes...">
-
-            <% if(search){ %>
-
-                <a href="/shop" class="clear-search">
-
-                    <i class="fa-solid fa-xmark"></i>
-
-                </a>
-
-            <% } %>
-              <button type="submit" hidden></button>
-
-        </div>
-
-    </form>
-
-</section>
-
-<section class="shop-container">
-
-    <aside class="shop-sidebar">
-
-        <h2>Filters</h2>
-
-        <form action="/shop" method="GET">
-
-            <% if(search){ %>
-
-                <input
-                    type="hidden"
-                    name="search"
-                    value="<%= search %>">
-
-            <% } %>
-
-           
-
-            <div class="filter-group">
-
-                <details>
-
-                    <summary>Brands</summary>
-
-                    <% brands.forEach(brand=>{ %>
-
-                        <label>
-<input
-    type="checkbox"
-    name="brand"
-    value="<%= brand._id %>"
-    <%= (
-        Array.isArray(query.brand)
-            ? query.brand.includes(brand._id.toString())
-            : query.brand === brand._id.toString()
-    ) ? "checked" : "" %>>
-                            <%= brand.name %>
-
-                        </label>
-
-                    <% }) %>
-
-                </details>
-
-            </div>
-
-            <div class="filter-group">
-
-                <h3>Category</h3>
-
-                <% categories.forEach(category=>{ %>
-
-                    <label>
-
-                        <input
-    type="checkbox"
-    name="category"
-    value="<%= category._id %>"
-    <%= (
-        Array.isArray(query.category)
-            ? query.category.includes(category._id.toString())
-            : query.category === category._id.toString()
-    ) ? "checked" : "" %>>
-                        <%= category.name %>
-
-                    </label>
-
-                <% }) %>
-
-            </div>
-
-            <div class="filter-group">
-
-                <h3>Size</h3>
-
-                <label>
-
-                   <input
-    type="checkbox"
-    name="size"
-    value="30"
-    <%= (
-        Array.isArray(query.size)
-            ? query.size.includes("30")
-            : query.size === "30"
-    ) ? "checked" : "" %>>
-                    30 ml
-
-                </label>
-
-                <label>
-
-                   <input
-    type="checkbox"
-    name="size"
-    value="30"
-    <%= (
-        Array.isArray(query.size)
-            ? query.size.includes("30")
-            : query.size === "50"
-    ) ? "checked" : "" %>>
-
-                    50 ml
-
-                </label>
-
-                <label>
-
-                    <input
-    type="checkbox"
-    name="size"
-    value="30"
-    <%= (
-        Array.isArray(query.size)
-            ? query.size.includes("30")
-            : query.size === "100"
-    ) ? "checked" : "" %>>
-
-                    100 ml
-
-                </label>
-
-            </div>
-
-            <div class="filter-group">
-
-                <h3>Concentration</h3>
-
-                <label>
-
-                   <input
-    type="checkbox"
-    name="concentration"
-    value="EDP"
-    <%= (
-        Array.isArray(query.concentration)
-            ? query.concentration.includes("EDP")
-            : query.concentration === "EDP"
-    ) ? "checked" : "" %>>
-
-                    EDP
-
-                </label>
-
-                <label>
-
-                   <input
-    type="checkbox"
-    name="concentration"
-    value="EDT"
-    <%= (
-        Array.isArray(query.concentration)
-            ? query.concentration.includes("EDT")
-            : query.concentration === "EDT"
-    ) ? "checked" : "" %>>
-
-                    EDT
-
-                </label>
-
-                <label>
-
-                   <input
-    type="checkbox"
-    name="concentration"
-    value="EDC"
-    <%= (
-        Array.isArray(query.concentration)
-            ? query.concentration.includes("EDC")
-            : query.concentration === "EDC"
-    ) ? "checked" : "" %>>
-
-                    EDC
-
-                </label>
-
-                <label>
-
-                    <input
-    type="checkbox"
-    name="concentration"
-    value=" Mist/Fraiche"
-    <%= (
-        Array.isArray(query.concentration)
-            ? query.concentration.includes(" Mist/Fraiche")
-            : query.concentration === " Mist/Fraiche"
-    ) ? "checked" : "" %>>
-
-                    Mist/Fraiche
-
-                </label>
-
-            </div>
-
-            <div class="filter-group">
-
-                <h3>Price</h3>
-
-                <label>
-
-                  <input
-    type="checkbox"
-    name="price"
-    value="0-1000"
-    <%= (
-        Array.isArray(query.price)
-            ? query.price.includes("0-1000")
-            : query.price === "0-1000"
-    ) ? "checked" : "" %>>
-                    Below ₹1000
-
-                </label>
-
-                <label>
-
-                   <input
-    type="checkbox"
-    name="price"
-    value="1000-3000"
-    <%= (
-        Array.isArray(query.price)
-            ? query.price.includes("1000-3000")
-            : query.price === "1000-3000"
-    ) ? "checked" : "" %>>
-                    ₹1000 - ₹3000
-
-                </label>
-
-                <label>
-
-                    <input
-    type="checkbox"
-    name="price"
-    value="3000-5000"
-    <%= (
-        Array.isArray(query.price)
-            ? query.price.includes("3000-5000")
-            : query.price === "3000-5000"
-    ) ? "checked" : "" %>>
-
-                    ₹3000 - ₹5000
-
-                </label>
-
-                <label>
-
-                    <input
-    type="checkbox"
-    name="price"
-    value="5000+"
-    <%= (
-        Array.isArray(query.price)
-            ? query.price.includes("5000+")
-            : query.price === "5000+"
-    ) ? "checked" : "" %>>
-
-                    Above ₹5000
-
-                </label>
-
-            </div>
-
-            <div class="filter-group">
-
-                <h3>Occasion</h3>
-
-                <label>
-
-                   <input
-    type="checkbox"
-    name="occasion"
-    value="Daily wear"
-    <%= (
-        Array.isArray(query.occasion)
-            ? query.occasion.includes("Daily wear")
-            : query.occasion === "Daily wear"
-    ) ? "checked" : "" %>>
-
-                    Daily Wear
-
-                </label>
-
-                <label>
-
-                   <input
-    type="checkbox"
-    name="occasion"
-    value="Date night"
-    <%= (
-        Array.isArray(query.occasion)
-            ? query.occasion.includes("Date night")
-            : query.occasion === "Date night"
-    ) ? "checked" : "" %>>
-
-                    Date Night
-
-                </label>
-
-                <label>
-
-                      <input
-    type="checkbox"
-    name="occasion"
-    value="formal/office"
-    <%= (
-        Array.isArray(query.occasion)
-            ? query.occasion.includes("formal/office")
-            : query.occasion === "formal/office"
-    ) ? "checked" : "" %>>
-
-                    Formal
-
-                </label>
-
-                <label>
-
-                    <input
-    type="checkbox"
-    name="occasion"
-    value="Summer/Beach"
-    <%= (
-        Array.isArray(query.occasion)
-            ? query.occasion.includes("Summer/Beach")
-            : query.occasion === "Summer/Beach"
-    ) ? "checked" : "" %>>
-
-
-                    Summer
-
-                </label>
-
-                <label>
-
-                    <input
-    type="checkbox"
-    name="occasion"
-    value="   Night Out"
-    <%= (
-        Array.isArray(query.occasion)
-            ? query.occasion.includes("   Night Out")
-            : query.occasion === "Night Out"
-    ) ? "checked" : "" %>>
-                    Night Out
-
-                </label>
-
-            </div>
-
-            <button
-                type="submit"
-                class="filter-btn">
-
-                Apply Filters
-
-            </button>
-
-        </form>
-
-    </aside>
-
-    <div class="shop-products">
-
-        <div class="shop-top">
-
-            <p>
-                Showing
-                <strong><%= products.length %></strong>
-                Products
-            </p>
-
-            <form
-                action="/shop"
-                method="GET"
-                class="sort-form">
-
-                <% if(query.search){ %>
-    <input type="hidden" name="search" value="<%= query.search %>">
-<% } %>
-
-<% if(query.brand){ %>
-
-    <% (Array.isArray(query.brand) ? query.brand : [query.brand]).forEach(id => { %>
-
-        <input
-            type="hidden"
-            name="brand"
-            value="<%= id %>">
-
-    <% }) %>
-
-<% } %>
-
-<% if(query.category){ %>
-
-    <% (Array.isArray(query.category) ? query.category : [query.category]).forEach(id => { %>
-
-        <input
-            type="hidden"
-            name="category"
-            value="<%= id %>">
-
-    <% }) %>
-
-<% } %>
-
-<% if(query.size){ %>
-
-    <% (Array.isArray(query.size) ? query.size : [query.size]).forEach(size => { %>
-
-        <input
-            type="hidden"
-            name="size"
-            value="<%= size %>">
-
-    <% }) %>
-
-<% } %>
-
-<% if(query.concentration){ %>
-
-    <% (Array.isArray(query.concentration) ? query.concentration : [query.concentration]).forEach(c => { %>
-
-        <input
-            type="hidden"
-            name="concentration"
-            value="<%= c %>">
-
-    <% }) %>
-
-<% } %>
-
-<% if(query.occasion){ %>
-
-    <% (Array.isArray(query.occasion) ? query.occasion : [query.occasion]).forEach(o => { %>
-
-        <input
-            type="hidden"
-            name="occasion"
-            value="<%= o %>">
-
-    <% }) %>
-
-<% } %>
-
-<% if(query.price){ %>
-
-    <% (Array.isArray(query.price) ? query.price : [query.price]).forEach(price => { %>
-
-        <input
-            type="hidden"
-            name="price"
-            value="<%= price %>">
-
-    <% }) %>
-
-<% } %>
-
-                <select
-                    name="sort"
-                    onchange="this.form.submit()">
-
-                    <option
-                        value="latest"
-                        <%= sort==="latest" ? "selected":"" %>>
-
-                        Newest
-
-                    </option>
-
-                    <option
-                        value="priceLow"
-                        <%= sort==="priceLow" ? "selected":"" %>>
-
-                        Price : Low to High
-
-                    </option>
-
-                    <option
-                        value="priceHigh"
-                        <%= sort==="priceHigh" ? "selected":"" %>>
-
-                        Price : High to Low
-
-                    </option>
-
-                    <option
-                        value="name"
-                        <%= sort==="name" ? "selected":"" %>>
-
-                        Name A-Z
-
-                    </option>
-
-                </select>
-
-            </form>
-
-        </div>
-
-        <div class="product-grid">
-
-            <% if(products.length){ %>
-
-                <% products.forEach(product=>{ %>
-
-                    <div class="product-card">
-
-                        <div class="product-image">
-
-                            <a href="/shop/product-details/<%= product._id %>">
-
-                                <img
-    src="/admin/uploads/products/<%= product.variants.images[0] %>"
-    alt="<%= product.name %>">
-
-                            </a>
-
-                           <button
-    class="wishlist-btn <%= wishlistVariantIds.includes(product.variants._id.toString()) ? 'active' : '' %>"
-    data-variant="<%= product.variants._id %>">
-
-    <% if (wishlistVariantIds.includes(product.variants._id.toString())) { %>
-        <i class="fa-solid fa-heart"></i>
-    <% } else { %>
-        <i class="fa-regular fa-heart"></i>
-    <% } %>
-
-</button>
-
-                        </div>
-
-                        <div class="product-content">
-
-                            <p class="product-brand">
-
-                                <%= product.brand.name %>
-
-                            </p>
-
-                           <div class="product-title">
-    <h3 class="product-name">
-        <%= product.name %>
-    </h3>
-
-    <span class="product-size">
-        <%= product.variants.size %> ml
-    </span>
-</div>
-
-                            <div class="product-rating">
-
-                                <span class="stars">
-
-                                    <i class="fa-solid fa-star"></i>
-
-                                    <i class="fa-solid fa-star"></i>
-
-                                    <i class="fa-solid fa-star"></i>
-
-                                    <i class="fa-solid fa-star"></i>
-
-                                    <i class="fa-regular fa-star"></i>
-
-                                </span>
-
-                                <span class="rating-number">
-
-                                    4.3
-
-                                </span>
-
-                            </div>
-
-                            <div class="price-section">
-
-                                <% if(product.variants.salePrice>0){ %>
-
-                                    <span class="sale-price">
-
-                                        ₹<%= product.variants.salePrice %>
-
-                                    </span>
-
-                                    <span class="original-price">
-
-                                        ₹<%= product.variants.price %>
-
-                                    </span>
-
-                                <% }else{ %>
-
-                                    <span class="sale-price">
-
-                                        ₹<%= product.variants.price %>
-
-                                    </span>
-
-                                <% } %>
-
-                            </div>
-
-                            <button
-                                class="cart-btn"
-                                data-variant= "<%= product.variants._id %>" >
-
-                                Add to Cart
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                <% }) %>
-
-            <% }else{ %>
-
-                <div class="empty-products">
-
-                   
-                    <h3>No Products Found</h3>
-
-                    <p>
-
-                        Try changing the search or filter.
-
-                    </p>
+                    <span>Shop</span>
 
                 </div>
 
-            <% } %>
+            </div>
 
-        </div>
+        </section>
 
-    <div class="shop-pagination">
+        <section class="shop-search">
 
-    <% if(currentPage > 1){ %>
-        <a href="?page=<%= currentPage-1 %>" class="page-btn">
-            <i class="fa-solid fa-angle-left"></i>
-        </a>
-    <% } %>
+            <form action="/shop" method="GET" class="search-form">
 
-    <% for(let i=1;i<=totalPages;i++){ %>
+                <div class="search-box">
 
-        <a
-            href="?page=<%= i %>"
-            class="page-btn <%= currentPage===i ? 'active' : '' %>">
-            <%= i %>
-        </a>
+                    <i class="fa-solid fa-magnifying-glass"></i>
 
-    <% } %>
+                    <input type="text" name="search" value="<%= search || '' %>" placeholder="Search perfumes...">
 
-    <% if(currentPage < totalPages){ %>
+                    <% if(search){ %>
 
-        <a href="?page=<%= currentPage+1 %>" class="page-btn">
-            <i class="fa-solid fa-angle-right"></i>
-        </a>
+                        <a href="/shop" class="clear-search">
 
-    <% } %>
+                            <i class="fa-solid fa-xmark"></i>
 
-</div>
+                        </a>
 
-    </div>
+                        <% } %>
+                            <button type="submit" hidden></button>
 
-</section>
+                </div>
+
+            </form>
+
+        </section>
+
+        <section class="shop-container">
+
+            <aside class="shop-sidebar">
+
+                <h2>Filters</h2>
+
+                <form action="/shop" method="GET">
+
+                    <% if(search){ %>
+
+                        <input type="hidden" name="search" value="<%= search %>">
+
+                        <% } %>
 
 
 
-<section class="features-section">
+                            <div class="filter-group">
 
-    <div class="feature-box">
+                                <details>
 
-        <div class="feature-item">
+                                    <summary>Brands</summary>
 
-            <i class="fa-solid fa-truck-fast feature-icon"></i>
+                                    <% brands.forEach(brand=>{ %>
 
-            <div class="feature-text">
+                                        <label>
+                                            <input type="checkbox" name="brand" value="<%= brand._id %>" <%=(
+                                                Array.isArray(query.brand) ? query.brand.includes(brand._id.toString())
+                                                : query.brand===brand._id.toString() ) ? "checked" : "" %>>
+                                            <%= brand.name %>
 
-                <h3>Free Shipping</h3>
+                                        </label>
 
-                <p>Orders above ₹999</p>
+                                        <% }) %>
+
+                                </details>
+
+                            </div>
+
+                            <div class="filter-group">
+
+                                <h3>Category</h3>
+
+                                <% categories.forEach(category=>{ %>
+
+                                    <label>
+
+                                        <input type="checkbox" name="category" value="<%= category._id %>" <%=(
+                                            Array.isArray(query.category) ?
+                                            query.category.includes(category._id.toString()) :
+                                            query.category===category._id.toString() ) ? "checked" : "" %>>
+                                        <%= category.name %>
+
+                                    </label>
+
+                                    <% }) %>
+
+                            </div>
+
+                            <div class="filter-group">
+
+                                <h3>Size</h3>
+
+                                <label>
+
+                                    <input type="checkbox" name="size" value="30" <%=( Array.isArray(query.size) ?
+                                        query.size.includes("30") : query.size==="30" ) ? "checked" : "" %>>
+                                    30 ml
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="size" value="30" <%=( Array.isArray(query.size) ?
+                                        query.size.includes("30") : query.size==="50" ) ? "checked" : "" %>>
+
+                                    50 ml
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="size" value="30" <%=( Array.isArray(query.size) ?
+                                        query.size.includes("30") : query.size==="100" ) ? "checked" : "" %>>
+
+                                    100 ml
+
+                                </label>
+
+                            </div>
+
+                            <div class="filter-group">
+
+                                <h3>Concentration</h3>
+
+                                <label>
+
+                                    <input type="checkbox" name="concentration" value="EDP" <%=(
+                                        Array.isArray(query.concentration) ? query.concentration.includes("EDP") :
+                                        query.concentration==="EDP" ) ? "checked" : "" %>>
+
+                                    EDP
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="concentration" value="EDT" <%=(
+                                        Array.isArray(query.concentration) ? query.concentration.includes("EDT") :
+                                        query.concentration==="EDT" ) ? "checked" : "" %>>
+
+                                    EDT
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="concentration" value="EDC" <%=(
+                                        Array.isArray(query.concentration) ? query.concentration.includes("EDC") :
+                                        query.concentration==="EDC" ) ? "checked" : "" %>>
+
+                                    EDC
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="concentration" value="Mist/Fraiche"
+                                        <%=Array.isArray(query.concentration) ?
+                                        query.concentration.includes("Mist/Fraiche") :
+                                        query.concentration==="Mist/Fraiche" ? "checked" : "" %>
+                                    >
+
+                                    Mist/Fraiche
+
+                                </label>
+
+                            </div>
+
+                            <div class="filter-group">
+
+                                <h3>Price</h3>
+
+                                <label>
+
+                                    <input type="checkbox" name="price" value="0-1000" <%=( Array.isArray(query.price) ?
+                                        query.price.includes("0-1000") : query.price==="0-1000" ) ? "checked" : "" %>>
+                                    Below ₹1000
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="price" value="1000-3000" <%=(
+                                        Array.isArray(query.price) ? query.price.includes("1000-3000") :
+                                        query.price==="1000-3000" ) ? "checked" : "" %>>
+                                    ₹1000 - ₹3000
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="price" value="3000-5000" <%=(
+                                        Array.isArray(query.price) ? query.price.includes("3000-5000") :
+                                        query.price==="3000-5000" ) ? "checked" : "" %>>
+
+                                    ₹3000 - ₹5000
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="price" value="5000+" <%=( Array.isArray(query.price) ?
+                                        query.price.includes("5000+") : query.price==="5000+" ) ? "checked" : "" %>>
+
+                                    Above ₹5000
+
+                                </label>
+
+                            </div>
+
+                            <div class="filter-group">
+
+                                <h3>Occasion</h3>
+
+                                <label>
+
+                                    <input type="checkbox" name="occasion" value="Daily wear" <%=(
+                                        Array.isArray(query.occasion) ? query.occasion.includes("Daily wear") :
+                                        query.occasion==="Daily wear" ) ? "checked" : "" %>>
+
+                                    Daily Wear
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="occasion" value="Date night" <%=(
+                                        Array.isArray(query.occasion) ? query.occasion.includes("Date night") :
+                                        query.occasion==="Date night" ) ? "checked" : "" %>>
+
+                                    Date Night
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="occasion" value="formal/office" <%=(
+                                        Array.isArray(query.occasion) ? query.occasion.includes("formal/office") :
+                                        query.occasion==="formal/office" ) ? "checked" : "" %>>
+
+                                    Formal
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="occasion" value="Summer/Beach" <%=(
+                                        Array.isArray(query.occasion) ? query.occasion.includes("Summer/Beach") :
+                                        query.occasion==="Summer/Beach" ) ? "checked" : "" %>>
+
+
+                                    Summer
+
+                                </label>
+
+                                <label>
+
+                                    <input type="checkbox" name="occasion" value="   Night Out" <%=(
+                                        Array.isArray(query.occasion) ? query.occasion.includes(" Night Out") :
+                                        query.occasion==="Night Out" ) ? "checked" : "" %>>
+                                    Night Out
+
+                                </label>
+
+                            </div>
+
+                            <button type="submit" class="filter-btn">
+
+                                Apply Filters
+
+                            </button>
+
+                </form>
+
+            </aside>
+
+            <div class="shop-products">
+
+                <div class="shop-top">
+
+                    <p>
+                        Showing
+                        <strong>
+                            <%= products.length %>
+                        </strong>
+                        Products
+                    </p>
+
+                    <form action="/shop" method="GET" class="sort-form">
+
+                        <% if(query.search){ %>
+                            <input type="hidden" name="search" value="<%= query.search %>">
+                            <% } %>
+
+                                <% if(query.brand){ %>
+
+                                    <% (Array.isArray(query.brand) ? query.brand : [query.brand]).forEach(id=> { %>
+
+                                        <input type="hidden" name="brand" value="<%= id %>">
+
+                                        <% }) %>
+
+                                            <% } %>
+
+                                                <% if(query.category){ %>
+
+                                                    <% (Array.isArray(query.category) ? query.category :
+                                                        [query.category]).forEach(id=> { %>
+
+                                                        <input type="hidden" name="category" value="<%= id %>">
+
+                                                        <% }) %>
+
+                                                            <% } %>
+
+                                                                <% if(query.size){ %>
+
+                                                                    <% (Array.isArray(query.size) ? query.size :
+                                                                        [query.size]).forEach(size=> { %>
+
+                                                                        <input type="hidden" name="size"
+                                                                            value="<%= size %>">
+
+                                                                        <% }) %>
+
+                                                                            <% } %>
+
+                                                                                <% if(query.concentration){ %>
+
+                                                                                    <% (Array.isArray(query.concentration)
+                                                                                        ? query.concentration :
+                                                                                        [query.concentration]).forEach(c=>
+                                                                                        { %>
+
+                                                                                        <input type="hidden"
+                                                                                            name="concentration"
+                                                                                            value="<%= c %>">
+
+                                                                                        <% }) %>
+
+                                                                                            <% } %>
+
+                                                                                                <% if(query.occasion){
+                                                                                                    %>
+
+                                                                                                    <% (Array.isArray(query.occasion)
+                                                                                                        ? query.occasion
+                                                                                                        :
+                                                                                                        [query.occasion]).forEach(o=>
+                                                                                                        { %>
+
+                                                                                                        <input
+                                                                                                            type="hidden"
+                                                                                                            name="occasion"
+                                                                                                            value="<%= o %>">
+
+                                                                                                        <% }) %>
+
+                                                                                                            <% } %>
+
+                                                                                                                <% if(query.price){
+                                                                                                                    %>
+
+                                                                                                                    <% (Array.isArray(query.price)
+                                                                                                                        ?
+                                                                                                                        query.price
+                                                                                                                        :
+                                                                                                                        [query.price]).forEach(price=>
+                                                                                                                        {
+                                                                                                                        %>
+
+                                                                                                                        <input
+                                                                                                                            type="hidden"
+                                                                                                                            name="price"
+                                                                                                                            value="<%= price %>">
+
+                                                                                                                        <% })
+                                                                                                                            %>
+
+                                                                                                                            <% }
+                                                                                                                                %>
+
+                                                                                                                                <select
+                                                                                                                                    name="sort"
+                                                                                                                                    onchange="this.form.submit()">
+
+                                                                                                                                    <option
+                                                                                                                                        value="latest"
+                                                                                                                                        <%=sort==="latest"
+                                                                                                                                        ? "selected"
+                                                                                                                                        :""
+                                                                                                                                        %>
+                                                                                                                                        >
+
+                                                                                                                                        Newest
+
+                                                                                                                                    </option>
+
+                                                                                                                                    <option
+                                                                                                                                        value="priceLow"
+                                                                                                                                        <%=sort==="priceLow"
+                                                                                                                                        ? "selected"
+                                                                                                                                        :""
+                                                                                                                                        %>
+                                                                                                                                        >
+
+                                                                                                                                        Price
+                                                                                                                                        :
+                                                                                                                                        Low
+                                                                                                                                        to
+                                                                                                                                        High
+
+                                                                                                                                    </option>
+
+                                                                                                                                    <option
+                                                                                                                                        value="priceHigh"
+                                                                                                                                        <%=sort==="priceHigh"
+                                                                                                                                        ? "selected"
+                                                                                                                                        :""
+                                                                                                                                        %>
+                                                                                                                                        >
+
+                                                                                                                                        Price
+                                                                                                                                        :
+                                                                                                                                        High
+                                                                                                                                        to
+                                                                                                                                        Low
+
+                                                                                                                                    </option>
+
+                                                                                                                                    <option
+                                                                                                                                        value="name"
+                                                                                                                                        <%=sort==="name"
+                                                                                                                                        ? "selected"
+                                                                                                                                        :""
+                                                                                                                                        %>
+                                                                                                                                        >
+
+                                                                                                                                        Name
+                                                                                                                                        A-Z
+
+                                                                                                                                    </option>
+
+                                                                                                                                </select>
+
+                    </form>
+
+                </div>
+
+                <div class="product-grid">
+
+                    <% if(products.length){ %>
+
+                        <% products.forEach(product=>{ %>
+
+                            <div class="product-card">
+
+                                <div class="product-image">
+
+                                    <a href="/shop/product-details/<%= product._id %>">
+
+                                        <img src="/admin/uploads/products/<%= product.variants.images[0] %>"
+                                            alt="<%= product.name %>">
+
+                                    </a>
+
+                                    <button
+                                        class="wishlist-btn <%= wishlistVariantIds.includes(product.variants._id.toString()) ? 'active' : '' %>"
+                                        data-variant="<%= product.variants._id %>">
+
+                                        <% if (wishlistVariantIds.includes(product.variants._id.toString())) { %>
+                                            <i class="fa-solid fa-heart"></i>
+                                            <% } else { %>
+                                                <i class="fa-regular fa-heart"></i>
+                                                <% } %>
+
+                                    </button>
+
+                                </div>
+
+                                <div class="product-content">
+
+                                    <p class="product-brand">
+
+                                        <%= product.brand.name %>
+
+                                    </p>
+
+                                    <div class="product-title">
+                                        <h3 class="product-name">
+                                            <%= product.name %>
+                                        </h3>
+
+                                        <span class="product-size">
+                                            <%= product.variants.size %> ml
+                                        </span>
+                                    </div>
+
+                                    <div class="product-rating">
+
+                                        <span class="stars">
+
+                                            <i class="fa-solid fa-star"></i>
+
+                                            <i class="fa-solid fa-star"></i>
+
+                                            <i class="fa-solid fa-star"></i>
+
+                                            <i class="fa-solid fa-star"></i>
+
+                                            <i class="fa-regular fa-star"></i>
+
+                                        </span>
+
+                                        <span class="rating-number">
+
+                                            4.3
+
+                                        </span>
+
+                                    </div>
+
+                                    <div class="price-section">
+
+                                        <% if(product.variants.salePrice>0){ %>
+
+                                            <span class="sale-price">
+
+                                                ₹<%= product.variants.salePrice %>
+
+                                            </span>
+
+                                            <span class="original-price">
+
+                                                ₹<%= product.variants.price %>
+
+                                            </span>
+
+                                            <% }else{ %>
+
+                                                <span class="sale-price">
+
+                                                    ₹<%= product.variants.price %>
+
+                                                </span>
+
+                                                <% } %>
+
+                                    </div>
+
+                                    <button class="cart-btn" data-variant="<%= product.variants._id %>">
+
+                                        Add to Cart
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <% }) %>
+
+                                <% }else{ %>
+
+                                    <div class="empty-products">
+
+
+                                        <h3>No Products Found</h3>
+
+                                        <p>
+
+                                            Try changing the search or filter.
+
+                                        </p>
+
+                                    </div>
+
+                                    <% } %>
+
+                </div>
+
+                <div class="shop-pagination">
+
+                    <% if(currentPage> 1){ %>
+                        <a href="?page=<%= currentPage-1 %>" class="page-btn">
+                            <i class="fa-solid fa-angle-left"></i>
+                        </a>
+                        <% } %>
+
+                            <% for(let i=1;i<=totalPages;i++){ %>
+
+                                <a href="?page=<%= i %>" class="page-btn <%= currentPage===i ? 'active' : '' %>">
+                                    <%= i %>
+                                </a>
+
+                                <% } %>
+
+                                    <% if(currentPage < totalPages){ %>
+
+                                        <a href="?page=<%= currentPage+1 %>" class="page-btn">
+                                            <i class="fa-solid fa-angle-right"></i>
+                                        </a>
+
+                                        <% } %>
+
+                </div>
 
             </div>
 
-        </div>
+        </section>
 
-        <div class="feature-item">
 
-            <i class="fa-solid fa-shield feature-icon"></i>
 
-            <div class="feature-text">
+        <section class="features-section">
 
-                <h3>100% Authentic</h3>
+            <div class="feature-box">
 
-                <p>Guaranteed Original</p>
+                <div class="feature-item">
+
+                    <i class="fa-solid fa-truck-fast feature-icon"></i>
+
+                    <div class="feature-text">
+
+                        <h3>Free Shipping</h3>
+
+                        <p>Orders above ₹999</p>
+
+                    </div>
+
+                </div>
+
+                <div class="feature-item">
+
+                    <i class="fa-solid fa-shield feature-icon"></i>
+
+                    <div class="feature-text">
+
+                        <h3>100% Authentic</h3>
+
+                        <p>Guaranteed Original</p>
+
+                    </div>
+
+                </div>
+
+                <div class="feature-item">
+
+                    <i class="fa-solid fa-headset feature-icon"></i>
+
+                    <div class="feature-text">
+
+                        <h3>Support</h3>
+
+                        <p>24/7 Customer Care</p>
+
+                    </div>
+
+                </div>
+
+                <div class="feature-item">
+
+                    <i class="fa-solid fa-rotate-left feature-icon"></i>
+
+                    <div class="feature-text">
+
+                        <h3>Easy Returns</h3>
+
+                        <p>7 Days Return</p>
+
+                    </div>
+
+                </div>
 
             </div>
 
-        </div>
+        </section>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <%- include("../partials/footer") %>
+            <script>
+                window.isLoggedIn = <%= !!user %>;
+            </script>
 
-        <div class="feature-item">
+            <script>
+                const message = <% - JSON.stringify(message || null) %>;
 
-            <i class="fa-solid fa-headset feature-icon"></i>
-
-            <div class="feature-text">
-
-                <h3>Support</h3>
-
-                <p>24/7 Customer Care</p>
-
-            </div>
-
-        </div>
-
-        <div class="feature-item">
-
-            <i class="fa-solid fa-rotate-left feature-icon"></i>
-
-            <div class="feature-text">
-
-                <h3>Easy Returns</h3>
-
-                <p>7 Days Return</p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<%- include("../partials/footer") %>
-<script>
-    window.isLoggedIn = <%= !!user %>;
-</script>
-
-<script>
-const message = <%- JSON.stringify(message || null) %>;
-
-if (message) {
-
-    Swal.fire({
-
-        icon: message.type,
-        title: message.text,
-        timer: 1800,
-        showConfirmButton: false
-
-    });
-
-}
-</script>
-<script src="/user/js/shop.js"></script>
-<% if (user) { %>
-<script src="/user/js/block-check.js"></script>
-<% } %>
+                if (message) {
+                    Swal.fire({
+                        icon: message.type,
+                        title: message.text,
+                        timer: 1800,
+                        showConfirmButton: false
+                    });
+                }
+            </script>
+            <script src="/user/js/shop.js"></script>
+            <% if (user) { %>
+                <script src="/user/js/block-check.js"></script>
+                <% } %>
 
 
 </body>
 
 </html>
-

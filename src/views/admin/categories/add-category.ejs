@@ -4,181 +4,156 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Add Category</title>
 
     <link rel="stylesheet" href="/admin/css/admin.css">
     <link rel="stylesheet" href="/admin/css/add-category.css">
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<div class="page">
+        <div class="page">
 
-<%- include('../partials/sidebar') %>
+            <%- include('../partials/sidebar') %>
 
-<main class="content">
+                <main class="content">
 
-<div class="page-header">
+                    <div class="page-header">
 
-    <div>
-        <h2>Add Category</h2>
-        <p>Create a new perfume category</p>
-    </div>
+                        <div>
+                            <h2>Add Category</h2>
+                            <p>Create a new perfume category</p>
+                        </div>
 
-</div>
+                    </div>
 
 
-<div class="form-card">
+                    <div class="form-card">
 
-<form
-id="categoryForm"
-action="/admin/categories/add"
-method="POST"
-enctype="multipart/form-data">
+                        <form id="categoryForm" action="/admin/categories/add" method="POST"
+                            enctype="multipart/form-data">
 
-<div class="form-grid">
+                            <div class="form-grid">
 
-<div class="form-group">
+                                <div class="form-group">
 
-<label>Category Name</label>
+                                    <label>Category Name</label>
 
-<input
-type="text"
-name="name"
-id="name"
-placeholder="Enter category name"
->
-<small class="error" id="nameError"></small>
+                                    <input type="text" name="name" id="name" placeholder="Enter category name">
+                                    <small class="error" id="nameError"></small>
 
-</div>
+                                </div>
 
 
-<div class="form-group">
+                                <div class="form-group">
 
-<label>Slug</label>
+                                    <label>Slug</label>
 
-<input
-type="text"
-name="slug"
-id="slug"
-placeholder="example : woody"
->
-<small class="error" id="slugError"></small>
+                                    <input type="text" name="slug" id="slug" placeholder="example : woody">
+                                    <small class="error" id="slugError"></small>
 
-</div>
+                                </div>
 
 
-<div class="form-group">
+                                <div class="form-group">
 
-<label>Parent Category</label>
+                                    <label>Parent Category</label>
 
-<select name="parentCategory">
+                                    <select name="parentCategory">
 
-<option value="">None (Main Category)</option>
+                                        <option value="">None (Main Category)</option>
 
-<% if(parentCategories){ %>
+                                        <% if(parentCategories){ %>
 
-<% parentCategories.forEach(category=>{ %>
+                                            <% parentCategories.forEach(category=>{ %>
 
-<option value="<%= category._id %>">
+                                                <option value="<%= category._id %>">
 
-<%= category.name %>
+                                                    <%= category.name %>
 
-</option>
+                                                </option>
 
-<% }) %>
+                                                <% }) %>
 
-<% } %>
+                                                    <% } %>
 
-</select>
+                                    </select>
 
-</div>
+                                </div>
 
 
-<div class="form-group full-width">
+                                <div class="form-group full-width">
 
-<label>Description</label>
+                                    <label>Description</label>
 
-<textarea
-name="description"
-rows="5"
-id="description"
-placeholder="Enter category description"></textarea>
+                                    <textarea name="description" rows="5" id="description"
+                                        placeholder="Enter category description"></textarea>
 
-<small class="error" id="descriptionError"></small>
+                                    <small class="error" id="descriptionError"></small>
 
-</div>
+                                </div>
 
 
-<div class="form-group full-width">
+                                <div class="form-group full-width">
 
-<label>Category Image</label>
+                                    <label>Category Image</label>
 
-<input
-type="file"
-name="image"
-accept="image/*">
+                                    <input type="file" name="image" accept="image/*">
 
-</div>
+                                </div>
 
-</div>
+                            </div>
 
 
-<div class="button-group">
+                            <div class="button-group">
 
-<a
-href="/admin/categories"
-class="cancel-btn">
+                                <a href="/admin/categories" class="cancel-btn">
 
-Cancel
+                                    Cancel
 
-</a>
+                                </a>
 
-<button
-type="submit"
-class="save-btn">
+                                <button type="submit" class="save-btn">
 
 
 
-Save Category
+                                    Save Category
 
-</button>
+                                </button>
 
-</div>
+                            </div>
 
-</form>
+                        </form>
 
-</div>
+                    </div>
 
-</main>
+                </main>
 
-</div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<% if(message){ %>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <% if(message){ %>
 
-<script>
+            <script>
 
-Swal.fire({
-    icon: "error",
-    title: "Error",
-    text: "<%= message.text %>",
-    confirmButtonText: "OK"
-});
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "<%= message.text %>",
+                    confirmButtonText: "OK"
+                });
 
-</script>
+            </script>
 
-<% } %>
+            <% } %>
 
-<script src="/admin/js/add-categories.js"></script>
+                <script src="/admin/js/add-categories.js"></script>
 </body>
 
 </html>

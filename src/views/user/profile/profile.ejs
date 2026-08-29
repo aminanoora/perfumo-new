@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,286 +9,274 @@
 
     <link rel="stylesheet" href="/user/css/profile.css">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="/user/css/headers.css">
     <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
- <link rel="stylesheet" href="/user/css/headers.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap"
+        rel="stylesheet">
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<section class="profile-section">
+        <section class="profile-section">
 
-    <div class="profile-container">
+            <div class="profile-container">
 
-        <div class="sidebar">
+                <div class="sidebar">
 
-            <div class="user-box">
+                    <div class="user-box">
 
-                <div class="user-avatar">
-                    <%= user.firstName.charAt(0) %>
+                        <div class="user-avatar">
+                            <%= user.firstName.charAt(0) %>
+                        </div>
+
+                        <div class="user-info">
+                            <h3>
+                                <%= user.firstName %>
+                                    <%= user.lastName %>
+                            </h3>
+                        </div>
+
+                    </div>
+
+                    <div class="sidebar-menu">
+
+                        <a href="/profile/orders">
+                            <i class="fa-solid fa-cube"></i>
+                            My Orders
+                        </a>
+
+                        <a href="/wishlist">
+                            <i class="fa-regular fa-heart"></i>
+                            Wishlist
+                        </a>
+
+                        <a href="/profile/address">
+                            <i class="fa-solid fa-location-dot"></i>
+                            Addresses
+                        </a>
+
+                        <a href="/coupons">
+                            <i class="fa-solid fa-ticket"></i>
+                            Coupons
+                        </a>
+
+                        <a href="/wallet">
+                            <i class="fa-solid fa-wallet"></i>
+                            My Wallet
+                        </a>
+
+                        <a href="/refer">
+                            <i class="fa-solid fa-gift"></i>
+                            Refer & Earn
+                        </a>
+
+                        <a href="/profile" class="active">
+                            <i class="fa-regular fa-user"></i>
+                            Profile Settings
+                        </a>
+
+                    </div>
+
+                    <a href="/logout" class="logout-btn">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Logout
+                    </a>
+
                 </div>
 
-                <div class="user-info">
-                    <h3>
-                        <%= user.firstName %> <%= user.lastName %>
-                    </h3>
+                <div class="profile-content">
+
+                    <div class="profile-card">
+
+                        <div class="profile-heading">
+
+                            <h2>Personal Details</h2>
+
+                            <p>
+                                Update your account details and contact information
+                            </p>
+
+                        </div>
+
+                        <form id="profile-form">
+
+                            <div class="input-group">
+
+                                <label>FIRST NAME</label>
+
+                                <input type="text" name="firstName" id="firstName" value="<%= user.firstName %>"
+                                    <%=isGoogleUser ? "readonly" : "" %>>
+
+                            </div>
+
+                            <div class="input-group">
+
+                                <label>LAST NAME</label>
+
+                                <input type="text" name="lastName" id="lastName" value="<%= user.lastName %>"
+                                    <%=isGoogleUser ? "readonly" : "" %>>
+
+                            </div>
+
+                            <div class="input-group">
+
+                                <label>EMAIL ADDRESS</label>
+
+                                <input type="email" name="email" id="email" value="<%= user.email %>" <%=isGoogleUser
+                                    ? "readonly" : "" %>>
+
+                            </div>
+
+                            <button type="submit" class="save-btn" <%=isGoogleUser ? "disabled" : "" %>>
+                                Save Changes
+                            </button>
+
+                        </form>
+
+                        <% if (!isGoogleUser) { %>
+
+                            <a href="/profile/editpassword" class="password-link">
+                                Edit Password?
+                            </a>
+
+                            <% } %>
+                    </div>
+
                 </div>
 
             </div>
 
-            <div class="sidebar-menu">
+        </section>
 
-                <a href="/profile/orders">
-                    <i class="fa-solid fa-cube"></i>
-                    My Orders
-                </a>
+        <footer class="profile-footer">
 
-                <a href="/wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    Wishlist
-                </a>
+            <div class="footer-logo">
+                PERFUMO
+            </div>
 
-                <a href="/profile/address">
-                    <i class="fa-solid fa-location-dot"></i>
-                    Addresses
-                </a>
+            <div class="footer-links">
 
-                <a href="/coupons">
-                    <i class="fa-solid fa-ticket"></i>
-                    Coupons
-                </a>
-
-                <a href="/wallet">
-                    <i class="fa-solid fa-wallet"></i>
-                    My Wallet
-                </a>
-
-                <a href="/refer">
-                    <i class="fa-solid fa-gift"></i>
-                    Refer & Earn
-                </a>
-
-                <a href="/profile" class="active">
-                    <i class="fa-regular fa-user"></i>
-                    Profile Settings
-                </a>
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="/products">Products</a>
+                <a href="/pages">Pages</a>
 
             </div>
 
-            <a href="/logout" class="logout-btn">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                Logout
-            </a>
+            <p>
+                Copyright © 2025 PERFUMO . All Rights Reserved.
+            </p>
 
-        </div>
+        </footer>
+        <script>
+            const form =
+                document.getElementById('profile-form');
 
-        <div class="profile-content">
+            form.addEventListener('submit', async (e) => {
 
-            <div class="profile-card">
+                e.preventDefault();
 
-                <div class="profile-heading">
+                const firstName =
+                    document.getElementById('firstName').value;
 
-                    <h2>Personal Details</h2>
+                const lastName =
+                    document.getElementById('lastName').value;
 
-                    <p>
-                        Update your account details and contact information
-                    </p>
+                const email =
+                    document.getElementById('email').value;
 
-                </div>
+                try {
 
-               <form id="profile-form">
+                    const response =
+                        await fetch('/profile/update', {
 
-    <div class="input-group">
+                            method: 'POST',
 
-        <label>FIRST NAME</label>
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
 
-      <input
-    type="text"
-    name="firstName"
-    id="firstName"
-    value="<%= user.firstName %>"
-    <%= isGoogleUser ? "readonly" : "" %>>
+                            body: JSON.stringify({
+                                firstName,
+                                lastName,
+                                email
+                            })
+                        });
 
-    </div>
+                    const data =
+                        await response.json();
 
-    <div class="input-group">
+                    if (!data.success) {
 
-        <label>LAST NAME</label>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message
+                        });
 
-       <input
-    type="text"
-    name="lastName"
-    id="lastName"
-    value="<%= user.lastName %>"
-    <%= isGoogleUser ? "readonly" : "" %>>
+                        return;
+                    }
 
-    </div>
+                    if (data.success) {
 
-    <div class="input-group">
+                        if (data.requiresPasswordConfirmation) {
 
-        <label>EMAIL ADDRESS</label>
+                            window.location.href =
+                                data.redirectUrl;
 
-       <input
-    type="email"
-    name="email"
-    id="email"
-    value="<%= user.email %>"
-    <%= isGoogleUser ? "readonly" : "" %>>
+                            return;
 
-    </div>
+                        }
 
-   <button
-    type="submit"
-    class="save-btn"
-    <%= isGoogleUser ? "disabled" : "" %>>
-    Save Changes
-</button>
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success",
+                            text: data.message
+                        });
 
-</form>
+                    }
 
-              <% if (!isGoogleUser) { %>
+                } catch (error) {
 
-<a href="/profile/editpassword" class="password-link">
-    Edit Password?
-</a>
+                    console.log(error);
 
-<% } %>
-            </div>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong'
+                    });
+                }
 
-        </div>
-
-    </div>
-
-</section>
-
-<footer class="profile-footer">
-
-    <div class="footer-logo">
-        PERFUMO
-    </div>
-
-    <div class="footer-links">
-
-        <a href="/">Home</a>
-        <a href="/shop">Shop</a>
-        <a href="/products">Products</a>
-        <a href="/pages">Pages</a>
-
-    </div>
-
-    <p>
-        Copyright © 2025 PERFUMO . All Rights Reserved.
-    </p>
-
-</footer>
-<script>
-   const form =
-document.getElementById('profile-form');
-
-form.addEventListener('submit', async(e)=>{
-
-    e.preventDefault();
-
-    const firstName =
-    document.getElementById('firstName').value;
-
-    const lastName =
-    document.getElementById('lastName').value;
-
-    const email =
-    document.getElementById('email').value;
-
-    try{
-
-        const response =
-        await fetch('/profile/update',{
-
-            method:'POST',
-
-            headers:{
-                'Content-Type':'application/json'
-            },
-
-            body:JSON.stringify({
-                firstName,
-                lastName,
-                email
-            })
-        });
-
-        const data =
-        await response.json();
-
-        if(!data.success){
-
-            Swal.fire({
-                icon:'error',
-                title:'Error',
-                text:data.message
             });
 
-            return;
-        }
+            if (profileToggle) {
 
-        if (data.success) {
+                profileToggle.addEventListener('click', (e) => {
 
-    if (data.requiresPasswordConfirmation) {
+                    e.preventDefault();
 
-        window.location.href =
-            data.redirectUrl;
+                    profileMenu.classList.toggle('show');
+                });
 
-        return;
+                document.addEventListener('click', (e) => {
 
-    }
-
-    Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: data.message
-    });
-
-}
-
-    }catch(error){
-
-        console.log(error);
-
-        Swal.fire({
-            icon:'error',
-            title:'Error',
-            text:'Something went wrong'
-        });
-    }
-
-});
-
-if(profileToggle){
-
-    profileToggle.addEventListener('click', (e) => {
-
-        e.preventDefault();
-
-        profileMenu.classList.toggle('show');
-    });
-
-    document.addEventListener('click', (e) => {
-
-        if(
-            !profileToggle.contains(e.target) &&
-            !profileMenu.contains(e.target)
-        ){
-            profileMenu.classList.remove('show');
-        }
-    });
-}
+                    if (
+                        !profileToggle.contains(e.target) &&
+                        !profileMenu.contains(e.target)
+                    ) {
+                        profileMenu.classList.remove('show');
+                    }
+                });
+            }
 
 
-</script>
-<script src="/user/js/block-check.js"></script>
+        </script>
+        <script src="/user/js/block-check.js"></script>
 
 </body>
+
 </html>

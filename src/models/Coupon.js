@@ -1,145 +1,110 @@
 import mongoose from "mongoose";
 
 const couponSchema = new mongoose.Schema(
+  {
+    code: {
+      type: String,
 
-{
+      required: true,
 
-    code:{
+      unique: true,
 
-        type:String,
+      uppercase: true,
 
-        required:true,
-
-        unique:true,
-
-        uppercase:true,
-
-        trim:true
-
+      trim: true,
     },
 
-    description:{
+    description: {
+      type: String,
 
-        type:String,
+      required: true,
 
-        required:true,
-
-        trim:true
-
+      trim: true,
     },
 
-    discountType:{
+    discountType: {
+      type: String,
 
-        type:String,
+      enum: ["percentage", "fixed"],
 
-        enum:["percentage","fixed"],
-
-        required:true
-
+      required: true,
     },
 
-    discount:{
+    discount: {
+      type: Number,
 
-        type:Number,
+      required: true,
 
-        required:true,
-
-        min:1
-
+      min: 1,
     },
 
-    minimumPurchase:{
+    minimumPurchase: {
+      type: Number,
 
-        type:Number,
+      default: 0,
 
-        default:0,
-
-        min:0
-
+      min: 0,
     },
 
-    maximumDiscount:{
+    maximumDiscount: {
+      type: Number,
 
-        type:Number,
-
-        default:0
-
+      default: 0,
     },
 
-    usageLimit:{
+    usageLimit: {
+      type: Number,
 
-        type:Number,
-
-        default:0
-
+      default: 0,
     },
 
-    usedCount:{
+    usedCount: {
+      type: Number,
 
-        type:Number,
-
-        default:0
-
+      default: 0,
     },
 
-    validFrom:{
+    validFrom: {
+      type: Date,
 
-        type:Date,
-
-        required:true
-
+      required: true,
     },
 
-    validUntil:{
+    validUntil: {
+      type: Date,
 
-        type:Date,
-
-        required:true
-
+      required: true,
     },
 
-    isActive:{
+    isActive: {
+      type: Boolean,
 
-        type:Boolean,
-
-        default:true
-
+      default: true,
     },
 
-    usedBy:[{
+    usedBy: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
 
-        user:{
-
-            type:mongoose.Schema.Types.ObjectId,
-
-            ref:"User"
-
+          ref: "User",
         },
 
-        usedAt:{
+        usedAt: {
+          type: Date,
 
-            type:Date,
+          default: Date.now,
+        },
+      },
+    ],
+  },
 
-            default:Date.now
-
-        }
-
-    }]
-
-},
-
-{
-
-    timestamps:true
-
-}
-
+  {
+    timestamps: true,
+  },
 );
 
-
 couponSchema.index({
-
-description:"text"
-
+  description: "text",
 });
-export default mongoose.model("Coupon",couponSchema);
+export default mongoose.model("Coupon", couponSchema);

@@ -6,59 +6,46 @@ import adminAuth from "../../middleware/adminAuth.js";
 import noCache from "../../middleware/noCache.js";
 
 import {
-
-    loadAnalytics,
-
-    fetchAnalytics,
-
-    exportPdf,
-
-    exportExcel
-
+  loadAnalytics,
+  fetchAnalytics,
+  exportPdf,
+  exportExcel,
 } from "../../controllers/admin/analyticsController.js";
 
 router.get(
+  "/",
 
-    "/",
+  adminAuth,
 
-    adminAuth,
+  noCache,
 
-    noCache,
-
-    loadAnalytics
-
+  loadAnalytics,
 );
 
 router.get(
+  "/data",
 
-    "/data",
+  adminAuth,
 
-    adminAuth,
+  noCache,
 
-    noCache,
-
-    fetchAnalytics
-
+  fetchAnalytics,
 );
 
 router.get(
+  "/export/pdf",
 
-    "/export/pdf",
+  adminAuth,
 
-    adminAuth,
-
-    exportPdf
-
+  exportPdf,
 );
 
 router.get(
+  "/export/excel",
 
-    "/export/excel",
+  adminAuth,
 
-    adminAuth,
-
-    exportExcel
-
+  exportExcel,
 );
 
 export default router;

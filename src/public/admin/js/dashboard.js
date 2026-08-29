@@ -1,322 +1,258 @@
 document.addEventListener("DOMContentLoaded", () => {
-console.log("dashboard.js loaded");
-    const filter = document.getElementById("dashboardFilter");
-    const customRange = document.getElementById("customDateRange");
-    const applyBtn = document.getElementById("applyDateFilter");
+  console.log("dashboard.js loaded");
+  const filter = document.getElementById("dashboardFilter");
+  const customRange = document.getElementById("customDateRange");
+  const applyBtn = document.getElementById("applyDateFilter");
 
-    let revenueChart = null;
-    let orderStatusChart = null;
-    let categoryChart = null;
+  let revenueChart = null;
+  let orderStatusChart = null;
+  let categoryChart = null;
 
-    initializeCharts();
+  initializeCharts();
 
-    loadDashboard();
+  loadDashboard();
 
-    filter.addEventListener("change", () => {
-
-        if (filter.value === "custom") {
-
-            customRange.style.display = "flex";
-            return;
-
-        }
-
-        customRange.style.display = "none";
-
-        loadDashboard(filter.value);
-
-    });
-
-    applyBtn.addEventListener("click", () => {
-
-        const start = document.getElementById("startDate").value;
-        const end = document.getElementById("endDate").value;
-
-        if (!start || !end) {
-
-            Swal.fire({
-                icon: "warning",
-                title: "Missing Dates",
-                text: "Please select both dates."
-            });
-
-            return;
-
-        }
-
-        loadDashboard("custom", start, end);
-
-    });
-
-    async function loadDashboard(type = "month", start = "", end = "") {
-
-        try {
-
-            let url = `/admin/dashboard/data?filter=${type}`;
-
-            if (type === "custom") {
-
-                url += `&start=${start}&end=${end}`;
-
-            }
-
-            const response = await fetch(url);
-
-            const result = await response.json();
-
-            console.log(result)
-
-            if (!result.success) {
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Dashboard",
-                    text: result.message || "Unable to load dashboard."
-                });
-
-                return;
-
-            }
-
-            updateCards(result.dashboard);
-
-            updateRevenueChart(result.revenueChart);
-
-            updateStatusChart(result.orderStatus);
-
-            updateCategoryChart(result.topCategories);
-
-            updateProducts(result.topProducts);
-
-            console.log(result.revenueChart);
-console.log(result.orderStatus);
-console.log(result.topCategories);
-
-        }
-
-        catch (error) {
-
-            console.log(error);
-
-            Swal.fire({
-                icon: "error",
-                title: "Network Error",
-                text: "Unable to load dashboard."
-            });
-
-        }
-
+  filter.addEventListener("change", () => {
+    if (filter.value === "custom") {
+      customRange.style.display = "flex";
+      return;
     }
 
-    function updateCards(data) {
+    customRange.style.display = "none";
 
-        animateValue(
+    loadDashboard(filter.value);
+  });
 
-            document.getElementById("totalOrders"),
+  applyBtn.addEventListener("click", () => {
+    const start = document.getElementById("startDate").value;
+    const end = document.getElementById("endDate").value;
 
-            Number(document.getElementById("totalOrders").textContent.replace(/\D/g, "")) || 0,
+    if (!start || !end) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Dates",
+        text: "Please select both dates.",
+      });
 
-            data.totalOrders
-
-        );
-
-        animateValue(
-
-            document.getElementById("totalUsers"),
-
-            Number(document.getElementById("totalUsers").textContent.replace(/\D/g, "")) || 0,
-
-            data.totalUsers
-
-        );
-
-        animateMoney(
-
-            document.getElementById("totalRevenue"),
-
-            data.totalRevenue
-
-        );
-
+      return;
     }
 
-    function initializeCharts() {
+    loadDashboard("custom", start, end);
+  });
 
-        revenueChart = new Chart(
+  async function loadDashboard(type = "month", start = "", end = "") {
+    try {
+      let url = `/admin/dashboard/data?filter=${type}`;
 
-            document.getElementById("revenueChart"),
+      if (type === "custom") {
+        url += `&start=${start}&end=${end}`;
+      }
 
+      const response = await fetch(url);
+
+      const result = await response.json();
+
+      console.log(result);
+
+      if (!result.success) {
+        Swal.fire({
+          icon: "error",
+          title: "Dashboard",
+          text: result.message || "Unable to load dashboard.",
+        });
+
+        return;
+      }
+
+      updateCards(result.dashboard);
+
+      updateRevenueChart(result.revenueChart);
+
+      updateStatusChart(result.orderStatus);
+
+      updateCategoryChart(result.topCategories);
+
+      updateProducts(result.topProducts);
+
+      console.log(result.revenueChart);
+      console.log(result.orderStatus);
+      console.log(result.topCategories);
+    } catch (error) {
+      console.log(error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Network Error",
+        text: "Unable to load dashboard.",
+      });
+    }
+  }
+
+  function updateCards(data) {
+    animateValue(
+      document.getElementById("totalOrders"),
+
+      Number(
+        document.getElementById("totalOrders").textContent.replace(/\D/g, ""),
+      ) || 0,
+
+      data.totalOrders,
+    );
+
+    animateValue(
+      document.getElementById("totalUsers"),
+
+      Number(
+        document.getElementById("totalUsers").textContent.replace(/\D/g, ""),
+      ) || 0,
+
+      data.totalUsers,
+    );
+
+    animateMoney(
+      document.getElementById("totalRevenue"),
+
+      data.totalRevenue,
+    );
+  }
+
+  function initializeCharts() {
+    revenueChart = new Chart(
+      document.getElementById("revenueChart"),
+
+      {
+        type: "line",
+
+        data: {
+          labels: [],
+
+          datasets: [
             {
+              label: "Revenue",
 
-                type: "line",
+              data: [],
 
-                data: {
+              borderColor: "#3666d6",
 
-                    labels: [],
+              backgroundColor: "rgba(54, 203, 214, 0.15)",
 
-                    datasets: [{
+              tension: 0.4,
 
-                         label: "Revenue",
+              fill: true,
+            },
+          ],
+        },
 
-                        data: [],
+        options: {
+          responsive: true,
 
-                        borderColor: "#3666d6",
+          maintainAspectRatio: false,
+        },
+      },
+    );
 
-                        backgroundColor: "rgba(54, 203, 214, 0.15)",
+    orderStatusChart = new Chart(
+      document.getElementById("orderStatusChart"),
 
-                        tension: .4,
+      {
+        type: "bar",
 
-                        fill: true
+        data: {
+          labels: [],
 
-                    }]
-
-                },
-
-                options: {
-
-                    responsive: true,
-
-                    maintainAspectRatio: false
-
-                }
-
-            }
-
-        );
-
-        orderStatusChart = new Chart(
-
-            document.getElementById("orderStatusChart"),
-
+          datasets: [
             {
+              label: "Orders",
 
-                type: "bar",
+              data: [],
 
-                data: {
+              backgroundColor: "#2245de",
+            },
+          ],
+        },
 
-                    labels: [],
+        options: {
+          responsive: true,
 
-                    datasets: [{
+          maintainAspectRatio: false,
+        },
+      },
+    );
 
-                        label: "Orders",
+    categoryChart = new Chart(
+      document.getElementById("categoryChart"),
 
-                        data: [],
+      {
+        type: "doughnut",
 
-                        backgroundColor: "#2245de"
+        data: {
+          labels: [],
 
-                    }]
-
-                },
-
-                options: {
-
-                    responsive: true,
-
-                    maintainAspectRatio: false
-
-                }
-
-            }
-
-        );
-
-        categoryChart = new Chart(
-
-            document.getElementById("categoryChart"),
-
+          datasets: [
             {
+              data: [],
 
-                type: "doughnut",
+              backgroundColor: [
+                "#3669d6",
 
-                data: {
+                "#222B3C",
 
-                    labels:  [],
+                "#60738B",
 
-                    datasets: [{
+                "#BAC6D6",
 
-                        data: [],
+                "#6eaada",
+              ],
+            },
+          ],
+        },
 
-                        backgroundColor: [
+        options: {
+          responsive: true,
 
-                            "#3669d6",
+          maintainAspectRatio: false,
+        },
+      },
+    );
+  }
 
-                            "#222B3C",
+  function updateRevenueChart(data) {
+    revenueChart.data.labels = data.labels;
 
-                            "#60738B",
+    revenueChart.data.datasets[0].data = data.values;
 
-                            "#BAC6D6",
+    revenueChart.update();
+  }
 
-                            "#6eaada"
+  function updateStatusChart(data) {
+    orderStatusChart.data.labels = data.labels;
 
-                        ]
+    orderStatusChart.data.datasets[0].data = data.values;
 
-                    }]
+    orderStatusChart.update();
+  }
 
-                },
+  function updateCategoryChart(data) {
+    categoryChart.data.labels = data.map((i) => i.name);
 
-                options: {
+    categoryChart.data.datasets[0].data = data.map((i) => i.quantity);
 
-                    responsive: true,
+    categoryChart.update();
+  }
 
-                    maintainAspectRatio: false
+  function updateProducts(products) {
+    const container = document.querySelector(".top-products-list");
 
-                }
+    container.innerHTML = "";
 
-            }
+    if (!products.length) {
+      container.innerHTML = `<div class="empty-state">No sales available</div>`;
 
-        );
-
+      return;
     }
 
-    function updateRevenueChart(data) {
-
-        revenueChart.data.labels = data.labels;
-
-        revenueChart.data.datasets[0].data = data.values;
-
-        revenueChart.update();
-
-    }
-
-    function updateStatusChart(data) {
-
-        orderStatusChart.data.labels = data.labels;
-
-        orderStatusChart.data.datasets[0].data = data.values;
-
-        orderStatusChart.update();
-
-    }
-
-    function updateCategoryChart(data) {
-
-        categoryChart.data.labels = data.map(i => i.name);
-
-        categoryChart.data.datasets[0].data = data.map(i => i.quantity);
-
-        categoryChart.update();
-
-    }
-
-    function updateProducts(products) {
-
-        const container = document.querySelector(".top-products-list");
-
-        container.innerHTML = "";
-
-        if (!products.length) {
-
-            container.innerHTML =
-
-                `<div class="empty-state">No sales available</div>`;
-
-            return;
-
-        }
-
-        products.forEach((product, index) => {
-
-            container.innerHTML += `
+    products.forEach((product, index) => {
+      container.innerHTML += `
 
             <div class="product-item">
 
@@ -345,61 +281,42 @@ console.log(result.topCategories);
             </div>
 
             `;
+    });
+  }
 
-        });
+  function animateValue(element, start, end) {
+    let current = start;
 
-    }
+    const increment = Math.ceil((end - start) / 30);
 
-    function animateValue(element, start, end) {
+    const timer = setInterval(() => {
+      current += increment;
 
-        let current = start;
+      if (current >= end) {
+        current = end;
 
-        const increment = Math.ceil((end - start) / 30);
+        clearInterval(timer);
+      }
 
-        const timer = setInterval(() => {
+      element.textContent = current.toLocaleString("en-IN");
+    }, 20);
+  }
 
-            current += increment;
+  function animateMoney(element, value) {
+    let current = 0;
 
-            if (current >= end) {
+    const increment = Math.ceil(value / 30);
 
-                current = end;
+    const timer = setInterval(() => {
+      current += increment;
 
-                clearInterval(timer);
+      if (current >= value) {
+        current = value;
 
-            }
+        clearInterval(timer);
+      }
 
-            element.textContent = current.toLocaleString("en-IN");
-
-        }, 20);
-
-    }
-
-    function animateMoney(element, value) {
-
-        let current = 0;
-
-        const increment = Math.ceil(value / 30);
-
-        const timer = setInterval(() => {
-
-            current += increment;
-
-            if (current >= value) {
-
-                current = value;
-
-                clearInterval(timer);
-
-            }
-
-            element.textContent =
-
-                "₹" + current.toLocaleString("en-IN");
-
-        }, 20);
-
-    }
-
-
-
+      element.textContent = "₹" + current.toLocaleString("en-IN");
+    }, 20);
+  }
 });

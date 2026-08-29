@@ -2,121 +2,82 @@ const searchInput = document.getElementById("searchInput");
 const clearSearch = document.getElementById("clearSearch");
 
 if (searchInput) {
+  let timer;
 
-    let timer;
+  searchInput.addEventListener("input", function () {
+    clearTimeout(timer);
 
-    searchInput.addEventListener("input", function () {
-
-        clearTimeout(timer);
-
-        timer = setTimeout(() => {
-
-            document.getElementById("searchForm").submit();
-
-        }, 500);
-
-    });
-
+    timer = setTimeout(() => {
+      document.getElementById("searchForm").submit();
+    }, 500);
+  });
 }
 
 if (clearSearch) {
-
-    clearSearch.addEventListener("click", function () {
-
-        window.location = "/admin/brand";
-
-    });
-
+  clearSearch.addEventListener("click", function () {
+    window.location = "/admin/brand";
+  });
 }
 
-
-
 function deleteBrand(id) {
+  Swal.fire({
+    title: "Delete Brand?",
 
-    Swal.fire({
+    text: "This will soft delete the brand.",
 
-        title: "Delete Brand?",
+    icon: "warning",
 
-        text: "This will soft delete the brand.",
+    showCancelButton: true,
 
-        icon: "warning",
+    confirmButtonColor: "#dc2626",
 
-        showCancelButton: true,
+    cancelButtonColor: "#6b7280",
 
-        confirmButtonColor: "#dc2626",
+    confirmButtonText: "Delete",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch("/admin/brand/delete/" + id, {
+        method: "POST",
+      })
+        .then((res) => res.json())
 
-        cancelButtonColor: "#6b7280",
+        .then((data) => {
+          if (data.success) {
+            Swal.fire({
+              icon: "success",
 
-        confirmButtonText: "Delete"
+              title: "Deleted",
 
-    }).then((result) => {
+              text: data.message,
 
-        if (result.isConfirmed) {
-
-            fetch("/admin/brand/delete/" + id, {
-
-                method: "POST"
-
-            })
-
-            .then(res => res.json())
-
-            .then(data => {
-
-                if (data.success) {
-
-                    Swal.fire({
-
-                        icon: "success",
-
-                        title: "Deleted",
-
-                        text: data.message,
-
-                        confirmButtonColor: "#2d7ff9"
-
-                    }).then(() => {
-
-                        window.location.reload();
-
-                    });
-
-                } else {
-
-                    Swal.fire({
-
-                        icon: "error",
-
-                        title: "Cannot Delete",
-
-                        text: data.message,
-
-                        confirmButtonColor: "#dc2626"
-
-                    });
-
-                }
-
-            })
-
-            .catch(() => {
-
-                Swal.fire({
-
-                    icon: "error",
-
-                    title: "Error",
-
-                    text: "Something went wrong.",
-
-                    confirmButtonColor: "#dc2626"
-
-                });
-
+              confirmButtonColor: "#2d7ff9",
+            }).then(() => {
+              window.location.reload();
             });
+          } else {
+            Swal.fire({
+              icon: "error",
 
-        }
+              title: "Cannot Delete",
 
-    });
+              text: data.message,
 
+              confirmButtonColor: "#dc2626",
+            });
+          }
+        })
+
+        .catch(() => {
+          Swal.fire({
+            icon: "error",
+
+            title: "Error",
+
+            text: "Something went wrong.",
+
+            confirmButtonColor: "#dc2626",
+          });
+        });
+    }
+  });
 }

@@ -1,11 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("statusForm");
 
-    const form = document.getElementById("statusForm");
+  if (!form) return;
 
-    if (!form) return;
-
-    const statusSelect = document.getElementById("orderStatus");
-    const updateBtn = document.getElementById("updateStatusBtn");
+  const statusSelect = document.getElementById("orderStatus");
+  const updateBtn = document.getElementById("updateStatusBtn");
 
   const statusFlow = {
     Pending: ["Confirmed", "Cancelled"],
@@ -25,171 +24,140 @@ document.addEventListener("DOMContentLoaded", () => {
     Returned: [],
 
     "Partially Cancelled": [
-        "Processing",
-        "Shipped",
-        "Out For Delivery",
-        "Delivered"
+      "Processing",
+      "Shipped",
+      "Out For Delivery",
+      "Delivered",
     ],
 
-    "Partially Returned": []
-};
-    const currentStatus = statusSelect.dataset.current;
+    "Partially Returned": [],
+  };
+  const currentStatus = statusSelect.dataset.current;
 
-    statusSelect.value = currentStatus;
+  statusSelect.value = currentStatus;
 
-    const allowed = statusFlow[currentStatus] || [];
+  const allowed = statusFlow[currentStatus] || [];
 
-    Array.from(statusSelect.options).forEach(option => {
+  Array.from(statusSelect.options).forEach((option) => {
+    if (option.value === currentStatus || option.value === "") return;
 
-        if (option.value === currentStatus || option.value === "") return;
+    if (!allowed.includes(option.value)) {
+      option.disabled = true;
+    }
+  });
 
-        if (!allowed.includes(option.value)) {
+  if (allowed.length === 0) {
+    statusSelect.disabled = true;
 
-            option.disabled = true;
+    updateBtn.disabled = true;
+  }
 
-        }
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    });
+    if (statusSelect.value === currentStatus) {
+      Swal.fire({
+        icon: "info",
+        title: "No Changes",
+        text: "Please select a different status.",
+      });
 
-    if (allowed.length === 0) {
-
-        statusSelect.disabled = true;
-
-        updateBtn.disabled = true;
-
+      return;
     }
 
-    form.addEventListener("submit", async (e) => {
+    const result = await Swal.fire({
+      title: "Update Order Status?",
 
-        e.preventDefault();
+      text: `Change status to "${statusSelect.value}"?`,
 
-        if (statusSelect.value === currentStatus) {
+      icon: "question",
 
-            Swal.fire({
-                icon: "info",
-                title: "No Changes",
-                text: "Please select a different status."
-            });
+      showCancelButton: true,
 
-            return;
+      confirmButtonText: "Update",
 
-        }
+      cancelButtonText: "Cancel",
 
-        const result = await Swal.fire({
+      confirmButtonColor: "#111827",
+    });
 
-            title: "Update Order Status?",
+    if (!result.isConfirmed) return;
 
-            text: `Change status to "${statusSelect.value}"?`,
+    updateBtn.disabled = true;
 
-            icon: "question",
-
-            showCancelButton: true,
-
-            confirmButtonText: "Update",
-
-            cancelButtonText: "Cancel",
-
-            confirmButtonColor: "#111827"
-
-        });
-
-        if (!result.isConfirmed) return;
-
-        updateBtn.disabled = true;
-
-        updateBtn.innerHTML = `
+    updateBtn.innerHTML = `
             <i class="fa-solid fa-spinner fa-spin"></i>
             Updating...
         `;
 
-        form.submit();
-
-    });
-document.querySelectorAll(".approve-return-btn").forEach(btn => {
-
+    form.submit();
+  });
+  document.querySelectorAll(".approve-return-btn").forEach((btn) => {
     btn.addEventListener("click", async () => {
+      const orderId = btn.dataset.order;
+      const itemId = btn.dataset.item;
 
-        const orderId = btn.dataset.order;
-        const itemId = btn.dataset.item;
+      const res = await fetch(
+        `/admin/orders/${orderId}/items/${itemId}/approve-return`,
+        {
+          method: "PATCH",
+        },
+      );
 
-        const res = await fetch(
-            `/admin/orders/${orderId}/items/${itemId}/approve-return`,
-            {
-                method: "PATCH"
-            }
-        );
+      const data = await res.json();
 
-        const data = await res.json();
-
-        if (data.success) {
-
-            Swal.fire({
-                icon: "success",
-                title: data.message
-            }).then(() => location.reload());
-
-        } else {
-
-            Swal.fire({
-                icon: "error",
-                title: data.message
-            });
-
-        }
-
-    });
-
-});
-
-
-
-document.querySelectorAll(".reject-return-btn").forEach(btn => {
-
-    btn.addEventListener("click", async () => {
-
-        const { value: reason } = await Swal.fire({
-            title: "Reject Return",
-            input: "text",
-            inputPlaceholder: "Reason",
-            showCancelButton: true
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: data.message,
+        }).then(() => location.reload());
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: data.message,
         });
-
-        if (!reason) return;
-
-        const orderId = btn.dataset.order;
-        const itemId = btn.dataset.item;
-
-        const res = await fetch(
-            `/admin/orders/${orderId}/items/${itemId}/reject-return`,
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ reason })
-            }
-        );
-
-        const data = await res.json();
-
-        if (data.success) {
-
-            Swal.fire({
-                icon: "success",
-                title: data.message
-            }).then(() => location.reload());
-
-        } else {
-
-            Swal.fire({
-                icon: "error",
-                title: data.message
-            });
-
-        }
-
+      }
     });
+  });
 
-});
+  document.querySelectorAll(".reject-return-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const { value: reason } = await Swal.fire({
+        title: "Reject Return",
+        input: "text",
+        inputPlaceholder: "Reason",
+        showCancelButton: true,
+      });
 
+      if (!reason) return;
+
+      const orderId = btn.dataset.order;
+      const itemId = btn.dataset.item;
+
+      const res = await fetch(
+        `/admin/orders/${orderId}/items/${itemId}/reject-return`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reason }),
+        },
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: data.message,
+        }).then(() => location.reload());
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: data.message,
+        });
+      }
+    });
+  });
 });

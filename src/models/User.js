@@ -1,81 +1,80 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-
+const userSchema = new mongoose.Schema(
+  {
     firstName: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
     },
 
     lastName: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
     },
 
     email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
     },
 
     phone: {
-        type: String,
-        unique: true,
-        sparse: true
-
+      type: String,
+      unique: true,
+      sparse: true,
     },
 
     password: {
-        type: String,
-       
+      type: String,
     },
 
     isBlocked: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false,
     },
     otp: String,
 
-       otpExpiry: Date,
+    otpExpiry: Date,
 
     isVerified: {
-    type: Boolean,
-    default: false
-},
-referralCode: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
-},
+      type: Boolean,
+      default: false,
+    },
+    referralCode: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
 
-referredBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    default: null
-},
+    referredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
 
-isReferralApplied: {
-    type: Boolean,
-    default: false
-},
-authProvider: {
-    type: String,
-    enum: ['local', 'google'],
-    default: 'local'
-},
-googleId: {
-    type: String
-},
+    isReferralApplied: {
+      type: Boolean,
+      default: false,
+    },
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
+    googleId: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
-}, {
-    timestamps: true
-});
-
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;

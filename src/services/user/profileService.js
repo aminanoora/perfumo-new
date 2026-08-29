@@ -1,47 +1,34 @@
 import Coupon from "../../models/Coupon.js";
 
-
 export const getAvailableCoupons = async (userId) => {
-
-    
-
   const now = new Date();
-    const coupons = await Coupon.find({
+  const coupons = await Coupon.find({
+    isActive: true,
 
-        isActive: true,
+    validFrom: { $lte: now },
 
-        validFrom: { $lte: now },
+    validUntil: { $gte: now },
 
-        validUntil: { $gte: now },
+    $or: [
+      {
+        usageLimit: 0,
+      },
 
-        $or: [
+      {
+        $expr: {
+          $lt: ["$usedCount", "$usageLimit"],
+        },
+      },
+    ],
 
-            {
-                usageLimit: 0
-            },
-
-            {
-                $expr: {
-                    $lt: ["$usedCount", "$usageLimit"]
-                }
-            }
-
-        ],
-
-        "usedBy.user": {
-
-            $ne: userId
-
-        }
-
-    })
+    "usedBy.user": {
+      $ne: userId,
+    },
+  })
 
     .sort({
-
-        validUntil: 1
-
+      validUntil: 1,
     });
 
-    return coupons;
-
+  return coupons;
 };

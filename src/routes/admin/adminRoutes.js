@@ -1,56 +1,26 @@
-import express from 'express';
+import express from "express";
 
 const router = express.Router();
 
 import {
+  loadAdminLogin,
+  adminLogin,
+  adminDashboard,
+  getDashboardData,
+  adminLogout,
+} from "../../controllers/admin/adminController.js";
 
-    loadAdminLogin,
+import adminAuth from "../../middleware/adminAuth.js";
+import noCache from "../../middleware/noCache.js";
 
-    adminLogin,
+router.get("/login", noCache, loadAdminLogin);
 
-    adminDashboard,
+router.post("/login", adminLogin);
 
-    getDashboardData,
+router.get("/dashboard", adminAuth, noCache, adminDashboard);
 
-    adminLogout
+router.get("/dashboard/data", adminAuth, noCache, getDashboardData);
 
-} from '../../controllers/admin/adminController.js';
-
-import adminAuth from '../../middleware/adminAuth.js';
-import noCache from '../../middleware/noCache.js';
-
-router.get(
-    '/login',
-    noCache,
-    loadAdminLogin
-);
-
-router.post(
-    '/login',
-    adminLogin
-);
-
-router.get(
-    '/dashboard',
-    adminAuth,
-     noCache,
-    adminDashboard
-);
-
-router.get(
-    "/dashboard/data",
-    adminAuth,
-    noCache,
-    getDashboardData
-);
-
-router.get(
-    '/logout',
-    noCache,
-    adminLogout
-);
-
-
-
+router.get("/logout", noCache, adminLogout);
 
 export default router;

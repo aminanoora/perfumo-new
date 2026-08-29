@@ -3,315 +3,300 @@
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Inventory</title>
+  <title>Inventory</title>
 
-<link rel="stylesheet" href="/admin/css/inventory.css">
+  <link rel="stylesheet" href="/admin/css/inventory.css">
   <link rel="stylesheet" href="/admin/css/admin.css">
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
 
-<%- include("../partials/header") %>
+  <%- include("../partials/header") %>
 
 
-<div class="page">
+    <div class="page">
 
-<%- include("../partials/sidebar") %>
+      <%- include("../partials/sidebar") %>
 
-  <div class="content">
-<div class="page-header">
+        <div class="content">
+          <div class="page-header">
 
-<h1>Inventory Management</h1>
+            <h1>Inventory Management</h1>
 
-<p>Manage product stock and variants</p>
+            <p>Manage product stock and variants</p>
 
-</div>
+          </div>
 
 
 
-<div class="inventory-cards">
+          <div class="inventory-cards">
 
-<div class="card">
+            <div class="card">
 
-<h2><%= stats.totalVariants %></h2>
+              <h2>
+                <%= stats.totalVariants %>
+              </h2>
 
-<span>Total Variants</span>
+              <span>Total Variants</span>
 
-</div>
+            </div>
 
-<div class="card">
+            <div class="card">
 
-<h2><%= stats.inStock %></h2>
+              <h2>
+                <%= stats.inStock %>
+              </h2>
 
-<span>In Stock</span>
+              <span>In Stock</span>
 
-</div>
+            </div>
 
-<div class="card low">
+            <div class="card low">
 
-<h2><%= stats.lowStock %></h2>
+              <h2>
+                <%= stats.lowStock %>
+              </h2>
 
-<span>Low Stock</span>
+              <span>Low Stock</span>
 
-</div>
+            </div>
 
-<div class="card out">
+            <div class="card out">
 
-<h2><%= stats.outOfStock %></h2>
+              <h2>
+                <%= stats.outOfStock %>
+              </h2>
 
-<span>Out Of Stock</span>
+              <span>Out Of Stock</span>
 
-</div>
+            </div>
 
-</div>
+          </div>
 
 
-<form
-class="toolbar"
-method="GET"
-action="/admin/inventory">
+          <form class="toolbar" method="GET" action="/admin/inventory">
 
-<input
-type="text"
-name="search"
-placeholder="Search Product..."
-value="<%= search %>">
+            <input type="text" name="search" placeholder="Search Product..." value="<%= search %>">
 
-<select name="status">
+            <select name="status">
 
-<option value="">All Status</option>
+              <option value="">All Status</option>
 
-<option
-value="instock"
-<%= status==="instock"?"selected":"" %>>
-In Stock
-</option>
+              <option value="instock" <%=status==="instock" ?"selected":"" %>>
+                In Stock
+              </option>
 
-<option
-value="lowstock"
-<%= status==="low"?"selected":"" %>>
-Low Stock
-</option>
+              <option value="lowstock" <%=status==="low" ?"selected":"" %>>
+                Low Stock
+              </option>
 
-<option
-value="outofstock"
-<%= status==="out"?"selected":"" %>>
-Out Of Stock
-</option>
+              <option value="outofstock" <%=status==="out" ?"selected":"" %>>
+                Out Of Stock
+              </option>
 
-</select>
+            </select>
 
-<button>
+            <button>
 
-<i class="fa-solid fa-search"></i>
+              <i class="fa-solid fa-search"></i>
 
-Search
+              Search
 
-</button>
+            </button>
 
-</form>
+          </form>
 
 
 
-<table class="inventory-table">
+          <table class="inventory-table">
 
-<thead>
+            <thead>
 
-<tr>
+              <tr>
 
-<th>Image</th>
+                <th>Image</th>
 
-<th>Product</th>
+                <th>Product</th>
 
-<th>Variant</th>
+                <th>Variant</th>
 
-<th>SKU</th>
+                <th>SKU</th>
 
-<th>Price</th>
+                <th>Price</th>
 
-<th>Stock</th>
+                <th>Stock</th>
 
-<th>Status</th>
+                <th>Status</th>
 
-<th></th>
+                <th></th>
 
-</tr>
+              </tr>
 
-</thead>
+            </thead>
 
-<tbody>
+            <tbody>
 
-<% variants.forEach(variant=>{ %>
+              <% variants.forEach(variant=>{ %>
 
-<tr>
+                <tr>
 
-<td>
+                  <td>
 
-<img
-src="/admin/uploads/products/<%= variant.images[0] %>"
-class="product-image">
+                    <img src="/admin/uploads/products/<%= variant.images[0] %>" class="product-image">
 
-</td>
+                  </td>
 
-<td>
+                  <td>
 
-<%= variant.product.name %>
+                    <%= variant.product.name %>
 
-</td>
+                  </td>
 
-<td>
+                  <td>
 
-<%= variant.size %> ml
+                    <%= variant.size %> ml
 
-<br>
+                      <br>
 
-<small>
+                      <small>
 
-<%= variant.concentration %>
+                        <%= variant.concentration %>
 
-</small>
+                      </small>
 
-</td>
+                  </td>
 
-<td>
+                  <td>
 
-<%= variant.sku %>
+                    <%= variant.sku %>
 
-</td>
+                  </td>
 
-<td>
+                  <td>
 
-₹<%= variant.salePrice.toLocaleString() %>
+                    ₹<%= variant.salePrice.toLocaleString() %>
 
-</td>
+                  </td>
 
-<td>
+                  <td>
 
-<%= variant.stock %>
+                    <%= variant.stock %>
 
-</td>
+                  </td>
 
-<td>
+                  <td>
 
-<% if(variant.stock===0){ %>
+                    <% if(variant.stock===0){ %>
 
-<span class="badge out">
+                      <span class="badge out">
 
-Out Of Stock
+                        Out Of Stock
 
-</span>
+                      </span>
 
-<% }else if(variant.stock<=10){ %>
+                      <% }else if(variant.stock<=10){ %>
 
-<span class="badge low">
+                        <span class="badge low">
 
-Low Stock
+                          Low Stock
 
-</span>
+                        </span>
 
-<% }else{ %>
+                        <% }else{ %>
 
-<span class="badge success">
+                          <span class="badge success">
 
-In Stock
+                            In Stock
 
-</span>
+                          </span>
 
-<% } %>
+                          <% } %>
 
-</td>
+                  </td>
 
-<td>
+                  <td>
 
-<div class="dropdown">
+                    <div class="dropdown">
 
-<button class="menu-btn">
+                      <button class="menu-btn">
 
-<i class="fa-solid fa-ellipsis-vertical"></i>
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
 
-</button>
+                      </button>
 
-<div class="dropdown-content">
+                      <div class="dropdown-content">
 
-<a
-href="/admin/inventory/<%= variant._id %>">
+                        <a href="/admin/inventory/<%= variant._id %>">
 
-<i class="fa-solid fa-eye"></i>
+                          <i class="fa-solid fa-eye"></i>
 
-View Details
+                          View Details
 
-</a>
+                        </a>
 
-</div>
+                      </div>
 
-</div>
+                    </div>
 
-</td>
+                  </td>
 
-</tr>
+                </tr>
 
-<% }) %>
+                <% }) %>
 
-</tbody>
+            </tbody>
 
-</table>
+          </table>
 
 
 
-<div class="pagination">
+          <div class="pagination">
 
-<% if(currentPage>1){ %>
+            <% if(currentPage>1){ %>
 
-<a
-href="?page=<%= currentPage-1 %>&search=<%= search %>&status=<%= status %>">
+              <a href="?page=<%= currentPage-1 %>&search=<%= search %>&status=<%= status %>">
 
-Previous
+                Previous
 
-</a>
+              </a>
 
-<% } %>
+              <% } %>
 
-<% for(let i=1;i<=totalPages;i++){ %>
+                <% for(let i=1;i<=totalPages;i++){ %>
 
-<a
+                  <a class="<%= currentPage===i?'active':'' %>"
+                    href="?page=<%= i %>&search=<%= search %>&status=<%= status %>">
 
-class="<%= currentPage===i?'active':'' %>"
+                    <%= i %>
 
-href="?page=<%= i %>&search=<%= search %>&status=<%= status %>">
+                  </a>
 
-<%= i %>
+                  <% } %>
 
-</a>
+                    <% if(currentPage<totalPages){ %>
 
-<% } %>
+                      <a href="?page=<%= currentPage+1 %>&search=<%= search %>&status=<%= status %>">
 
-<% if(currentPage<totalPages){ %>
+                        Next
 
-<a
-href="?page=<%= currentPage+1 %>&search=<%= search %>&status=<%= status %>">
+                      </a>
 
-Next
+                      <% } %>
 
-</a>
+          </div>
 
-<% } %>
+        </div>
 
-</div>
+    </div>
 
-</div>
-
-</div>
-
-<script src="/admin/js/inventory.js"></script>
+    <script src="/admin/js/inventory.js"></script>
 
 </body>
 

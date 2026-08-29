@@ -12,219 +12,215 @@
     <link rel="stylesheet" href="/user/css/footer.css">
     <link rel="stylesheet" href="/user/css/wishlist.css">
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<section class="wishlist-section">
+        <section class="wishlist-section">
 
-    <div class="wishlist-container">
+            <div class="wishlist-container">
 
-        <div class="wishlist-title">
+                <div class="wishlist-title">
 
-            <h1>My Wishlist</h1>
+                    <h1>My Wishlist</h1>
 
-            <p>
+                    <p>
 
-                <%= wishlist && wishlist.products ? wishlist.products.length : 0 %>
-                Item(s)
-
-            </p>
-
-        </div>
-
-        <% if (wishlist && wishlist.products && wishlist.products.length > 0) { %>
-        <div class="wishlist-list">
-
-            <% wishlist.products.forEach(item=>{ %>
-
-            <div class="wishlist-card">
-
-                <div class="wishlist-image">
-
-                   <img
-    src="/admin/uploads/products/<%= item.variant.images[0] %>"
-    alt="<%= item.variant.product.name %>">
-
-                </div>
-
-                <div class="wishlist-details">
-
-                    <h2><%=item.variant.product.name%></h2>
-
-                    <p class="brand">
-
-                        <%= item.variant.product.brand.name  %>
+                        <%= wishlist && wishlist.products ? wishlist.products.length : 0 %>
+                            Item(s)
 
                     </p>
 
-                    <p class="variant">
-
-                        <%= item.variant.size %> ml •
-
-                        <%= item.variant.concentration %>
-
-                    </p>
-
-                    <h3>
-
-                        ₹<%= item.variant.salePrice.toLocaleString() %>
-
-                    </h3>
-
-                   <% if(item.variant.stock === 0){ %>
-
-<span class="stock unavailable">
-    Out of Stock
-</span>
-
-<% } else if(item.variant.stock < 10){ %>
-
-<span class="stock low-stock">
-    Only <%= item.variant.stock %> left
-</span>
-
-<% } else { %>
-
-<span class="stock available">
-    In Stock
-</span>
-
-<% } %>
-
                 </div>
 
-                <div class="wishlist-actions">
+                <% if (wishlist && wishlist.products && wishlist.products.length> 0) { %>
+                    <div class="wishlist-list">
 
-                    <% if(item.variant.stock>0){ %>
+                        <% wishlist.products.forEach(item=>{ %>
 
-                    <button
-                        class="move-cart-btn"
-                        data-variant="<%= item.variant._id %>">
+                            <div class="wishlist-card">
 
-                        <i class="fa-solid fa-cart-shopping"></i>
+                                <div class="wishlist-image">
 
-                        Move To Cart
+                                    <img src="/admin/uploads/products/<%= item.variant.images[0] %>"
+                                        alt="<%= item.variant.product.name %>">
 
-                    </button>
+                                </div>
 
-                    <% } %>
+                                <div class="wishlist-details">
 
-                    <button
-                        class="remove-btn"
-                       data-variant="<%= item.variant._id %>">
+                                    <h2>
+                                        <%=item.variant.product.name%>
+                                    </h2>
 
-                        <i class="fa-solid fa-trash"></i>
+                                    <p class="brand">
 
-                        Remove
+                                        <%= item.variant.product.brand.name %>
 
-                    </button>
+                                    </p>
 
-                </div>
+                                    <p class="variant">
+
+                                        <%= item.variant.size %> ml •
+
+                                            <%= item.variant.concentration %>
+
+                                    </p>
+
+                                    <h3>
+
+                                        ₹<%= item.variant.salePrice.toLocaleString() %>
+
+                                    </h3>
+
+                                    <% if(item.variant.stock===0){ %>
+
+                                        <span class="stock unavailable">
+                                            Out of Stock
+                                        </span>
+
+                                        <% } else if(item.variant.stock < 10){ %>
+
+                                            <span class="stock low-stock">
+                                                Only <%= item.variant.stock %> left
+                                            </span>
+
+                                            <% } else { %>
+
+                                                <span class="stock available">
+                                                    In Stock
+                                                </span>
+
+                                                <% } %>
+
+                                </div>
+
+                                <div class="wishlist-actions">
+
+                                    <% if(item.variant.stock>0){ %>
+
+                                        <button class="move-cart-btn" data-variant="<%= item.variant._id %>">
+
+                                            <i class="fa-solid fa-cart-shopping"></i>
+
+                                            Move To Cart
+
+                                        </button>
+
+                                        <% } %>
+
+                                            <button class="remove-btn" data-variant="<%= item.variant._id %>">
+
+                                                <i class="fa-solid fa-trash"></i>
+
+                                                Remove
+
+                                            </button>
+
+                                </div>
+
+                            </div>
+
+                            <% }) %>
+
+                    </div>
+
+                    <% }else{ %>
+
+                        <div class="empty-wishlist">
+
+                            <i class="fa-regular fa-heart"></i>
+
+                            <h2>Your Wishlist is Empty</h2>
+
+                            <p>
+
+                                Save perfumes you love and they'll appear here.
+
+                            </p>
+
+                            <a href="/shop" class="shop-btn">
+
+                                Continue Shopping
+
+                            </a>
+
+                        </div>
+
+                        <% } %>
 
             </div>
 
-            <% }) %>
+        </section>
 
-        </div>
-
-        <% }else{ %>
-
-        <div class="empty-wishlist">
-
-            <i class="fa-regular fa-heart"></i>
-
-            <h2>Your Wishlist is Empty</h2>
-
-            <p>
-
-                Save perfumes you love and they'll appear here.
-
-            </p>
-
-            <a href="/shop" class="shop-btn">
-
-                Continue Shopping
-
-            </a>
-
-        </div>
-
-        <% } %>
-
-    </div>
-
-</section>
-
-<%- include('../partials/footer') %>
+        <%- include('../partials/footer') %>
 
 
-<script>
+            <script>
 
-const profileToggle =
-document.getElementById('profileToggle');
+                const profileToggle =
+                    document.getElementById('profileToggle');
 
-const profileMenu =
-document.getElementById('profileMenu');
+                const profileMenu =
+                    document.getElementById('profileMenu');
 
-if(profileToggle){
+                if (profileToggle) {
 
-    profileToggle.addEventListener('click', (e) => {
+                    profileToggle.addEventListener('click', (e) => {
 
-        e.preventDefault();
+                        e.preventDefault();
 
-        profileMenu.classList.toggle('show');
-    });
+                        profileMenu.classList.toggle('show');
+                    });
 
-    document.addEventListener('click', (e) => {
+                    document.addEventListener('click', (e) => {
 
-        if(
-            !profileToggle.contains(e.target) &&
-            !profileMenu.contains(e.target)
-        ){
-            profileMenu.classList.remove('show');
-        }
-    });
-}
+                        if (
+                            !profileToggle.contains(e.target) &&
+                            !profileMenu.contains(e.target)
+                        ) {
+                            profileMenu.classList.remove('show');
+                        }
+                    });
+                }
 
-</script>
+            </script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<% if(typeof message !== "undefined" && message){ %>
+            <% if(typeof message !=="undefined" && message){ %>
 
-<script>
+                <script>
 
-Swal.fire({
+                    Swal.fire({
 
-    icon:"<%= message.type %>",
+                        icon: "<%= message.type %>",
 
-    title:
-        "<%= message.type==='success'
-            ? 'Success'
-            : message.type==='warning'
-            ? 'Warning'
-            : 'Error' %>",
+                        title:
+                            "<%= message.type==='success'
+                                ? 'Success'
+                                : message.type === 'warning'
+                                    ? 'Warning'
+                                    : 'Error' %> ",
 
-    text:"<%= message.text %>",
+    text: "<%= message.text %>",
 
-    timer:1500,
+                        timer: 1500,
 
-    showConfirmButton:false
+                        showConfirmButton: false
 
-});
+                    });
 
-</script>
+                </script>
 
-<% } %>
+                <% } %>
 
-<script src="/user/js/wishlist.js"></script>
-<script src="/user/js/block-check.js"></script>
+                    <script src="/user/js/wishlist.js"></script>
+                    <script src="/user/js/block-check.js"></script>
 
 </body>
 

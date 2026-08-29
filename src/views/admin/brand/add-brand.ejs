@@ -12,310 +12,198 @@
     <link rel="stylesheet" href="/admin/css/admin.css">
     <link rel="stylesheet" href="/admin/css/add-brand.css">
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<div class="page">
+        <div class="page">
 
-<%- include('../partials/sidebar') %>
+            <%- include('../partials/sidebar') %>
 
-<main class="content">
+                <main class="content">
 
-<div class="page-header">
+                    <div class="page-header">
 
-    <div>
+                        <div>
 
-        <h2>Add Brand</h2>
+                            <h2>Add Brand</h2>
 
-        <p>Create a new perfume brand</p>
+                            <p>Create a new perfume brand</p>
 
-    </div>
+                        </div>
 
-</div>
+                    </div>
 
-<div class="form-card">
+                    <div class="form-card">
 
-<form
+                        <form id="brandForm" action="/admin/brand/add" method="POST" enctype="multipart/form-data">
 
-    id="brandForm"
+                            <div class="form-layout">
 
-    action="/admin/brand/add"
+                                <div class="left-section">
 
-    method="POST"
+                                    <div class="form-group">
 
-    enctype="multipart/form-data">
+                                        <label>Brand Name</label>
 
-<div class="form-layout">
+                                        <input type="text" id="name" name="name" autocomplete="off"
+                                            placeholder="Enter brand name">
 
-<div class="left-section">
+                                        <small class="error" id="nameError"></small>
 
-<div class="form-group">
+                                    </div>
 
-<label>Brand Name</label>
+                                    <div class="form-group">
 
-<input
+                                        <label>Slug</label>
 
-    type="text"
+                                        <input type="text" id="slug" name="slug" autocomplete="off"
+                                            placeholder="Enter slug">
 
-    id="name"
+                                        <small class="error" id="slugError"></small>
 
-    name="name"
+                                    </div>
 
-    autocomplete="off"
 
-    placeholder="Enter brand name">
 
-<small
+                                    <div class="form-group">
 
-    class="error"
+                                        <label>Description</label>
 
-    id="nameError"></small>
+                                        <textarea id="description" name="description" rows="6"
+                                            placeholder="Brand description"></textarea>
 
-</div>
+                                        <small class="error" id="descriptionError"></small>
 
-<div class="form-group">
+                                    </div>
 
-<label>Slug</label>
+                                </div>
 
-<input
+                                <div class="right-section">
 
-    type="text"
+                                    <h3>Brand Logo</h3>
 
-    id="slug"
+                                    <div class="logo-upload">
 
-    name="slug"
+                                        <input type="file" id="logo" name="logo" accept="image/*" hidden>
 
-    autocomplete="off"
+                                        <div class="upload-box" id="uploadBox">
 
-    placeholder="Enter slug">
+                                            <div class="upload-preview" id="previewContainer">
 
-<small
+                                                <img id="previewImage" src="" alt="">
 
-    class="error"
+                                                <div class="upload-placeholder" id="placeholder">
 
-    id="slugError"></small>
+                                                    <i class="fa-solid fa-cloud-arrow-up"></i>
 
-</div>
+                                                    <h4>Upload Brand Logo</h4>
 
+                                                    <p>PNG, JPG or WEBP</p>
 
+                                                    <button type="button" id="browseBtn" class="browse-btn">
 
-<div class="form-group">
+                                                        Browse Files
 
-<label>Description</label>
+                                                    </button>
 
-<textarea
+                                                </div>
 
-    id="description"
+                                            </div>
 
-    name="description"
+                                        </div>
 
-    rows="6"
+                                        <small class="error" id="logoError"></small>
 
-    placeholder="Brand description"></textarea>
+                                    </div>
 
-<small
+                                    <div class="logo-actions" id="logoActions" style="display:none;">
 
-    class="error"
+                                        <button type="button" class="remove-logo" id="removeLogo">
 
-    id="descriptionError"></small>
+                                            <i class="fa-solid fa-trash"></i>
 
-</div>
+                                            Remove Logo
 
-</div>
+                                        </button>
 
-<div class="right-section">
+                                        <input type="hidden" name="removeLogo" id="removeLogoInput" value="false">
 
-<h3>Brand Logo</h3>
+                                    </div>
 
-<div class="logo-upload">
+                                </div>
 
-<input
+                            </div>
 
-    type="file"
+                            <div class="button-group">
 
-    id="logo"
+                                <a href="/admin/brand" class="cancel-btn">
 
-    name="logo"
+                                    Cancel
 
-    accept="image/*"
+                                </a>
 
-    hidden>
+                                <button type="submit" class="save-btn">
 
-<div
+                                    Add Brand
 
-    class="upload-box"
+                                </button>
 
-    id="uploadBox">
+                            </div>
 
-<div
+                        </form>
 
-    class="upload-preview"
+                    </div>
 
-    id="previewContainer">
+                </main>
 
-<img
+        </div>
 
-    id="previewImage"
+        <script src="/admin/js/add-brand.js"></script>
 
-    src=""
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    alt="">
+        <% if(typeof message !=="undefined" && message){ %>
 
-<div
+            <script>
 
-    class="upload-placeholder"
+                Swal.fire({
 
-    id="placeholder">
+                    icon: "<%= message.type %>",
 
-<i class="fa-solid fa-cloud-arrow-up"></i>
-
-<h4>Upload Brand Logo</h4>
-
-<p>PNG, JPG or WEBP</p>
-
-<button
-
-    type="button"
-
-    id="browseBtn"
-
-    class="browse-btn">
-
-Browse Files
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<small
-
-    class="error"
-
-    id="logoError"></small>
-
-</div>
-
-<div
-
-    class="logo-actions"
-
-    id="logoActions"
-
-    style="display:none;">
-
-<button
-
-    type="button"
-
-    class="remove-logo"
-
-    id="removeLogo">
-
-<i class="fa-solid fa-trash"></i>
-
-Remove Logo
-
-</button>
-
-<input
-
-    type="hidden"
-
-    name="removeLogo"
-
-    id="removeLogoInput"
-
-    value="false">
-
-</div>
-
-</div>
-
-</div>
-
-<div class="button-group">
-
-<a
-
-    href="/admin/brand"
-
-    class="cancel-btn">
-
-Cancel
-
-</a>
-
-<button
-
-    type="submit"
-
-    class="save-btn">
-
-Add Brand
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-</main>
-
-</div>
-
-<script src="/admin/js/add-brand.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<% if(typeof message !== "undefined" && message){ %>
-
-<script>
-
-Swal.fire({
-
-    icon: "<%= message.type %>",
-
-    title:
-        "<%= message.type === 'success'
-            ? 'Success'
-            : message.type === 'warning'
-            ? 'Warning'
-            : 'Error' %>",
+                    title:
+                        "<%= message.type === 'success'
+                            ? 'Success'
+                            : message.type === 'warning'
+                                ? 'Warning'
+                                : 'Error' %> ",
 
     text: "<%= message.text %>",
 
-    confirmButtonColor:
-        "<%= message.type === 'success'
-            ? '#2d7ff9'
-            : message.type === 'warning'
-            ? '#f59e0b'
-            : '#dc2626' %>"
+                    confirmButtonColor:
+                        "<%= message.type === 'success'
+                            ? '#2d7ff9'
+                            : message.type === 'warning'
+                                ? '#f59e0b'
+                                : '#dc2626' %> "
 
-}).then(() => {
+                }).then(() => {
 
-    <% if(message.type === "success"){ %>
+    <% if (message.type === "success") { %>
 
-        window.location.href = "/admin/brand";
+                        window.location.href = "/admin/brand";
 
     <% } %>
 
 });
 
-</script>
+            </script>
 
-<% } %>
+            <% } %>
 
 </body>
 

@@ -5,23 +5,17 @@
 
     <meta charset="UTF-8">
 
-    <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Add Address</title>
 
-    <link
-    rel="stylesheet"
-    href="/user/css/add-address.css">
-    
-     <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/user/css/add-address.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap"
-    rel="stylesheet">
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="/user/css/headers.css">
 
@@ -29,473 +23,429 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body>
- <%- include('../partials/header') %>
-<section class="address-section">
+    <%- include('../partials/header') %>
+        <section class="address-section">
 
-    <div class="address-container">
+            <div class="address-container">
 
-        <div class="address-heading">
+                <div class="address-heading">
 
-            <h1>
-                Add New Address
-            </h1>
+                    <h1>
+                        Add New Address
+                    </h1>
 
-            <p>
-                Enter your shipping details for exclusive luxury delivery.
-            </p>
-
-        </div>
-
-        <form
-        action="/address/add-address"
-        method="POST"
-        class="address-form"
-        id="addressForm">
-
-        <input
-    type="hidden"
-    name="returnTo"
-    value="<%= returnTo || '' %>">
-
-            <div class="form-row">
-
-                <div class="input-group">
-
-                    <label>
-                        First Name
-                    </label>
-
-                    <input
-                    type="text"
-                    name="firstName"
-                    placeholder="Enter your First name "
-                    id="firstName">
+                    <p>
+                        Enter your shipping details for exclusive luxury delivery.
+                    </p>
 
                 </div>
 
-                <div class="input-group">
+                <form action="/address/add-address" method="POST" class="address-form" id="addressForm">
 
-                    <label>
-                        Last Name
-                    </label>
+                    <input type="hidden" name="returnTo" value="<%= returnTo || '' %>">
 
-                    <input
-                    type="text"
-                    name="lastName"
-                    placeholder="Enter your Last name"
-                    >
+                    <div class="form-row">
 
-                </div>
+                        <div class="input-group">
 
-            </div>
+                            <label>
+                                First Name
+                            </label>
 
-            <div class="input-group">
+                            <input type="text" name="firstName" placeholder="Enter your First name " id="firstName">
 
-                <label>
-                    Phone Number
-                </label>
+                        </div>
 
-                <input
-                type="text"
-                name="phone"
-                placeholder="Enter phone number"
-              >
+                        <div class="input-group">
 
-            </div>
+                            <label>
+                                Last Name
+                            </label>
 
-            <div class="input-group">
+                            <input type="text" name="lastName" placeholder="Enter your Last name">
 
-                <label>
-                    Street Address
-                </label>
+                        </div>
 
-                <input
-                type="text"
-                name="streetAddress"
-                placeholder="Enter street address"
-              >
+                    </div>
 
-            </div>
+                    <div class="input-group">
 
-            <div class="form-row">
+                        <label>
+                            Phone Number
+                        </label>
 
-                <div class="input-group">
+                        <input type="text" name="phone" placeholder="Enter phone number">
 
-                    <label>
-                        City
-                    </label>
+                    </div>
 
-                    <input
-                    type="text"
-                    name="city"
-                    placeholder="Enter city"
-                    >
+                    <div class="input-group">
 
-                </div>
+                        <label>
+                            Street Address
+                        </label>
 
-                <div class="input-group">
+                        <input type="text" name="streetAddress" placeholder="Enter street address">
 
-                    <label>
-                        State
-                    </label>
+                    </div>
 
-                    <input
-                    type="text"
-                    name="state"
-                    placeholder="Enter state"
-                    >
+                    <div class="form-row">
 
-                </div>
+                        <div class="input-group">
 
-                <div class="input-group">
+                            <label>
+                                City
+                            </label>
 
-                    <label>
-                        Pincode
-                    </label>
+                            <input type="text" name="city" placeholder="Enter city">
 
-                    <input
-                    type="text"
-                    name="pincode"
-                    placeholder="Enter pincode"
-                    >
+                        </div>
 
-                </div>
+                        <div class="input-group">
 
-            </div>
+                            <label>
+                                State
+                            </label>
 
-            <div class="input-group">
+                            <input type="text" name="state" placeholder="Enter state">
 
-                <label>
-                    Country
-                </label>
+                        </div>
 
-                <select
-                name="country"
-                >
+                        <div class="input-group">
 
-                    <option value="India">
-                        India
-                    </option>
+                            <label>
+                                Pincode
+                            </label>
 
-                    <option value="United States">
-                        United States
-                    </option>
+                            <input type="text" name="pincode" placeholder="Enter pincode">
 
-                    <option value="United Kingdom">
-                        United Kingdom
-                    </option>
+                        </div>
 
-                </select>
+                    </div>
 
-            </div>
+                    <div class="input-group">
 
-            <div class="checkbox-group">
+                        <label>
+                            Country
+                        </label>
 
-                <input
-                type="checkbox"
-                name="isDefault"
-                id="defaultAddress">
+                        <select name="country">
 
-                <label for="defaultAddress">
-                    Set as Default Address
-                </label>
+                            <option value="India">
+                                India
+                            </option>
 
-            </div>
+                            <option value="United States">
+                                United States
+                            </option>
 
-            <div class="button-group">
+                            <option value="United Kingdom">
+                                United Kingdom
+                            </option>
 
-                <button
-                type="submit"
-                class="save-btn">
+                        </select>
 
-                    Save Address
+                    </div>
 
-                </button>
+                    <div class="checkbox-group">
 
-                <a
-                href="/address"
-                class="cancel-btn">
+                        <input type="checkbox" name="isDefault" id="defaultAddress">
 
-                    Cancel
+                        <label for="defaultAddress">
+                            Set as Default Address
+                        </label>
 
-                </a>
+                    </div>
+
+                    <div class="button-group">
+
+                        <button type="submit" class="save-btn">
+
+                            Save Address
+
+                        </button>
+
+                        <a href="/address" class="cancel-btn">
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+                </form>
 
             </div>
 
-        </form>
+        </section>
+        <script>
+            const form = document.getElementById("addressForm");
 
-    </div>
+            const firstName = document.querySelector("input[name='firstName']");
+            const lastName = document.querySelector("input[name='lastName']");
+            const phone = document.querySelector("input[name='phone']");
+            const streetAddress = document.querySelector("input[name='streetAddress']");
+            const city = document.querySelector("input[name='city']");
+            const state = document.querySelector("input[name='state']");
+            const pincode = document.querySelector("input[name='pincode']");
+            const country = document.querySelector("select[name='country']");
 
-</section>
-<script>
-const form = document.getElementById("addressForm");
+            const nameRegex = /^[A-Za-z ]+$/;
+            const phoneRegex = /^[6-9]\d{9}$/;
+            const pincodeRegex = /^[1-9][0-9]{5}$/;
 
-const firstName = document.querySelector("input[name='firstName']");
-const lastName = document.querySelector("input[name='lastName']");
-const phone = document.querySelector("input[name='phone']");
-const streetAddress = document.querySelector("input[name='streetAddress']");
-const city = document.querySelector("input[name='city']");
-const state = document.querySelector("input[name='state']");
-const pincode = document.querySelector("input[name='pincode']");
-const country = document.querySelector("select[name='country']");
+            function removeFieldError(field) {
 
-const nameRegex = /^[A-Za-z ]+$/;
-const phoneRegex = /^[6-9]\d{9}$/;
-const pincodeRegex = /^[1-9][0-9]{5}$/;
+                field.classList.remove("error");
 
-function removeFieldError(field) {
+                const error = field.parentElement.querySelector(".error-message");
 
-    field.classList.remove("error");
+                if (error) {
+                    error.remove();
+                }
 
-    const error = field.parentElement.querySelector(".error-message");
+            }
 
-    if (error) {
-        error.remove();
-    }
+            function clearErrors() {
 
-}
+                document.querySelectorAll(".error-message").forEach(error => error.remove());
 
-function clearErrors() {
+                document.querySelectorAll(".error").forEach(field => {
+                    field.classList.remove("error");
+                });
 
-    document.querySelectorAll(".error-message").forEach(error => error.remove());
+            }
 
-    document.querySelectorAll(".error").forEach(field => {
-        field.classList.remove("error");
-    });
+            function showFieldError(field, message) {
 
-}
+                field.classList.add("error");
 
-function showFieldError(field, message) {
+                const error = document.createElement("small");
+                error.className = "error-message";
+                error.innerText = message;
 
-    field.classList.add("error");
+                field.parentElement.appendChild(error);
 
-    const error = document.createElement("small");
-    error.className = "error-message";
-    error.innerText = message;
-
-    field.parentElement.appendChild(error);
-
-}
+            }
 
 
-firstName.addEventListener("input", () => {
+            firstName.addEventListener("input", () => {
 
-    if (
-        firstName.value.trim() !== "" &&
-        nameRegex.test(firstName.value.trim())
-    ) {
-        removeFieldError(firstName);
-    }
+                if (
+                    firstName.value.trim() !== "" &&
+                    nameRegex.test(firstName.value.trim())
+                ) {
+                    removeFieldError(firstName);
+                }
 
-});
-
-lastName.addEventListener("input", () => {
-
-    if (
-        lastName.value.trim() !== "" &&
-        nameRegex.test(lastName.value.trim())
-    ) {
-        removeFieldError(lastName);
-    }
-
-});
-
-phone.addEventListener("input", () => {
-
-    if (phoneRegex.test(phone.value.trim())) {
-        removeFieldError(phone);
-    }
-
-});
-
-streetAddress.addEventListener("input", () => {
-
-    if (streetAddress.value.trim().length >= 5) {
-        removeFieldError(streetAddress);
-    }
-
-});
-
-city.addEventListener("input", () => {
-
-    if (
-        city.value.trim() !== "" &&
-        nameRegex.test(city.value.trim())
-    ) {
-        removeFieldError(city);
-    }
-
-});
-
-state.addEventListener("input", () => {
-
-    if (
-        state.value.trim() !== "" &&
-        nameRegex.test(state.value.trim())
-    ) {
-        removeFieldError(state);
-    }
-
-});
-
-pincode.addEventListener("input", () => {
-
-    if (pincodeRegex.test(pincode.value.trim())) {
-        removeFieldError(pincode);
-    }
-
-});
-
-country.addEventListener("change", () => {
-
-    if (country.value.trim() !== "") {
-        removeFieldError(country);
-    }
-
-});
-
-form.addEventListener("submit", async (e) => {
-
-    e.preventDefault();
-
-    clearErrors();
-
-    let valid = true;
-
-    if(firstName.value.trim() === ""){
-        showFieldError(firstName,"First name is required");
-        valid = false;
-    }else if(!nameRegex.test(firstName.value.trim())){
-        showFieldError(firstName,"Only letters are allowed");
-        valid = false;
-    }
-
-    if(lastName.value.trim() === ""){
-        showFieldError(lastName,"Last name is required");
-        valid = false;
-    }else if(!nameRegex.test(lastName.value.trim())){
-        showFieldError(lastName,"Only letters are allowed");
-        valid = false;
-    }
-
-    if(phone.value.trim() === ""){
-        showFieldError(phone,"Phone number is required");
-        valid = false;
-    }else if(!phoneRegex.test(phone.value.trim())){
-        showFieldError(phone,"Enter a valid 10 digit phone number");
-        valid = false;
-    }
-
-    if(streetAddress.value.trim() === ""){
-        showFieldError(streetAddress,"Street address is required");
-        valid = false;
-    }else if(streetAddress.value.trim().length < 5){
-        showFieldError(streetAddress,"Enter a valid street address");
-        valid = false;
-    }
-
-    if(city.value.trim() === ""){
-        showFieldError(city,"City is required");
-        valid = false;
-    }else if(!nameRegex.test(city.value.trim())){
-        showFieldError(city,"Only letters are allowed");
-        valid = false;
-    }
-
-    if(state.value.trim() === ""){
-        showFieldError(state,"State is required");
-        valid = false;
-    }else if(!nameRegex.test(state.value.trim())){
-        showFieldError(state,"Only letters are allowed");
-        valid = false;
-    }
-
-    if(pincode.value.trim() === ""){
-        showFieldError(pincode,"Pincode is required");
-        valid = false;
-    }else if(!pincodeRegex.test(pincode.value.trim())){
-        showFieldError(pincode,"Enter a valid 6 digit pincode");
-        valid = false;
-    }
-
-    if(country.value.trim() === ""){
-        showFieldError(country,"Please select a country");
-        valid = false;
-    }
-
-    if(!valid) return;
-
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-
-    try{
-
-        const response = await fetch(form.action,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if(result.success){
-
-            await Swal.fire({
-                icon:"success",
-                title:"Success",
-                text:result.message,
-                confirmButtonColor:"#151412"
             });
 
-            window.location.href = result.redirectUrl;
+            lastName.addEventListener("input", () => {
 
-        }else{
+                if (
+                    lastName.value.trim() !== "" &&
+                    nameRegex.test(lastName.value.trim())
+                ) {
+                    removeFieldError(lastName);
+                }
 
-            Swal.fire({
-                icon:"error",
-                title:"Error",
-                text:result.message,
-                confirmButtonColor:"#151412"
             });
 
-        }
+            phone.addEventListener("input", () => {
 
-    }catch(error){
+                if (phoneRegex.test(phone.value.trim())) {
+                    removeFieldError(phone);
+                }
 
-        Swal.fire({
-            icon:"error",
-            title:"Error",
-            text:"Something went wrong",
-            confirmButtonColor:"#151412"
-        });
+            });
 
-    }
+            streetAddress.addEventListener("input", () => {
 
-});
-if(profileToggle){
+                if (streetAddress.value.trim().length >= 5) {
+                    removeFieldError(streetAddress);
+                }
 
-    profileToggle.addEventListener('click', (e) => {
+            });
 
-        e.preventDefault();
+            city.addEventListener("input", () => {
 
-        profileMenu.classList.toggle('show');
-    });
+                if (
+                    city.value.trim() !== "" &&
+                    nameRegex.test(city.value.trim())
+                ) {
+                    removeFieldError(city);
+                }
 
-    document.addEventListener('click', (e) => {
+            });
 
-        if(
-            !profileToggle.contains(e.target) &&
-            !profileMenu.contains(e.target)
-        ){
-            profileMenu.classList.remove('show');
-        }
-    });
-}
+            state.addEventListener("input", () => {
 
-</script>
-<script src="/user/js/block-check.js"></script>
+                if (
+                    state.value.trim() !== "" &&
+                    nameRegex.test(state.value.trim())
+                ) {
+                    removeFieldError(state);
+                }
+
+            });
+
+            pincode.addEventListener("input", () => {
+
+                if (pincodeRegex.test(pincode.value.trim())) {
+                    removeFieldError(pincode);
+                }
+
+            });
+
+            country.addEventListener("change", () => {
+
+                if (country.value.trim() !== "") {
+                    removeFieldError(country);
+                }
+
+            });
+
+            form.addEventListener("submit", async (e) => {
+
+                e.preventDefault();
+
+                clearErrors();
+
+                let valid = true;
+
+                if (firstName.value.trim() === "") {
+                    showFieldError(firstName, "First name is required");
+                    valid = false;
+                } else if (!nameRegex.test(firstName.value.trim())) {
+                    showFieldError(firstName, "Only letters are allowed");
+                    valid = false;
+                }
+
+                if (lastName.value.trim() === "") {
+                    showFieldError(lastName, "Last name is required");
+                    valid = false;
+                } else if (!nameRegex.test(lastName.value.trim())) {
+                    showFieldError(lastName, "Only letters are allowed");
+                    valid = false;
+                }
+
+                if (phone.value.trim() === "") {
+                    showFieldError(phone, "Phone number is required");
+                    valid = false;
+                } else if (!phoneRegex.test(phone.value.trim())) {
+                    showFieldError(phone, "Enter a valid 10 digit phone number");
+                    valid = false;
+                }
+
+                if (streetAddress.value.trim() === "") {
+                    showFieldError(streetAddress, "Street address is required");
+                    valid = false;
+                } else if (streetAddress.value.trim().length < 5) {
+                    showFieldError(streetAddress, "Enter a valid street address");
+                    valid = false;
+                }
+
+                if (city.value.trim() === "") {
+                    showFieldError(city, "City is required");
+                    valid = false;
+                } else if (!nameRegex.test(city.value.trim())) {
+                    showFieldError(city, "Only letters are allowed");
+                    valid = false;
+                }
+
+                if (state.value.trim() === "") {
+                    showFieldError(state, "State is required");
+                    valid = false;
+                } else if (!nameRegex.test(state.value.trim())) {
+                    showFieldError(state, "Only letters are allowed");
+                    valid = false;
+                }
+
+                if (pincode.value.trim() === "") {
+                    showFieldError(pincode, "Pincode is required");
+                    valid = false;
+                } else if (!pincodeRegex.test(pincode.value.trim())) {
+                    showFieldError(pincode, "Enter a valid 6 digit pincode");
+                    valid = false;
+                }
+
+                if (country.value.trim() === "") {
+                    showFieldError(country, "Please select a country");
+                    valid = false;
+                }
+
+                if (!valid) return;
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                try {
+
+                    const response = await fetch(form.action, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+
+                        await Swal.fire({
+                            icon: "success",
+                            title: "Success",
+                            text: result.message,
+                            confirmButtonColor: "#151412"
+                        });
+
+                        window.location.href = result.redirectUrl;
+
+                    } else {
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: result.message,
+                            confirmButtonColor: "#151412"
+                        });
+
+                    }
+
+                } catch (error) {
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Something went wrong",
+                        confirmButtonColor: "#151412"
+                    });
+
+                }
+
+            });
+            if (profileToggle) {
+
+                profileToggle.addEventListener('click', (e) => {
+
+                    e.preventDefault();
+
+                    profileMenu.classList.toggle('show');
+                });
+
+                document.addEventListener('click', (e) => {
+
+                    if (
+                        !profileToggle.contains(e.target) &&
+                        !profileMenu.contains(e.target)
+                    ) {
+                        profileMenu.classList.remove('show');
+                    }
+                });
+            }
+
+        </script>
+        <script src="/user/js/block-check.js"></script>
 
 </body>
 

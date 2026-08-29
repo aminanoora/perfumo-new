@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
@@ -10,266 +11,249 @@
     <link rel="stylesheet" href="/admin/css/admin.css">
     <link rel="stylesheet" href="/admin/css/categories.css">
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
 </head>
 
 <body>
- <%- include('../partials/header') %>   
+    <%- include('../partials/header') %>
 
- 
 
-<div class="page">
 
-  <%- include('../partials/sidebar') %>
-<main class="content">
+        <div class="page">
 
+            <%- include('../partials/sidebar') %>
+                <main class="content">
 
-<div class="category-topbar">
 
-    <div class="page-title">
+                    <div class="category-topbar">
 
-        <h2>Category</h2>
+                        <div class="page-title">
 
-        <p>Manage perfume categories</p>
+                            <h2>Category</h2>
 
-    </div>
+                            <p>Manage perfume categories</p>
 
-    <a href="/admin/categories/add" class="add-category-btn">
+                        </div>
 
-        <i class="fa-solid fa-plus"></i>
+                        <a href="/admin/categories/add" class="add-category-btn">
 
-        Add Category
+                            <i class="fa-solid fa-plus"></i>
 
-    </a>
+                            Add Category
 
-</div>
+                        </a>
 
+                    </div>
 
-<div class="toolbar">
 
-<form action="/admin/categories" method="GET" id="searchForm">
+                    <div class="toolbar">
 
-<div class="search-box">
+                        <form action="/admin/categories" method="GET" id="searchForm">
 
-    <button type="submit" class="search-btn">
-        <i class="fa-solid fa-magnifying-glass"></i>
-    </button>
+                            <div class="search-box">
 
+                                <button type="submit" class="search-btn">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
 
-    
-    <input
-        type="text"
-        name="search"
-        id="searchInput"
-        placeholder="Search category..."
-        value="<%= search || '' %>">
 
-    <% if(search){ %>
-        <button
-            type="button"
-            id="clearSearch"
-            class="clear-btn">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-    <% } %>
 
+                                <input type="text" name="search" id="searchInput" placeholder="Search category..."
+                                    value="<%= search || '' %>">
 
+                                <% if(search){ %>
+                                    <button type="button" id="clearSearch" class="clear-btn">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                    <% } %>
 
-<input type="hidden" name="sort" value="<%= sort %>">
-</div>
-</form>
 
-<select
-id="sortSelect"
-onchange="location=this.value">
 
-<option
-value="/admin/categories?sort=desc"
-<%= sort === 'desc' ? 'selected' : '' %>>
+                                        <input type="hidden" name="sort" value="<%= sort %>">
+                            </div>
+                        </form>
 
-Latest First
+                        <select id="sortSelect" onchange="location=this.value">
 
-</option>
+                            <option value="/admin/categories?sort=desc" <%=sort==='desc' ? 'selected' : '' %>>
 
-<option
-value="/admin/categories?sort=asc"
-<%= sort === 'asc' ? 'selected' : '' %>>
+                                Latest First
 
-Oldest First
+                            </option>
 
-</option>
+                            <option value="/admin/categories?sort=asc" <%=sort==='asc' ? 'selected' : '' %>>
 
-</select>
+                                Oldest First
 
-</div>
+                            </option>
 
+                        </select>
 
+                    </div>
 
-<div class="table-wrapper">
 
-<table class="category-table">
 
-<thead>
+                    <div class="table-wrapper">
 
-<tr>
+                        <table class="category-table">
 
-<th>Category</th>
+                            <thead>
 
+                                <tr>
 
+                                    <th>Category</th>
 
-<th>Products</th>
 
-<th>Status</th>
 
-<th>Action</th>
+                                    <th>Products</th>
 
-</tr>
+                                    <th>Status</th>
 
-</thead>
+                                    <th>Action</th>
 
-<tbody>
+                                </tr>
 
-<% categories.forEach(category=>{ %>
+                            </thead>
 
-<tr>
+                            <tbody>
 
-<td>
+                                <% categories.forEach(category=>{ %>
 
-<div class="category-cell">
+                                    <tr>
 
+                                        <td>
 
-<h4><%= category.name %></h4>
+                                            <div class="category-cell">
 
 
+                                                <h4>
+                                                    <%= category.name %>
+                                                </h4>
 
-</div>
 
-</div>
 
-</td>
+                                            </div>
 
+                    </div>
 
+                    </td>
 
-<td>
 
-<%= category.productCount %>
 
-</td>
+                    <td>
 
-<td>
+                        <%= category.productCount %>
 
-<% if(category.isListed){ %>
+                    </td>
 
-<span class="status active">
+                    <td>
 
-Listed
+                        <% if(category.isListed){ %>
 
-</span>
+                            <span class="status active">
 
-<% }else{ %>
+                                Listed
 
-<span class="status blocked">
+                            </span>
 
-Hidden
+                            <% }else{ %>
 
-</span>
+                                <span class="status blocked">
 
-<% } %>
+                                    Hidden
 
-</td>
+                                </span>
 
-<td>
+                                <% } %>
 
-<div class="actions">
+                    </td>
 
-<button
-class="dots">
+                    <td>
 
-<i class="fa-solid fa-ellipsis-vertical"></i>
+                        <div class="actions">
 
-</button>
+                            <button class="dots">
 
-<div class="dropdown">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
 
-<a
-    href="/admin/categories/<%= category._id.toString() %>"
-    onclick="console.log(this.href)">
-    View Details
-</a>
+                            </button>
 
-</div>
+                            <div class="dropdown">
 
-</div>
+                                <a href="/admin/categories/<%= category._id.toString() %>"
+                                    onclick="console.log(this.href)">
+                                    View Details
+                                </a>
 
-</td>
+                            </div>
 
-</tr>
+                        </div>
 
-<% }) %>
+                    </td>
 
-</tbody>
+                    </tr>
 
-</table>
+                    <% }) %>
 
+                        </tbody>
 
+                        </table>
 
-<div class="pagination-wrapper">
 
-<div class="pagination">
 
-<nav aria-label="Category pagination">
-  <ul class="pagination justify-content-center">
+                        <div class="pagination-wrapper">
 
-    <% for(let i = 1; i <= totalPages; i++) { %>
+                            <div class="pagination">
 
-      <li class="page-item <%= page === i ? 'active' : '' %>">
+                                <nav aria-label="Category pagination">
+                                    <ul class="pagination justify-content-center">
 
-        <a
-          class="page-link"
-          href="/admin/categories?page=<%= i %>&search=<%= search %>&sort=<%= sort %>"
-        >
-          <%= i %>
-        </a>
+                                        <% for(let i=1; i <=totalPages; i++) { %>
 
-      </li>
+                                            <li class="page-item <%= page === i ? 'active' : '' %>">
 
-    <% } %>
+                                                <a class="page-link"
+                                                    href="/admin/categories?page=<%= i %>&search=<%= search %>&sort=<%= sort %>">
+                                                    <%= i %>
+                                                </a>
 
-  </ul>
-</nav>
+                                            </li>
 
-</div>
+                                            <% } %>
 
-</div>
-</main>
+                                    </ul>
+                                </nav>
 
-</div>
-</div>
+                            </div>
 
-<script src="/admin/js/categories.js"></script>
+                        </div>
+                </main>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        </div>
+        </div>
 
-<% if(message){ %>
+        <script src="/admin/js/categories.js"></script>
 
-<script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-Swal.fire({
-    icon: "<%= message.type %>",
-    title: "<%= message.type === 'success' ? 'Success' : 'Error' %>",
-    text: "<%= message.text %>",
-    confirmButtonText: "OK"
-});
+        <% if(message){ %>
 
-</script>
+            <script>
 
-<% } %>
+                Swal.fire({
+                    icon: "<%= message.type %>",
+                    title: "<%= message.type === 'success' ? 'Success' : 'Error' %>",
+                    text: "<%= message.text %>",
+                    confirmButtonText: "OK"
+                });
+
+            </script>
+
+            <% } %>
 </body>
+
 </html>

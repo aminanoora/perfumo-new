@@ -1,53 +1,35 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("searchInput");
+  const filterForm = document.getElementById("filterForm");
+  const clearBtn = document.getElementById("clearFilters");
 
-    const searchInput = document.getElementById("searchInput");
-    const filterForm = document.getElementById("filterForm");
-    const clearBtn = document.getElementById("clearFilters");
+  let timer;
 
-    let timer;
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      clearTimeout(timer);
 
-    if (searchInput) {
+      timer = setTimeout(() => {
+        filterForm.submit();
+      }, 500);
+    });
+  }
 
-        searchInput.addEventListener("input", () => {
+  if (filterForm) {
+    const selects = filterForm.querySelectorAll("select");
 
-            clearTimeout(timer);
+    selects.forEach((select) => {
+      select.addEventListener("change", () => {
+        filterForm.submit();
+      });
+    });
+  }
 
-            timer = setTimeout(() => {
+  if (clearBtn) {
+    clearBtn.addEventListener("click", (e) => {
+      e.preventDefault();
 
-                filterForm.submit();
-
-            }, 500);
-
-        });
-
-    }
-
-    if (filterForm) {
-
-        const selects = filterForm.querySelectorAll("select");
-
-        selects.forEach(select => {
-
-            select.addEventListener("change", () => {
-
-                filterForm.submit();
-
-            });
-
-        });
-
-    }
-
-    if (clearBtn) {
-
-        clearBtn.addEventListener("click", (e) => {
-
-            e.preventDefault();
-
-            window.location.href = "/admin/orders";
-
-        });
-
-    }
-
+      window.location.href = "/admin/orders";
+    });
+  }
 });

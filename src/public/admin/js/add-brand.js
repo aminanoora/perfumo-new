@@ -16,123 +16,105 @@ const removeLogoInput = document.getElementById("removeLogoInput");
 const nameRegex = /^[A-Za-z\s]+$/;
 
 function clearErrors() {
-    nameError.textContent = "";
-    slugError.textContent = "";
-    descriptionError.textContent = "";
+  nameError.textContent = "";
+  slugError.textContent = "";
+  descriptionError.textContent = "";
 }
 
 browseBtn.addEventListener("click", () => {
-    logoInput.click();
+  logoInput.click();
 });
 
 logoInput.addEventListener("change", function () {
+  const file = this.files[0];
 
-    const file = this.files[0];
+  if (!file) return;
 
-    if (!file) return;
+  const reader = new FileReader();
 
-    const reader = new FileReader();
+  reader.onload = function (e) {
+    previewImage.src = e.target.result;
 
-    reader.onload = function (e) {
+    previewImage.style.display = "block";
 
-        previewImage.src = e.target.result;
+    placeholder.style.display = "none";
 
-        previewImage.style.display = "block";
+    logoActions.style.display = "block";
 
-        placeholder.style.display = "none";
+    removeLogoInput.value = "false";
+  };
 
-        logoActions.style.display = "block";
-
-        removeLogoInput.value = "false";
-    };
-
-    reader.readAsDataURL(file);
-
+  reader.readAsDataURL(file);
 });
 
 removeLogo.addEventListener("click", () => {
+  logoInput.value = "";
 
-    logoInput.value = "";
+  previewImage.src = "";
 
-    previewImage.src = "";
+  previewImage.style.display = "none";
 
-    previewImage.style.display = "none";
+  placeholder.style.display = "flex";
 
-    placeholder.style.display = "flex";
+  logoActions.style.display = "none";
 
-    logoActions.style.display = "none";
-
-    removeLogoInput.value = "true";
-
+  removeLogoInput.value = "true";
 });
 
 function validate() {
+  clearErrors();
 
-    clearErrors();
+  let valid = true;
 
-    let valid = true;
+  if (name.value.trim().length < 4) {
+    nameError.textContent = "Minimum 4 characters required.";
+    valid = false;
+  } else if (!nameRegex.test(name.value.trim())) {
+    nameError.textContent = "Only letters are allowed.";
+    valid = false;
+  }
 
-    if (name.value.trim().length < 4) {
-        nameError.textContent = "Minimum 4 characters required.";
-        valid = false;
-    } else if (!nameRegex.test(name.value.trim())) {
-        nameError.textContent = "Only letters are allowed.";
-        valid = false;
-    }
+  if (slug.value.trim().length < 4) {
+    slugError.textContent = "Minimum 4 characters required.";
+    valid = false;
+  }
 
-    if (slug.value.trim().length < 4) {
-        slugError.textContent = "Minimum 4 characters required.";
-        valid = false;
-    }
+  if (description.value.trim().length < 4) {
+    descriptionError.textContent = "Minimum 4 characters required.";
+    valid = false;
+  }
 
-    if (description.value.trim().length < 4) {
-        descriptionError.textContent = "Minimum 4 characters required.";
-        valid = false;
-    }
-
-    return valid;
+  return valid;
 }
 
-form.addEventListener("submit", function(e){
-
-    if(!validate()){
-        e.preventDefault();
-    }
-
+form.addEventListener("submit", function (e) {
+  if (!validate()) {
+    e.preventDefault();
+  }
 });
 
-name.addEventListener("input", function(){
-
-    this.value = this.value.replace(/[^A-Za-z\s]/g,"");
-
+name.addEventListener("input", function () {
+  this.value = this.value.replace(/[^A-Za-z\s]/g, "");
 });
 
-name.addEventListener("input", function(){
-
-    slug.value = this.value
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g,"-")
-        .replace(/[^a-z0-9-]/g,"");
-
+name.addEventListener("input", function () {
+  slug.value = this.value
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 });
 
-logoInput.addEventListener("change",function(){
+logoInput.addEventListener("change", function () {
+  const file = this.files[0];
 
-    const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
 
-    if(file){
+    reader.onload = function (e) {
+      preview.src = e.target.result;
+    };
 
-        const reader = new FileReader();
-
-        reader.onload = function(e){
-
-            preview.src = e.target.result;
-
-        }
-
-        reader.readAsDataURL(file);
-
-    }
-
+    reader.readAsDataURL(file);
+  }
 });

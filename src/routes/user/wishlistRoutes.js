@@ -1,14 +1,13 @@
 import express from "express";
 
 import {
-    loadWishlist,
-    addToWishlist,
-    removeFromWishlist,
-    moveToCart
+  loadWishlist,
+  addToWishlist,
+  removeFromWishlist,
+  moveToCart,
 } from "../../controllers/user/wishlistController.js";
 
 import userAuth from "../../middleware/userAuth.js";
-
 
 const router = express.Router();
 

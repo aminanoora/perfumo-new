@@ -17,144 +17,112 @@ let selectedImages = [];
 const cropModalElement = document.getElementById("cropModal");
 const cropModal = new bootstrap.Modal(cropModalElement);
 
-
-
 const cropImage = document.getElementById("cropImage");
 
 function showNextImage() {
+  console.log("showNextImage called");
+  if (imageQueue.length === 0) {
+    imageInput.value = "";
 
-    console.log("showNextImage called");
-    if (imageQueue.length === 0) {
+    return;
+  }
 
-        imageInput.value = "";
+  currentFile = imageQueue.shift();
 
-        return;
-    }
+  cropImage.src = URL.createObjectURL(currentFile);
 
-    currentFile = imageQueue.shift();
+  cropModal.show();
 
-    cropImage.src = URL.createObjectURL(currentFile);
+  setTimeout(() => {
+    if (cropper) cropper.destroy();
 
-    cropModal.show();
+    console.log("Creating cropper");
 
-    setTimeout(() => {
+    cropper = new Cropper(cropImage, {
+      aspectRatio: 1,
 
-        if (cropper) cropper.destroy();
+      viewMode: 1,
 
-
-        console.log("Creating cropper");
-        
-        cropper = new Cropper(cropImage, {
-
-            aspectRatio: 1,
-
-            viewMode: 1,
-
-            autoCropArea: 1
-
-        });
-
-    }, 200);
-
+      autoCropArea: 1,
+    });
+  }, 200);
 }
 imageInput.addEventListener("change", (e) => {
-  
-     console.log("File selected");
+  console.log("File selected");
 
-    console.log(e.target.files);
-    const existingImages =
-        document.querySelectorAll(".existing-images .image-box").length;
+  console.log(e.target.files);
+  const existingImages = document.querySelectorAll(
+    ".existing-images .image-box",
+  ).length;
 
-    const totalImages =
-        existingImages +
-        selectedImages.length +
-        e.target.files.length;
+  const totalImages =
+    existingImages + selectedImages.length + e.target.files.length;
 
-    if (totalImages > 5) {
-
-        Swal.fire({
-            icon: "error",
-            title: "Maximum 5 images allowed"
-        });
-
-        imageInput.value = "";
-
-        return;
-    }
-
-    imageQueue = [...e.target.files];
-
-    if (!imageQueue.length) return;
-
-    showNextImage();
-
-});
-
-
-
-
-cropModalElement.addEventListener("hidden.bs.modal", () => {
-
-    if (cropper) {
-
-        cropper.destroy();
-
-        cropper = null;
-
-    }
-
-});
-document.getElementById("cropButton").addEventListener("click", () => {
-
-    cropper.getCroppedCanvas({
-
-        width: 800,
-
-        height: 800
-
-    }).toBlob(blob => {
-
-        const croppedFile = new File(
-
-            [blob],
-
-            currentFile.name,
-
-            {
-
-                type: currentFile.type
-
-            }
-
-        );
-
-        selectedImages.push(croppedFile);
-
-        renderPreview();
-
-        cropModal.hide();
-
-        showNextImage();
-
+  if (totalImages > 5) {
+    Swal.fire({
+      icon: "error",
+      title: "Maximum 5 images allowed",
     });
 
+    imageInput.value = "";
+
+    return;
+  }
+
+  imageQueue = [...e.target.files];
+
+  if (!imageQueue.length) return;
+
+  showNextImage();
+});
+
+cropModalElement.addEventListener("hidden.bs.modal", () => {
+  if (cropper) {
+    cropper.destroy();
+
+    cropper = null;
+  }
+});
+document.getElementById("cropButton").addEventListener("click", () => {
+  cropper
+    .getCroppedCanvas({
+      width: 800,
+
+      height: 800,
+    })
+    .toBlob((blob) => {
+      const croppedFile = new File(
+        [blob],
+
+        currentFile.name,
+
+        {
+          type: currentFile.type,
+        },
+      );
+
+      selectedImages.push(croppedFile);
+
+      renderPreview();
+
+      cropModal.hide();
+
+      showNextImage();
+    });
 });
 
 function renderPreview() {
+  previewContainer.innerHTML = "";
 
-    previewContainer.innerHTML = "";
+  selectedImages.forEach((file, index) => {
+    const reader = new FileReader();
 
-    selectedImages.forEach((file, index) => {
+    reader.onload = (e) => {
+      const box = document.createElement("div");
 
-        const reader = new FileReader();
+      box.className = "image-box";
 
-        reader.onload = e => {
-
-            const box = document.createElement("div");
-
-            box.className = "image-box";
-
-            box.innerHTML = `
+      box.innerHTML = `
 
                 <img src="${e.target.result}" class="preview-image">
 
@@ -172,140 +140,108 @@ function renderPreview() {
 
             `;
 
-            previewContainer.appendChild(box);
+      previewContainer.appendChild(box);
+    };
 
-        };
-
-        reader.readAsDataURL(file);
-
-    });
-
+    reader.readAsDataURL(file);
+  });
 }
 
-previewContainer.addEventListener("click", e => {
+previewContainer.addEventListener("click", (e) => {
+  if (!e.target.closest(".removePreview")) return;
 
-    if (!e.target.closest(".removePreview")) return;
+  const index = e.target.closest(".removePreview").dataset.index;
 
-    const index = e.target.closest(".removePreview").dataset.index;
+  selectedImages.splice(index, 1);
 
-    selectedImages.splice(index, 1);
-
-    renderPreview();
-
+  renderPreview();
 });
 
-document.querySelectorAll(".removeExistingImage").forEach(button => {
-
-    button.addEventListener("click", function () {
-
-        this.parentElement.remove();
-
-    });
-
+document.querySelectorAll(".removeExistingImage").forEach((button) => {
+  button.addEventListener("click", function () {
+    this.parentElement.remove();
+  });
 });
 
 function clearErrors() {
-
-    document.querySelectorAll(".error").forEach(error => {
-
-        error.textContent = "";
-
-    });
-
+  document.querySelectorAll(".error").forEach((error) => {
+    error.textContent = "";
+  });
 }
 
 function validateForm() {
+  clearErrors();
 
-    clearErrors();
+  let valid = true;
 
-    let valid = true;
+  const sku = document.getElementById("sku").value.trim();
 
-    const sku = document.getElementById("sku").value.trim();
+  const stock = document.getElementById("stock").value;
 
-    const stock = document.getElementById("stock").value;
+  const price = document.getElementById("price").value;
 
-    const price = document.getElementById("price").value;
+  const salePrice = document.getElementById("salePrice").value;
 
-    const salePrice = document.getElementById("salePrice").value;
+  const weight = document.getElementById("weight").value;
 
-    const weight = document.getElementById("weight").value;
-
-    if (sku.length < 3) {
-
-        document.getElementById("skuError").textContent = "Invalid SKU";
-
-        valid = false;
-
-    }
-
-    if (stock < 0) {
-
-        document.getElementById("stockError").textContent = "Invalid Stock";
-
-        valid = false;
-
-    }
-
-    if (price <= 0) {
-
-        document.getElementById("priceError").textContent = "Invalid Price";
-
-        valid = false;
-
-    }
-
-    if (salePrice && Number(salePrice) > Number(price)) {
-
-        document.getElementById("salePriceError").textContent = "Sale price cannot exceed price";
-
-        valid = false;
-
-    }
-
-    if (weight <= 0) {
-
-        document.getElementById("weightError").textContent = "Invalid Weight";
-
-        valid = false;
-
-    }
-    const existingImages =
-    document.querySelectorAll(".existing-images .image-box").length;
-
-const totalImages =
-    existingImages + selectedImages.length;
-
-if (totalImages < 3) {
-
-    document.getElementById("imageError").textContent =
-        "Minimum 3 images required";
+  if (sku.length < 3) {
+    document.getElementById("skuError").textContent = "Invalid SKU";
 
     valid = false;
+  }
 
+  if (stock < 0) {
+    document.getElementById("stockError").textContent = "Invalid Stock";
+
+    valid = false;
+  }
+
+  if (price <= 0) {
+    document.getElementById("priceError").textContent = "Invalid Price";
+
+    valid = false;
+  }
+
+  if (salePrice && Number(salePrice) > Number(price)) {
+    document.getElementById("salePriceError").textContent =
+      "Sale price cannot exceed price";
+
+    valid = false;
+  }
+
+  if (weight <= 0) {
+    document.getElementById("weightError").textContent = "Invalid Weight";
+
+    valid = false;
+  }
+  const existingImages = document.querySelectorAll(
+    ".existing-images .image-box",
+  ).length;
+
+  const totalImages = existingImages + selectedImages.length;
+
+  if (totalImages < 3) {
+    document.getElementById("imageError").textContent =
+      "Minimum 3 images required";
+
+    valid = false;
+  }
+
+  return valid;
 }
 
-    return valid;
+form.addEventListener("submit", (e) => {
+  if (!validateForm()) {
+    e.preventDefault();
 
-}
+    return;
+  }
 
-form.addEventListener("submit", e => {
+  dt.items.clear();
 
-    if (!validateForm()) {
+  selectedImages.forEach((file) => {
+    dt.items.add(file);
+  });
 
-        e.preventDefault();
-
-        return;
-
-    }
-
-    dt.items.clear();
-
-    selectedImages.forEach(file => {
-
-        dt.items.add(file);
-
-    });
-
-    imageInput.files = dt.files;
-
+  imageInput.files = dt.files;
 });

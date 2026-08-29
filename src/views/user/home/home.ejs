@@ -1,526 +1,514 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Perfumo</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Volkhov:wght@400;700&display=swap" rel="stylesheet">
-   <link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Volkhov:wght@400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="/user/css/style.css">
-   <link rel="stylesheet" href="/user/css/footer.css">
+  <link rel="stylesheet" href="/user/css/footer.css">
   <link rel="stylesheet" href="/user/css/headers.css">
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <body>
-<%- include('../partials/header') %>
+  <%- include('../partials/header') %>
 
 
-  <section class="hero">
+    <section class="hero">
 
-    <div class="hero-left">
-      <img src="/user/images/Gemini_Generated_Image_.png" alt="">
+      <div class="hero-left">
+        <img src="/user/images/Gemini_Generated_Image_.png" alt="">
+      </div>
+
+      <div class="hero-center">
+
+        <h2>ULTIMATE</h2>
+
+        <h1>SALE</h1>
+
+        <p>NEW COLLECTION</p>
+
+        <button>SHOP NOW</button>
+
+      </div>
+
+      <div class="hero-right">
+        <img src="/user/images/Gemini_Generated_Image_ (1).png" alt="">
+      </div>
+
+    </section>
+
+    <div class="rbb-slick-carousel">
+      <div class="slick-list">
+        <div class="slick-track">
+
+
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 104828.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 110228.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105735.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105348.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105124.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-05-12 220603.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-05-12 220802.png"></div>
+
+
+
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 104828.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 110228.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105735.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105348.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105124.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-05-12 220603.png"></div>
+          <div class="logo-item"><img src="/user/images/Screenshot 2026-05-12 220802.png"></div>
+
+
+        </div>
+      </div>
     </div>
 
-    <div class="hero-center">
-
-      <h2>ULTIMATE</h2>
-
-      <h1>SALE</h1>
-
-      <p>NEW COLLECTION</p>
-
-      <button>SHOP NOW</button>
-
-    </div>
-
-    <div class="hero-right">
-      <img src="/user/images/Gemini_Generated_Image_ (1).png" alt="">
-    </div>
-
-  </section>
-
-<div class="rbb-slick-carousel">
-  <div class="slick-list">
-    <div class="slick-track">
- 
-      
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 104828.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 110228.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105735.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105348.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105124.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-05-12 220603.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-05-12 220802.png"></div>
-      
- 
-      
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 104828.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 110228.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105735.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105348.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-04-16 105124.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-05-12 220603.png"></div>
-      <div class="logo-item"><img src="/user/images/Screenshot 2026-05-12 220802.png"></div>
-     
- 
-    </div>
-  </div>
-</div>
 
 
-  
-  <section class="collections">
+    <section class="collections">
 
-    <div class="collection-card">
-      <% categories.forEach(category => { %>
+      <div class="collection-card">
+        <% categories.forEach(category=> { %>
 
-    <% if(category.name === "Women"){ %>
-        <a href="/shop?category=<%= category._id %>">
-           <img src="/user/images/823fb45a2cf534ec378d1ff253cc2421.jpg">
-<h2> FOR HER</h2>
+          <% if(category.name==="Women" ){ %>
+            <a href="/shop?category=<%= category._id %>">
+              <img src="/user/images/823fb45a2cf534ec378d1ff253cc2421.jpg">
+              <h2> FOR HER</h2>
+            </a>
+            <% } %>
+
+              <% }) %>
+      </div>
+
+      <div class="collection-card">
+        <% categories.forEach(category=> { %>
+
+          <% if(category.name==="Men" ){ %>
+            <a href="/shop?category=<%= category._id %>">
+              <img src="/user/images/WhatsApp Image 2026-04-16 at 1.50.42 PM.jpeg">
+              <h2> FOR HIM</h2>
+            </a>
+            <% } %>
+
+              <% }) %>
+      </div>
+
+      <div class="collection-card">
+        <% categories.forEach(category=> { %>
+
+          <% if(category.name==="Unisex" ){ %>
+            <a href="/shop?category=<%= category._id %>">
+              <img src="/user/images/59fad13fd53b096f13e3e9e48e245587.jpg">
+              <h2> FOR UNISEX</h2>
+            </a>
+            <% } %>
+
+              <% }) %>
+      </div>
+
+    </section>
+
+
+
+    <section class="best-sellers">
+
+      <h2>
+
+        <%= featured==="hidden" ? "Hidden Gems" : featured==="budget" ? "Budget Picks" : featured==="limited"
+          ? "Limited Edition" : featured==="trending" ? "Trending" : "Best Sellers" %>
+
+      </h2>
+
+      <p>
+        No elegance is possible without perfume.
+        It is the unseen, unforgettable, ultimate accessory.
+      </p>
+
+      <div class="categories">
+
+        <a href="/?featured=hidden">
+          <button class="<%= featured==='hidden' ? 'active' : '' %>">
+            Hidden Gems
+          </button>
         </a>
-    <% } %>
 
-<% }) %>
-    </div>
-
-    <div class="collection-card">
-    <% categories.forEach(category => { %>
-
-    <% if(category.name === "Men"){ %>
-        <a href="/shop?category=<%= category._id %>">
-           <img src="/user/images/WhatsApp Image 2026-04-16 at 1.50.42 PM.jpeg">
-<h2> FOR HIM</h2>
+        <a href="/?featured=bestseller">
+          <button default="true" class="<%= featured==='bestseller' ? 'active' : '' %>">
+            Best Sellers
+          </button>
         </a>
-    <% } %>
 
-<% }) %>
-    </div>
-
-    <div class="collection-card">
-     <% categories.forEach(category => { %>
-
-    <% if(category.name === "Unisex"){ %>
-        <a href="/shop?category=<%= category._id %>">
-            <img src="/user/images/59fad13fd53b096f13e3e9e48e245587.jpg">
-<h2> FOR UNISEX</h2>
+        <a href="/?featured=budget">
+          <button class="<%= featured==='budget' ? 'active' : '' %>">
+            Budget Picks
+          </button>
         </a>
-    <% } %>
 
-<% }) %>
-    </div>
+        <a href="/?featured=limited">
+          <button class="<%= featured==='limited' ? 'active' : '' %>">
+            Limited Edition
+          </button>
+        </a>
 
-  </section>
+        <a href="/?featured=trending">
+          <button class="<%= featured==='trending' ? 'active' : '' %>">
+            Trending
+          </button>
+        </a>
 
+      </div>
 
-  
-  <section class="best-sellers">
+      <div class="products">
 
-   <h2>
+        <% if(featuredProducts.length){ %>
 
-<%=
-featured==="hidden" ? "Hidden Gems" :
+          <% featuredProducts.forEach(product=>{ %>
 
-featured==="budget" ? "Budget Picks" :
+            <div class="product-card">
 
-featured==="limited" ? "Limited Edition" :
+              <div class="product-image">
 
-featured==="trending" ? "Trending" :
+                <a href="/shop/product-details/<%= product._id %>">
 
-"Best Sellers"
+                  <img src="/admin/uploads/products/<%= product.variants.images[0] %>" alt="<%= product.name %>">
 
-%>
+                </a>
 
-</h2>
+                <button class="wishlist-btn" data-product="<%= product._id %>">
 
-    <p>
-      No elegance is possible without perfume.
-      It is the unseen, unforgettable, ultimate accessory.
-    </p>
+                  <i class="fa-regular fa-heart"></i>
 
-    <div class="categories">
+                </button>
 
-<a href="/?featured=hidden">
-<button class="<%= featured==='hidden' ? 'active' : '' %>">
-Hidden Gems
-</button>
-</a>
+              </div>
 
-<a href="/?featured=bestseller"  >
-<button  default="true" class="<%= featured==='bestseller' ? 'active' : '' %>">
-Best Sellers
-</button>
-</a>
+              <div class="product-content">
 
-<a href="/?featured=budget">
-<button class="<%= featured==='budget' ? 'active' : '' %>">
-Budget Picks
-</button>
-</a>
+                <p class="product-brand">
 
-<a href="/?featured=limited">
-<button class="<%= featured==='limited' ? 'active' : '' %>">
-Limited Edition
-</button>
-</a>
+                  <%= product.brand.name %>
 
-<a href="/?featured=trending">
-<button class="<%= featured==='trending' ? 'active' : '' %>">
-Trending
-</button>
-</a>
+                </p>
 
-</div>
+                <div class="product-title">
 
-   <div class="products">
+                  <h3 class="product-name">
 
-<% if(featuredProducts.length){ %>
+                    <%= product.name %>
 
-<% featuredProducts.forEach(product=>{ %>
+                  </h3>
 
-<div class="product-card">
+                  <span class="product-size">
 
-<div class="product-image">
+                    <%= product.variants.size %> ml
 
-<a href="/shop/product-details/<%= product._id %>">
+                  </span>
 
-<img
-src="/admin/uploads/products/<%= product.variants.images[0] %>"
-alt="<%= product.name %>">
+                </div>
 
-</a>
+                <div class="product-rating">
 
-<button
-class="wishlist-btn"
-data-product="<%= product._id %>">
+                  <span class="stars">
 
-<i class="fa-regular fa-heart"></i>
+                    ★★★★★
 
-</button>
+                  </span>
 
-</div>
+                </div>
 
-<div class="product-content">
+                <div class="price-section">
 
-<p class="product-brand">
+                  <% if(product.variants.salePrice>0){ %>
 
-<%= product.brand.name %>
+                    <span class="sale-price">
 
-</p>
+                      ₹<%= product.variants.salePrice %>
 
-<div class="product-title">
+                    </span>
 
-<h3 class="product-name">
+                    <span class="original-price">
 
-<%= product.name %>
+                      ₹<%= product.variants.price %>
 
-</h3>
+                    </span>
 
-<span class="product-size">
+                    <% }else{ %>
 
-<%= product.variants.size %> ml
+                      <span class="sale-price">
 
-</span>
+                        ₹<%= product.variants.price %>
 
-</div>
+                      </span>
 
-<div class="product-rating">
+                      <% } %>
 
-<span class="stars">
+                </div>
 
-★★★★★
+                <button class="cart-btn" data-variant="<%= product.variants._id %>">
 
-</span>
+                  Add to Cart
 
-</div>
+                </button>
 
-<div class="price-section">
+              </div>
 
-<% if(product.variants.salePrice>0){ %>
+            </div>
 
-<span class="sale-price">
+            <% }) %>
 
-₹<%= product.variants.salePrice %>
+              <% }else{ %>
 
-</span>
+                <p>No products found.</p>
 
-<span class="original-price">
+                <% } %>
 
-₹<%= product.variants.price %>
+      </div>
+      <div class=view>
+        <a href="/shop?featured=<%= featured %>">
 
-</span>
+          <button class="view-text">
 
-<% }else{ %>
+            View More
 
-<span class="sale-price">
+          </button>
 
-₹<%= product.variants.price %>
+        </a>
+      </div>
 
-</span>
+    </section>
 
-<% } %>
 
-</div>
 
-<button
-class="cart-btn"
-data-variant="<%= product.variants._id %>">
 
-Add to Cart
-
-</button>
-
-</div>
-
-</div>
-
-<% }) %>
-
-<% }else{ %>
-
-<p>No products found.</p>
-
-<% } %>
-
-</div>
-    <div class = view >
-      <a href="/shop?featured=<%= featured %>">
-
-<button class="view-text">
-
-View More
-
-</button>
-
-</a>
-    </div>
-
-  </section>
-
-
- 
-  
 
 
     <section class="features-section">
 
-  <div class="feature-box">
+      <div class="feature-box">
 
-    <div class="feature-item">
+        <div class="feature-item">
 
-      <div class="feature-icon">
-        <i class="fa-solid fa-trophy"></i>
+          <div class="feature-icon">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+
+          <div class="feature-text">
+            <h3>High Quality</h3>
+            <p>crafted from top materials</p>
+          </div>
+
+        </div>
+
+
+        <div class="feature-item">
+
+          <div class="feature-icon">
+            <i class="fa-solid fa-shield"></i>
+          </div>
+
+          <div class="feature-text">
+            <h3>Warranty Protection</h3>
+            <p>Over 2 years</p>
+          </div>
+
+        </div>
+
+
+        <div class="feature-item">
+
+          <div class="feature-icon">
+            <i class="fa-solid fa-truck"></i>
+          </div>
+
+          <div class="feature-text">
+            <h3>Free Shipping</h3>
+            <p>Order over Rs 1000</p>
+          </div>
+
+        </div>
+
+
+        <div class="feature-item">
+
+          <div class="feature-icon">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+
+          <div class="feature-text">
+            <h3>24 / 7 Support</h3>
+            <p>Dedicated support</p>
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="feature-text">
-        <h3>High Quality</h3>
-        <p>crafted from top materials</p>
-      </div>
+    </section>
 
-    </div>
+    <section class="notes-section">
 
+      <h2 class="notes-title">Shop by Notes</h2>
 
-    <div class="feature-item">
-
-      <div class="feature-icon">
-        <i class="fa-solid fa-shield"></i>
-      </div>
-
-      <div class="feature-text">
-        <h3>Warranty Protection</h3>
-        <p>Over 2 years</p>
-      </div>
-
-    </div>
-
-
-    <div class="feature-item">
-
-      <div class="feature-icon">
-        <i class="fa-solid fa-truck"></i>
-      </div>
-
-      <div class="feature-text">
-        <h3>Free Shipping</h3>
-        <p>Order over Rs 1000</p>
-      </div>
-
-    </div>
-
-
-    <div class="feature-item">
-
-      <div class="feature-icon">
-        <i class="fa-solid fa-headset"></i>
-      </div>
-
-      <div class="feature-text">
-        <h3>24 / 7 Support</h3>
-        <p>Dedicated support</p>
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-<section class="notes-section">
-
-    <h2 class="notes-title">Shop by Notes</h2>
-
-    <div class="notes-container">
+      <div class="notes-container">
 
         <div class="note-card">
-           <a href="/shop?note=Wood" class="note-card">
+          <a href="/shop?note=Wood" class="note-card">
 
- <img src="/user/images/images.jpg" alt="Wood">
-<p>Wood</p>
+            <img src="/user/images/images.jpg" alt="Wood">
+            <p>Wood</p>
 
-</a>
+          </a>
         </div>
 
         <div class="note-card">
           <a href="/shop?note=Floral" class="note-card">
 
- <img src="/user/images/pink-flowers-transparent-background_84443-15455.avif" alt="Floral">
-<p>Floral</p>
+            <img src="/user/images/pink-flowers-transparent-background_84443-15455.avif" alt="Floral">
+            <p>Floral</p>
 
-</a>
+          </a>
         </div>
 
         <div class="note-card">
-            <a href="/shop?note=Citrus" class="note-card">
+          <a href="/shop?note=Citrus" class="note-card">
 
- <img src="/user/images/citrus-fruit-11563346485lykf4kcwyq.png" alt="Citrus">
-<p>Citrus</p>
+            <img src="/user/images/citrus-fruit-11563346485lykf4kcwyq.png" alt="Citrus">
+            <p>Citrus</p>
 
-</a>
+          </a>
         </div>
 
         <div class="note-card">
-            <a href="/shop?note=Vanilla" class="note-card">
+          <a href="/shop?note=Vanilla" class="note-card">
 
- <img src="/user/images/pngtree-vanilla-flowers-png-image_14026580.png" alt="Vanilla">
-<p>Vanilla</p>
+            <img src="/user/images/pngtree-vanilla-flowers-png-image_14026580.png" alt="Vanilla">
+            <p>Vanilla</p>
 
-</a>
+          </a>
         </div>
 
         <div class="note-card">
-            
+
           <a href="/shop?note=Lavender" class="note-card">
 
-<img src="/user/images/4381751143714aomtdgiephvivpdtivjbhwt1ocydrmxeudfmaueufqbb1uixii9916smga5ohkoas0oinvn82kbol1ocwuioipd6434nazpnzgzd.webp" alt="Lavender">
-<p>Lavender</p>
+            <img
+              src="/user/images/4381751143714aomtdgiephvivpdtivjbhwt1ocydrmxeudfmaueufqbb1uixii9916smga5ohkoas0oinvn82kbol1ocwuioipd6434nazpnzgzd.webp"
+              alt="Lavender">
+            <p>Lavender</p>
 
-</a>
+          </a>
         </div>
 
         <div class="note-card">
-           <a href="/shop?note=Amber" class="note-card">
+          <a href="/shop?note=Amber" class="note-card">
 
-<img src="/user/images/pngtree-3d-the-best-amber-perfume-oil-stone-on-transparent-background-png-image_13086646.png" alt="Amber">
-<p>Amber</p>
+            <img
+              src="/user/images/pngtree-3d-the-best-amber-perfume-oil-stone-on-transparent-background-png-image_13086646.png"
+              alt="Amber">
+            <p>Amber</p>
 
-</a>
+          </a>
         </div>
-
-    </div>
-
-</section>
- 
-  <section class="testimonials">
-
-    <h2>This Is What Our Customers Say</h2>
-
-    <p>
-      At Perfumo, we believe choosing a fragrance should feel effortless.
-    </p>
-
-    <div class="testimonial-wrapper">
-
-      <div class="testimonial-card">
-
-        <p>
-          “I picked this up for daily use and it’s exactly what I wanted.”
-        </p>
-
-        <div class="stars">
-          ★★★★★
-        </div>
-
-        <h3>James K.</h3>
 
       </div>
 
-      <div class="testimonial-card">
+    </section>
 
-        <p>
-          “Honestly smells like something much more expensive.”
-        </p>
+    <section class="testimonials">
 
-        <div class="stars">
-          ★★★★★
+      <h2>This Is What Our Customers Say</h2>
+
+      <p>
+        At Perfumo, we believe choosing a fragrance should feel effortless.
+      </p>
+
+      <div class="testimonial-wrapper">
+
+        <div class="testimonial-card">
+
+          <p>
+            “I picked this up for daily use and it’s exactly what I wanted.”
+          </p>
+
+          <div class="stars">
+            ★★★★★
+          </div>
+
+          <h3>James K.</h3>
+
         </div>
 
-        <h3>Megen W.</h3>
+        <div class="testimonial-card">
+
+          <p>
+            “Honestly smells like something much more expensive.”
+          </p>
+
+          <div class="stars">
+            ★★★★★
+          </div>
+
+          <h3>Megen W.</h3>
+
+        </div>
 
       </div>
 
-    </div>
-
-  </section>
-
-
-  
+    </section>
 
 
 
 
 
-<%- include('../partials/footer') %>
 
 
 
-<script>
+    <%- include('../partials/footer') %>
 
-const profileToggle =
-document.getElementById('profileToggle');
 
-const profileMenu =
-document.getElementById('profileMenu');
 
-if(profileToggle){
+      <script>
 
-    profileToggle.addEventListener('click', (e) => {
+        const profileToggle =
+          document.getElementById('profileToggle');
 
-        e.preventDefault();
+        const profileMenu =
+          document.getElementById('profileMenu');
 
-        profileMenu.classList.toggle('show');
-    });
+        if (profileToggle) {
 
-    document.addEventListener('click', (e) => {
+          profileToggle.addEventListener('click', (e) => {
 
-        if(
-            !profileToggle.contains(e.target) &&
-            !profileMenu.contains(e.target)
-        ){
-            profileMenu.classList.remove('show');
+            e.preventDefault();
+
+            profileMenu.classList.toggle('show');
+          });
+
+          document.addEventListener('click', (e) => {
+
+            if (
+              !profileToggle.contains(e.target) &&
+              !profileMenu.contains(e.target)
+            ) {
+              profileMenu.classList.remove('show');
+            }
+          });
         }
-    });
-}
 
-</script>
-<script src="/user/js/block-check.js"></script>
+      </script>
+      <script src="/user/js/block-check.js"></script>
 
 </body>
+
 </html>

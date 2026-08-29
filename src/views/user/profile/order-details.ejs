@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,597 +9,643 @@
 
     <link rel="stylesheet" href="/user/css/profile.css">
 
-  
-
-            <link rel="stylesheet" href="/user/css/order-details.css">
 
 
-        
+    <link rel="stylesheet" href="/user/css/order-details.css">
 
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="/user/css/headers.css">
     <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
- <link rel="stylesheet" href="/user/css/headers.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap"
+        rel="stylesheet">
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
 
 
-<section class="order-details-section">
+        <section class="order-details-section">
 
-<div class="order-details-container">
+            <div class="order-details-container">
 
-<div class="page-header">
+                <div class="page-header">
 
-<h1>Order Details</h1>
+                    <h1>Order Details</h1>
 
-<a href="/profile/orders" class="back-btn">
-<i class="fa-solid fa-arrow-left"></i>
-Back to Orders
-</a>
+                    <a href="/profile/orders" class="back-btn">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to Orders
+                    </a>
 
-</div>
+                </div>
 
 
-<div class="summary-card">
+                <div class="summary-card">
 
-<div class="summary-item">
-<span>Order ID</span>
-<h3>#<%= order.orderId %></h3>
-</div>
+                    <div class="summary-item">
+                        <span>Order ID</span>
+                        <h3>#<%= order.orderId %>
+                        </h3>
+                    </div>
 
-<div class="summary-item">
-<span>Order Date</span>
-<h3>
-<%= new Date(order.createdAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) %>
-</h3>
-</div>
+                    <div class="summary-item">
+                        <span>Order Date</span>
+                        <h3>
+                            <%= new
+                                Date(order.createdAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})
+                                %>
+                        </h3>
+                    </div>
 
-<div class="summary-item">
-<span>Total Amount</span>
-<h3>₹<%= order.grandTotal.toLocaleString() %></h3>
-</div>
+                    <div class="summary-item">
+                        <span>Total Amount</span>
+                        <h3>₹<%= order.grandTotal.toLocaleString() %>
+                        </h3>
+                    </div>
 
-<div class="summary-item">
-<span>Payment</span>
-<h3><%= order.paymentMethod %></h3>
-</div>
+                    <div class="summary-item">
+                        <span>Payment</span>
+                        <h3>
+                            <%= order.paymentMethod %>
+                        </h3>
+                    </div>
 
-<div class="summary-item">
-<span>Status</span>
+                    <div class="summary-item">
+                        <span>Status</span>
 
-<span class="status-badge <%= order.orderStatus.toLowerCase().replace(/\s+/g,'-') %>">
-<%= order.orderStatus %>
-</span>
+                        <span class="status-badge <%= order.orderStatus.toLowerCase().replace(/\s+/g,'-') %>">
+                            <%= order.orderStatus %>
+                        </span>
 
-</div>
+                    </div>
 
-</div>
+                </div>
 
-<%
-let timelineStatus = order.orderStatus;
+                <% let timelineStatus=order.orderStatus; if (timelineStatus==="Partially Cancelled" ) { const
+                    activeItem=order.items.find( item=>
+                    item.itemStatus !== "Cancelled" &&
+                    item.itemStatus !== "Returned"
+                    );
 
-if (timelineStatus === "Partially Cancelled") {
-    const activeItem = order.items.find(
-        item =>
-            item.itemStatus !== "Cancelled" &&
-            item.itemStatus !== "Returned"
-    );
+                    if (activeItem) {
+                    timelineStatus = activeItem.itemStatus;
+                    }
+                    }
 
-    if (activeItem) {
-        timelineStatus = activeItem.itemStatus;
-    }
-}
+                    if (timelineStatus === "Partially Returned") {
+                    timelineStatus = "Delivered";
+                    }
+                    %>
 
-if (timelineStatus === "Partially Returned") {
-    timelineStatus = "Delivered";
-}
-%>
+                    <div class="timeline-card">
 
-<div class="timeline-card">
+                        <h2>Order Timeline</h2>
 
-<h2>Order Timeline</h2>
+                        <ul class="timeline">
 
-<ul class="timeline">
+                            <li
+                                class="<%= ['Pending','Confirmed','Processing','Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+                                Pending
+                            </li>
 
-<li class="<%= ['Pending','Confirmed','Processing','Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
-Pending
-</li>
+                            <li
+                                class="<%= ['Confirmed','Processing','Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+                                Confirmed
+                            </li>
 
-<li class="<%= ['Confirmed','Processing','Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
-Confirmed
-</li>
+                            <li
+                                class="<%= ['Processing','Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+                                Processing
+                            </li>
 
-<li class="<%= ['Processing','Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
-Processing
-</li>
+                            <li
+                                class="<%= ['Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+                                Shipped
+                            </li>
 
-<li class="<%= ['Shipped','Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
-Shipped
-</li>
+                            <li class="<%= ['Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
+                                Out For Delivery
+                            </li>
 
-<li class="<%= ['Out For Delivery','Delivered'].includes(timelineStatus) ? 'active':'' %>">
-Out For Delivery
-</li>
+                            <li class="<%= timelineStatus==='Delivered' ? 'active':'' %>">
+                                Delivered
+                            </li>
 
-<li class="<%= timelineStatus==='Delivered' ? 'active':'' %>">
-Delivered
-</li>
+                        </ul>
 
-</ul>
+                    </div>
 
-</div>
+                    <% if(order.cancelledAt){ %>
 
-<% if(order.cancelledAt){ %>
+                        <div class="cancel-card">
 
-<div class="cancel-card">
+                            <h2>Order Cancelled</h2>
 
-    <h2>Order Cancelled</h2>
+                            <p>
+                                Cancelled On :
+                                <strong>
+                                    <%= new Date(order.cancelledAt).toLocaleString("en-IN") %>
+                                </strong>
+                            </p>
 
-    <p>
-        Cancelled On :
-        <strong>
-            <%= new Date(order.cancelledAt).toLocaleString("en-IN") %>
-        </strong>
-    </p>
+                            <% if(order.cancelReason){ %>
 
-    <% if(order.cancelReason){ %>
+                                <p>
+                                    Reason :
+                                    <%= order.cancelReason %>
+                                </p>
 
-    <p>
-        Reason :
-        <%= order.cancelReason %>
-    </p>
+                                <% } %>
 
-    <% } %>
+                        </div>
 
-</div>
+                        <% } %>
 
-<% } %>
+                            <% if(order.returnedAt){ %>
 
-<% if(order.returnedAt){ %>
+                                <div class="return-card">
 
-<div class="return-card">
+                                    <h2>Returned</h2>
 
-    <h2>Returned</h2>
+                                    <p>
+                                        Returned On :
+                                        <strong>
+                                            <%= new Date(order.returnedAt).toLocaleString("en-IN") %>
+                                        </strong>
+                                    </p>
 
-    <p>
-        Returned On :
-        <strong>
-            <%= new Date(order.returnedAt).toLocaleString("en-IN") %>
-        </strong>
-    </p>
+                                    <% if(order.returnedReason){ %>
 
-    <% if(order.returnedReason){ %>
+                                        <p>
+                                            Reason :
+                                            <%= order.returnedReason %>
+                                        </p>
 
-    <p>
-        Reason :
-        <%= order.returnedReason %>
-    </p>
+                                        <% } %>
 
-    <% } %>
+                                </div>
 
-</div>
+                                <% } %>
 
-<% } %>
+                                    <% if(order.deliveredAt){ %>
 
-<% if(order.deliveredAt){ %>
+                                        <div class="delivered-card">
 
-<div class="delivered-card">
+                                            <h2>Delivered</h2>
 
-    <h2>Delivered</h2>
+                                            <p>
+                                                Delivered On :
+                                                <strong>
+                                                    <%= new Date(order.deliveredAt).toLocaleString("en-IN") %>
+                                                </strong>
+                                            </p>
 
-    <p>
-        Delivered On :
-        <strong>
-            <%= new Date(order.deliveredAt).toLocaleString("en-IN") %>
-        </strong>
-    </p>
+                                        </div>
 
-</div>
+                                        <% } %>
 
-<% } %>
+                                            <div class="address-card">
 
-<div class="address-card">
+                                                <h2>Delivery Address</h2>
 
-<h2>Delivery Address</h2>
+                                                <p><strong>
+                                                        <%= order.shippingAddress.fullName %>
+                                                    </strong></p>
 
-<p><strong><%= order.shippingAddress.fullName %></strong></p>
+                                                <p>
+                                                    <%= order.shippingAddress.house %>
+                                                </p>
 
-<p><%= order.shippingAddress.house %></p>
+                                                <p>
+                                                    <%= order.shippingAddress.street %>
+                                                </p>
 
-<p><%= order.shippingAddress.street %></p>
+                                                <p>
 
-<p>
+                                                    <%= order.shippingAddress.city %>,
 
-<%= order.shippingAddress.city %>,
+                                                        <%= order.shippingAddress.state %>
 
-<%= order.shippingAddress.state %>
+                                                            -
 
--
+                                                            <%= order.shippingAddress.pincode %>
 
-<%= order.shippingAddress.pincode %>
+                                                </p>
 
-</p>
+                                                <p>
+                                                    <%= order.shippingAddress.mobile %>
+                                                </p>
 
-<p><%= order.shippingAddress.mobile %></p>
+                                            </div>
 
-</div>
+                                            <div class="products-card">
 
-<div class="products-card">
+                                                <% order.items.forEach(item=>{ %>
 
-<% order.items.forEach(item=>{ %>
+                                                    <p>
+                                                        <%= item._id %>
+                                                    </p>
+                                                    <div class="product-row">
 
-    <p><%= item._id %></p>
-<div class="product-row">
+                                                        <div class="product-image">
+                                                            <img src="/admin/uploads/products/<%= item.variant.images[0] %>"
+                                                                alt="">
+                                                        </div>
 
-    <div class="product-image">
-        <img src="/admin/uploads/products/<%= item.variant.images[0] %>" alt="">
-    </div>
+                                                        <div class="product-info">
+                                                            <h3>
+                                                                <%= item.product.name %>
+                                                            </h3>
+                                                            <p>
+                                                                <%= item.variant.size %> ml | <%=
+                                                                        item.variant.concentration %>
+                                                            </p>
+                                                            <p>Qty : <%= item.quantity %>
+                                                            </p>
+                                                            <p>Status : <strong>
+                                                                    <%= item.itemStatus %>
+                                                                </strong></p>
+                                                        </div>
 
-    <div class="product-info">
-        <h3><%= item.product.name %></h3>
-        <p><%= item.variant.size %> ml | <%= item.variant.concentration %></p>
-        <p>Qty : <%= item.quantity %></p>
-        <p>Status : <strong><%= item.itemStatus %></strong></p>
-    </div>
+                                                        <div class="product-price">
+                                                            ₹<%= item.total.toLocaleString() %>
+                                                        </div>
 
-    <div class="product-price">
-        ₹<%= item.total.toLocaleString() %>
-    </div>
+                                                        <div class="item-actions">
 
-    <div class="item-actions">
+                                                            <% if ( ["Pending", "Confirmed" , "Processing"
+                                                                ].includes(item.itemStatus) && !isRetryPaymentOrder ) {
+                                                                %>
 
-       <% if (
-    ["Pending", "Confirmed", "Processing"].includes(item.itemStatus) &&
-    !isRetryPaymentOrder
-) { %>
+                                                                <button class="cancel-item-btn danger-btn"
+                                                                    data-order="<%= order._id %>"
+                                                                    data-item="<%= item.variant._id %>">
+                                                                    Cancel Item
+                                                                </button>
 
-            <button
-                class="cancel-item-btn danger-btn"
-                data-order="<%= order._id %>"
-              data-item="<%= item.variant._id %>">
-                Cancel Item
-            </button>
+                                                                <% } %>
 
-        <% } %>
+                                                                    <% if ( item.itemStatus==="Delivered" &&
+                                                                        item.returnStatus==="None" ) { %>
 
-    <% if (
-    item.itemStatus === "Delivered" &&
-    item.returnStatus === "None"
-) { %>
+                                                                        <button class="secondary-btn return-item-btn"
+                                                                            data-order="<%= order._id %>"
+                                                                            data-item="<%= item.variant._id %>">
 
-<button
-    class="secondary-btn return-item-btn"
-    data-order="<%= order._id %>"
-    data-item="<%= item.variant._id %>">
+                                                                            Return Item
 
-    Return Item
+                                                                        </button>
 
-</button>
+                                                                        <% } %>
 
-<% } %>
+                                                                            <% if(item.returnStatus==="Requested" ){ %>
 
-<% if(item.returnStatus === "Requested"){ %>
+                                                                                <div class="return-request-badge">
 
-<div class="return-request-badge">
+                                                                                    <i class="fa-solid fa-clock"></i>
 
-    <i class="fa-solid fa-clock"></i>
+                                                                                    Return Requested
 
-    Return Requested
+                                                                                </div>
 
-</div>
+                                                                                <% } %>
 
-<% } %>
 
+                                                                                    <% if(item.returnStatus==="Approved"
+                                                                                        ){ %>
 
-<% if(item.returnStatus === "Approved"){ %>
+                                                                                        <div
+                                                                                            class="return-approved-badge">
 
-<div class="return-approved-badge">
+                                                                                            <i
+                                                                                                class="fa-solid fa-circle-check"></i>
 
-    <i class="fa-solid fa-circle-check"></i>
+                                                                                            Returned
 
-    Returned
+                                                                                        </div>
 
-</div>
+                                                                                        <% } %>
 
-<% } %>
 
+                                                                                            <% if(item.returnStatus==="Rejected"
+                                                                                                ){ %>
 
-<% if(item.returnStatus === "Rejected"){ %>
+                                                                                                <div
+                                                                                                    class="return-rejected-box">
 
-<div class="return-rejected-box">
+                                                                                                    <div
+                                                                                                        class="return-rejected-badge">
 
-    <div class="return-rejected-badge">
+                                                                                                        <i
+                                                                                                            class="fa-solid fa-circle-xmark"></i>
 
-        <i class="fa-solid fa-circle-xmark"></i>
+                                                                                                        Return Rejected
 
-        Return Rejected
+                                                                                                    </div>
 
-    </div>
+                                                                                                    <% if(item.returnRejectedReason){
+                                                                                                        %>
 
-    <% if(item.returnRejectedReason){ %>
+                                                                                                        <small>
 
-        <small>
+                                                                                                            Reason:
+                                                                                                            <%= item.returnRejectedReason
+                                                                                                                %>
 
-            Reason:
-            <%= item.returnRejectedReason %>
+                                                                                                        </small>
 
-        </small>
+                                                                                                        <% } %>
 
-    <% } %>
+                                                                                                </div>
 
-</div>
+                                                                                                <% } %>
 
-<% } %>
+                                                        </div>
 
-    </div>
+                                                    </div>
 
-</div>
+                                                    <% }) %>
+                                                        <div class="price-card">
 
-<% }) %>
-<div class="price-card">
+                                                            <h2>Price Details</h2>
 
-<h2>Price Details</h2>
+                                                            <div class="row">
 
-<div class="row">
+                                                                <span>Subtotal</span>
 
-<span>Subtotal</span>
+                                                                <span>
 
-<span>
+                                                                    ₹<%= order.subtotal.toLocaleString() %>
 
-₹<%= order.subtotal.toLocaleString() %>
+                                                                </span>
 
-</span>
+                                                            </div>
 
-</div>
+                                                            <div class="row">
 
-<div class="row">
+                                                                <span>Discount</span>
 
-<span>Discount</span>
+                                                                <span>
 
-<span>
+                                                                    - ₹<%= order.discount.toLocaleString() %>
 
-- ₹<%= order.discount.toLocaleString() %>
+                                                                </span>
 
-</span>
+                                                            </div>
 
-</div>
+                                                            <div class="row">
 
-<div class="row">
+                                                                <span>Shipping</span>
 
-<span>Shipping</span>
+                                                                <span>
 
-<span>
+                                                                    ₹<%= order.shippingCharge.toLocaleString() %>
 
-₹<%= order.shippingCharge.toLocaleString() %>
+                                                                </span>
 
-</span>
+                                                            </div>
 
-</div>
+                                                            <div class="row">
 
-<div class="row">
+                                                                <span>Tax</span>
 
-<span>Tax</span>
+                                                                <span>
 
-<span>
+                                                                    ₹<%= order.tax.toLocaleString() %>
 
-₹<%= order.tax.toLocaleString() %>
+                                                                </span>
 
-</span>
+                                                            </div>
 
-</div>
+                                                            <hr>
 
-<hr>
+                                                            <div class="row total">
 
-<div class="row total">
+                                                                <span>Total</span>
 
-<span>Total</span>
+                                                                <span>
 
-<span>
+                                                                    ₹<%= order.grandTotal.toLocaleString() %>
 
-₹<%= order.grandTotal.toLocaleString() %>
+                                                                </span>
 
-</span>
+                                                            </div>
 
-</div>
+                                                        </div>
 
-</div>
+                                                        <div class="payment-card">
 
-<div class="payment-card">
+                                                            <h2>Payment Details</h2>
 
-<h2>Payment Details</h2>
+                                                            <p>
 
-<p>
+                                                                Method :
 
-Method :
+                                                                <strong>
 
-<strong>
+                                                                    <%= order.paymentMethod %>
 
-<%= order.paymentMethod %>
+                                                                </strong>
 
-</strong>
+                                                            </p>
 
-</p>
+                                                            <p>
 
-<p>
+                                                                Status :
 
-Status :
+                                                                <strong>
 
-<strong>
+                                                                    <% let paymentDisplay=order.paymentStatus;
+                                                                        if(order.orderStatus==="Cancelled" ){
+                                                                        if(order.paymentMethod==="COD" ){
+                                                                        paymentDisplay="Not Applicable" ; }else
+                                                                        if(order.paymentStatus==="Refund Pending" ){
+                                                                        paymentDisplay="Refund Pending" ; }else
+                                                                        if(order.paymentStatus==="Refunded" ){
+                                                                        paymentDisplay="Refunded" ; } } %>
 
-<%
-let paymentDisplay = order.paymentStatus;
+                                                                        <strong>
+                                                                            <%= paymentDisplay %>
+                                                                        </strong>
+                                                                </strong>
 
-if(order.orderStatus==="Cancelled"){
-    if(order.paymentMethod==="COD"){
-        paymentDisplay="Not Applicable";
-    }else if(order.paymentStatus==="Refund Pending"){
-        paymentDisplay="Refund Pending";
-    }else if(order.paymentStatus==="Refunded"){
-        paymentDisplay="Refunded";
-    }
-}
-%>
+                                                            </p>
 
-<strong><%= paymentDisplay %></strong>
-</strong>
+                                                            <% if(order.razorpayPaymentId){ %>
 
-</p>
+                                                                <p>
 
-<% if(order.razorpayPaymentId){ %>
+                                                                    Transaction ID :
 
-<p>
+                                                                    <%= order.razorpayPaymentId %>
 
-Transaction ID :
+                                                                </p>
 
-<%= order.razorpayPaymentId %>
+                                                                <% } %>
 
-</p>
+                                                        </div>
 
-<% } %>
 
-</div>
 
 
+                                                        <div class="action-card  action-row">
 
 
-<div class="action-card  action-row">
 
- 
 
 
+                                                            <% if(order.orderStatus==="Cancelled" ){ %>
 
-<% if(order.orderStatus==="Cancelled"){ %>
+                                                                <a href="/profile/orders/<%= order._id %>/summary"
+                                                                    class="primary-btn">
+                                                                    Download Order Summary
+                                                                </a>
 
-<a href="/profile/orders/<%= order._id %>/summary"
-   class="primary-btn">
-    Download Order Summary
-</a>
+                                                                <% } else if (typeof canDownloadInvoice !=="undefined"
+                                                                    && canDownloadInvoice) { %>
 
-<% } else if (typeof canDownloadInvoice !== "undefined" && canDownloadInvoice)  { %>
+                                                                    <a href="/profile/orders/<%= order._id %>/invoice"
+                                                                        class="primary-btn">
+                                                                        Download Invoice
+                                                                    </a>
 
-<a href="/profile/orders/<%= order._id %>/invoice"
-   class="primary-btn">
-    Download Invoice
-</a>
+                                                                    <% } %>
 
-<% } %>
 
+                                                                        <% if(
+                                                                            ["Pending","Confirmed","Processing"].includes(order.orderStatus)
+                                                                            ){ %>
 
-<% if(
-    ["Pending","Confirmed","Processing"].includes(order.orderStatus)
-){ %>
+                                                                            <button class="danger-btn"
+                                                                                id="cancelWholeOrderBtn"
+                                                                                data-order="<%= order._id %>">
 
-<button
-class="danger-btn"
-id="cancelWholeOrderBtn"
-data-order="<%= order._id %>">
+                                                                                Cancel Order
 
-Cancel Order
+                                                                            </button>
 
-</button>
+                                                                            <% } %>
 
-<% } %>
+                                                                                <% if(canReturnWholeOrder){ %>
 
-<% if(canReturnWholeOrder){ %>
+                                                                                    <% if(order.returnStatus==="None" ){
+                                                                                        %>
 
-<% if(order.returnStatus === "None"){ %>
+                                                                                        <button class="primary-btn"
+                                                                                            id="returnWholeOrderBtn"
+                                                                                            data-order="<%= order._id %>"
+                                                                                            data-total="<%= order.grandTotal %>"
+                                                                                            data-shipping="<%= order.shippingCharge %>">
 
-<button
-class="primary-btn"
-id="returnWholeOrderBtn"
-data-order="<%= order._id %>"
-data-total="<%= order.grandTotal %>"
-data-shipping="<%= order.shippingCharge %>">
+                                                                                            Return Whole Order
 
-Return Whole Order
+                                                                                        </button>
 
-</button>
+                                                                                        <% } else
+                                                                                            if(order.returnStatus==="Requested"
+                                                                                            ){ %>
 
-<% } else if(order.returnStatus === "Requested"){ %>
+                                                                                            <span
+                                                                                                class="return-request-badge">
+                                                                                                Return Requested
+                                                                                            </span>
 
-<span class="return-request-badge">
-Return Requested
-</span>
+                                                                                            <% } else
+                                                                                                if(order.returnStatus==="Approved"
+                                                                                                ){ %>
 
-<% } else if(order.returnStatus === "Approved"){ %>
+                                                                                                <span
+                                                                                                    class="return-approved-badge">
+                                                                                                    Returned
+                                                                                                </span>
 
-<span class="return-approved-badge">
-Returned
-</span>
+                                                                                                <% } else
+                                                                                                    if(order.returnStatus==="Rejected"
+                                                                                                    ){ %>
 
-<% } else if(order.returnStatus === "Rejected"){ %>
+                                                                                                    <span
+                                                                                                        class="return-rejected-badge">
+                                                                                                        Return Rejected
+                                                                                                    </span>
 
-<span class="return-rejected-badge">
-Return Rejected
-</span>
+                                                                                                    <p>
+                                                                                                        <%= order.returnRejectedReason
+                                                                                                            %>
+                                                                                                    </p>
 
-<p><%= order.returnRejectedReason %></p>
+                                                                                                    <% } %>
+                                                                                                        <% } %>
 
-<% } %>
-<% } %>
 
+                                                                                                            <% const
+                                                                                                                showRetry=order.paymentMethod==="RAZORPAY"
+                                                                                                                &&
+                                                                                                                order.paymentStatus==="Pending"
+                                                                                                                ; %>
 
-<%
-const showRetry =
-    order.paymentMethod === "RAZORPAY" &&
-    order.paymentStatus === "Pending";
-%>
+                                                                                                                <% if(showRetry){
+                                                                                                                    %>
 
-<% if(showRetry){ %>
+                                                                                                                    <a href="/checkout?retryOrder=<%= order._id %>"
+                                                                                                                        class="secondary-btn">
+                                                                                                                        Retry
+                                                                                                                        Payment
+                                                                                                                    </a>
 
-<a href="/checkout?retryOrder=<%= order._id %>"
-   class="secondary-btn">
-    Retry Payment
-</a>
+                                                                                                                    <% } else
+                                                                                                                        {
+                                                                                                                        %>
+                                                                                                                        <button
+                                                                                                                            id="buyAgainBtn"
+                                                                                                                            data-order="<%= order._id %>"
+                                                                                                                            class="secondary-btn">
 
-<% } else { %>
-<button
-id="buyAgainBtn"
-data-order="<%= order._id %>"
-class="secondary-btn">
+                                                                                                                            Buy
+                                                                                                                            Again
 
-Buy Again
+                                                                                                                        </button>
 
-</button>
+                                                                                                                        <% }
+                                                                                                                            %>
+                                                        </div>
 
-<% } %>
-</div>
 
+                                            </div>
 
-</div>
+        </section>
 
-</section>
+        <footer class="profile-footer">
 
-<footer class="profile-footer">
+            <div class="footer-logo">
+                PERFUMO
+            </div>
 
-    <div class="footer-logo">
-        PERFUMO
-    </div>
+            <div class="footer-links">
 
-    <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="/products">Products</a>
+                <a href="/pages">Pages</a>
 
-        <a href="/">Home</a>
-        <a href="/shop">Shop</a>
-        <a href="/products">Products</a>
-        <a href="/pages">Pages</a>
+            </div>
 
-    </div>
+            <p>
+                Copyright © 2025 PERFUMO . All Rights Reserved.
+            </p>
 
-    <p>
-        Copyright © 2025 PERFUMO . All Rights Reserved.
-    </p>
+        </footer>
 
-</footer>
+        <script src="/user/js/block-check.js"></script>
 
-<script src="/user/js/block-check.js"></script>
-
-<script src="/user/js/order-details.js"></script>
+        <script src="/user/js/order-details.js"></script>
 
 
 </body>
+
 </html>

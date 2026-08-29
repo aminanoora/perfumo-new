@@ -1,274 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-     <link rel="stylesheet" href="/user/css/headers.css">
-      <link rel="stylesheet" href="/user/css/Wallet.css">
-       <link rel="stylesheet" href="/user/css/footer.css">
-           <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-   
+    <link rel="stylesheet" href="/user/css/headers.css">
+    <link rel="stylesheet" href="/user/css/Wallet.css">
+    <link rel="stylesheet" href="/user/css/footer.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
 </head>
+
 <body>
-   <%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<section class="wallet-page">
- 
-    <div class="container">
-        
+        <section class="wallet-page">
 
-        <div class="wallet-header">
-  <div class="sidebar">
+            <div class="container">
 
-            <div class="user-box">
 
-                <div class="user-avatar">
-                    <%= user.firstName.charAt(0) %>
+                <div class="wallet-header">
+                    <div class="sidebar">
+
+                        <div class="user-box">
+
+                            <div class="user-avatar">
+                                <%= user.firstName.charAt(0) %>
+                            </div>
+
+                            <div class="user-info">
+                                <h3>
+                                    <%= user.firstName %>
+                                        <%= user.lastName %>
+                                </h3>
+                            </div>
+
+                        </div>
+
+                        <div class="sidebar-menu">
+
+                            <a href="/profile/orders">
+                                <i class="fa-solid fa-cube"></i>
+                                My Orders
+                            </a>
+
+                            <a href="/wishlist">
+                                <i class="fa-regular fa-heart"></i>
+                                Wishlist
+                            </a>
+
+                            <a href="/profile/address">
+                                <i class="fa-solid fa-location-dot"></i>
+                                Addresses
+                            </a>
+
+                            <a href="/coupons">
+                                <i class="fa-solid fa-ticket"></i>
+                                Coupons
+                            </a>
+
+                            <a href="/wallet" class="active">
+                                <i class="fa-solid fa-wallet"></i>
+                                My Wallet
+                            </a>
+
+                            <a href="/refer">
+                                <i class="fa-solid fa-gift"></i>
+                                Refer & Earn
+                            </a>
+
+                            <a href="/profile">
+                                <i class="fa-regular fa-user"></i>
+                                Profile Settings
+                            </a>
+
+                        </div>
+
+                        <a href="/logout" class="logout-btn">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            Logout
+                        </a>
+
+                    </div>
+                    <div class="wallet-content">
+                        <div class="wallet-balance-card">
+
+                            <h2>My Wallet</h2>
+
+                            <p class="wallet-label">Available Balance</p>
+
+                            <h1>
+
+                                ₹<%= wallet ? wallet.balance.toLocaleString("en-IN") : "0" %>
+
+                            </h1>
+
+                            <span class="wallet-status">
+
+                                Active
+
+                            </span>
+
+                        </div>
+                        <div class="wallet-transactions">
+
+                            <h3>
+
+                                Transaction History
+
+                            </h3>
+
+                            <% if(wallet && wallet.transactions.length>0){ %>
+
+                                <table class="wallet-table">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>Date</th>
+
+                                            <th>Type</th>
+
+                                            <th>Reason</th>
+
+                                            <th>Description</th>
+
+                                            <th>Amount</th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        <% wallet.transactions.forEach(transaction=>{ %>
+
+                                            <tr>
+
+                                                <td>
+
+                                                    <%= new
+                                                        Date(transaction.createdAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})
+                                                        %>
+
+                                                        <br>
+
+                                                        <small>
+
+                                                            <%= new
+                                                                Date(transaction.createdAt).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})
+                                                                %>
+
+                                                        </small>
+
+                                                </td>
+
+                                                <td>
+
+                                                    <% if(transaction.type==="credit" ){ %>
+
+                                                        <span class="badge credit">
+
+                                                            Credit
+
+                                                        </span>
+
+                                                        <% }else{ %>
+
+                                                            <span class="badge debit">
+
+                                                                Debit
+
+                                                            </span>
+
+                                                            <% } %>
+
+                                                </td>
+
+                                                <td>
+
+                                                    <%= transaction.reason %>
+
+                                                </td>
+
+                                                <td>
+
+                                                    <%= transaction.description || "-" %>
+
+                                                </td>
+
+                                                <td>
+
+                                                    <% if(transaction.type==="credit" ){ %>
+
+                                                        <span class="amount credit-text">
+
+                                                            + ₹<%= transaction.amount.toLocaleString("en-IN") %>
+
+                                                        </span>
+
+                                                        <% }else{ %>
+
+                                                            <span class="amount debit-text">
+
+                                                                - ₹<%= transaction.amount.toLocaleString("en-IN") %>
+
+                                                            </span>
+
+                                                            <% } %>
+
+                                                </td>
+
+                                            </tr>
+
+                                            <% }) %>
+
+                                    </tbody>
+
+                                </table>
+
+                                <% }else{ %>
+
+                                    <div class="empty-wallet">
+
+
+
+                                        <h4>
+
+                                            No Transactions Yet
+
+                                        </h4>
+
+                                        <p>
+
+                                            Your wallet transactions will appear here.
+
+                                        </p>
+
+                                    </div>
+
+                                    <% } %>
+
+                        </div>
+                    </div>
+
+
                 </div>
+            </div>
 
-                <div class="user-info">
-                    <h3>
-                        <%= user.firstName %> <%= user.lastName %>
-                    </h3>
-                </div>
+        </section>
+
+        <footer class="profile-footer">
+
+            <div class="footer-logo">
+                PERFUMO
+            </div>
+
+            <div class="footer-links">
+
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="/products">Products</a>
+                <a href="/pages">Pages</a>
 
             </div>
 
-            <div class="sidebar-menu">
+            <p>
+                Copyright © 2025 PERFUMO . All Rights Reserved.
+            </p>
 
-                <a href="/profile/orders">
-                    <i class="fa-solid fa-cube"></i>
-                    My Orders
-                </a>
 
-                <a href="/wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    Wishlist
-                </a>
-
-                <a href="/profile/address">
-                    <i class="fa-solid fa-location-dot"></i>
-                    Addresses
-                </a>
-
-                <a href="/coupons">
-                    <i class="fa-solid fa-ticket"></i>
-                    Coupons
-                </a>
-
-                <a href="/wallet" class="active">
-                    <i class="fa-solid fa-wallet"></i>
-                    My Wallet
-                </a>
-
-                <a href="/refer">
-                    <i class="fa-solid fa-gift"></i>
-                    Refer & Earn
-                </a>
-
-                <a href="/profile" >
-                    <i class="fa-regular fa-user"></i>
-                    Profile Settings
-                </a>
-
-            </div>
-
-            <a href="/logout" class="logout-btn">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                Logout
-            </a>
-
-        </div>
-        <div class="wallet-content">
-            <div class="wallet-balance-card">
-
-                <h2>My Wallet</h2>
-
-                <p class="wallet-label">Available Balance</p>
-
-                <h1>
-
-                    ₹<%= wallet ? wallet.balance.toLocaleString("en-IN") : "0" %>
-
-                </h1>
-
-                <span class="wallet-status">
-
-                    Active
-
-                </span>
-
-            </div>
-<div class="wallet-transactions">
-
-            <h3>
-
-                Transaction History
-
-            </h3>
-
-            <% if(wallet && wallet.transactions.length>0){ %>
-
-            <table class="wallet-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Date</th>
-
-                        <th>Type</th>
-
-                        <th>Reason</th>
-
-                        <th>Description</th>
-
-                        <th>Amount</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <% wallet.transactions.forEach(transaction=>{ %>
-
-                    <tr>
-
-                        <td>
-
-                            <%= new Date(transaction.createdAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) %>
-
-                            <br>
-
-                            <small>
-
-                                <%= new Date(transaction.createdAt).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"}) %>
-
-                            </small>
-
-                        </td>
-
-                        <td>
-
-                            <% if(transaction.type==="credit"){ %>
-
-                                <span class="badge credit">
-
-                                    Credit
-
-                                </span>
-
-                            <% }else{ %>
-
-                                <span class="badge debit">
-
-                                    Debit
-
-                                </span>
-
-                            <% } %>
-
-                        </td>
-
-                        <td>
-
-                            <%= transaction.reason %>
-
-                        </td>
-
-                        <td>
-
-                            <%= transaction.description || "-" %>
-
-                        </td>
-
-                        <td>
-
-                            <% if(transaction.type==="credit"){ %>
-
-                                <span class="amount credit-text">
-
-                                    + ₹<%= transaction.amount.toLocaleString("en-IN") %>
-
-                                </span>
-
-                            <% }else{ %>
-
-                                <span class="amount debit-text">
-
-                                    - ₹<%= transaction.amount.toLocaleString("en-IN") %>
-
-                                </span>
-
-                            <% } %>
-
-                        </td>
-
-                    </tr>
-
-                    <% }) %>
-
-                </tbody>
-
-            </table>
-
-            <% }else{ %>
-
-            <div class="empty-wallet">
-
-               
-
-                <h4>
-
-                    No Transactions Yet
-
-                </h4>
-
-                <p>
-
-                    Your wallet transactions will appear here.
-
-                </p>
-
-            </div>
-
-            <% } %>
-
-        </div>
-        </div>
-
-        
-</div>
-    </div>
-
-</section>
-
-<footer class="profile-footer">
-
-    <div class="footer-logo">
-        PERFUMO
-    </div>
-
-    <div class="footer-links">
-
-        <a href="/">Home</a>
-        <a href="/shop">Shop</a>
-        <a href="/products">Products</a>
-        <a href="/pages">Pages</a>
-
-    </div>
-
-    <p>
-        Copyright © 2025 PERFUMO . All Rights Reserved.
-    </p>
-
-
-<script src="/user/js/block-check.js"></script>
-<script src="/user/js/wallet.js"></script>
+            <script src="/user/js/block-check.js"></script>
+            <script src="/user/js/wallet.js"></script>
 </body>
+
 </html>

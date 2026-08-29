@@ -19,174 +19,159 @@ const descriptionError = document.getElementById("descriptionError");
 const logoError = document.getElementById("logoError");
 
 function showError(element, message) {
-    element.textContent = message;
+  element.textContent = message;
 }
 
 function clearErrors() {
-    nameError.textContent = "";
-    slugError.textContent = "";
-    descriptionError.textContent = "";
-    logoError.textContent = "";
+  nameError.textContent = "";
+  slugError.textContent = "";
+  descriptionError.textContent = "";
+  logoError.textContent = "";
 }
 
 function validateName() {
+  const value = name.value.trim();
 
-    const value = name.value.trim();
+  if (!value) {
+    showError(nameError, "Brand name is required.");
+    return false;
+  }
 
-    if (!value) {
-        showError(nameError, "Brand name is required.");
-        return false;
-    }
+  if (value.length < 4) {
+    showError(nameError, "Brand name must contain at least 4 characters.");
+    return false;
+  }
 
-    if (value.length < 4) {
-        showError(nameError, "Brand name must contain at least 4 characters.");
-        return false;
-    }
+  if (/\d/.test(value)) {
+    showError(nameError, "Numbers are not allowed.");
+    return false;
+  }
 
-    if (/\d/.test(value)) {
-        showError(nameError, "Numbers are not allowed.");
-        return false;
-    }
-
-    return true;
+  return true;
 }
 
 function validateSlug() {
+  const value = slug.value.trim();
 
-    const value = slug.value.trim();
+  if (!value) {
+    showError(slugError, "Slug is required.");
+    return false;
+  }
 
-    if (!value) {
-        showError(slugError, "Slug is required.");
-        return false;
-    }
+  if (value.length < 4) {
+    showError(slugError, "Slug must contain at least 4 characters.");
+    return false;
+  }
 
-    if (value.length < 4) {
-        showError(slugError, "Slug must contain at least 4 characters.");
-        return false;
-    }
+  if (/\d/.test(value)) {
+    showError(slugError, "Numbers are not allowed.");
+    return false;
+  }
 
-    if (/\d/.test(value)) {
-        showError(slugError, "Numbers are not allowed.");
-        return false;
-    }
-
-    return true;
+  return true;
 }
 
 function validateDescription() {
+  const value = description.value.trim();
 
-    const value = description.value.trim();
+  if (!value) {
+    showError(descriptionError, "Description is required.");
+    return false;
+  }
 
-    if (!value) {
-        showError(descriptionError, "Description is required.");
-        return false;
-    }
+  if (value.length < 4) {
+    showError(
+      descriptionError,
+      "Description must contain at least 4 characters.",
+    );
+    return false;
+  }
 
-    if (value.length < 4) {
-        showError(descriptionError, "Description must contain at least 4 characters.");
-        return false;
-    }
-
-
-
-    return true;
+  return true;
 }
 
 name.addEventListener("input", () => {
-    clearErrors();
+  clearErrors();
 });
 
 slug.addEventListener("input", () => {
-    clearErrors();
+  clearErrors();
 });
 
 description.addEventListener("input", () => {
-    clearErrors();
+  clearErrors();
 });
 
 browseBtn.addEventListener("click", () => {
-    logoInput.click();
+  logoInput.click();
 });
 
 uploadBox.addEventListener("click", () => {
-    logoInput.click();
+  logoInput.click();
 });
 
 logoInput.addEventListener("change", function () {
+  logoError.textContent = "";
 
-    logoError.textContent = "";
+  const file = this.files[0];
 
-    const file = this.files[0];
+  if (!file) return;
 
-    if (!file) return;
+  const allowed = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
 
-    const allowed = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if (!allowed.includes(file.type)) {
+    this.value = "";
 
-    if (!allowed.includes(file.type)) {
+    showError(logoError, "Only JPG, PNG and WEBP images are allowed.");
 
-        this.value = "";
+    return;
+  }
 
-        showError(logoError, "Only JPG, PNG and WEBP images are allowed.");
+  if (file.size > 2 * 1024 * 1024) {
+    this.value = "";
 
-        return;
-    }
+    showError(logoError, "Image size should not exceed 2MB.");
 
-    if (file.size > 2 * 1024 * 1024) {
+    return;
+  }
 
-        this.value = "";
+  const reader = new FileReader();
 
-        showError(logoError, "Image size should not exceed 2MB.");
+  reader.onload = function (e) {
+    previewImage.src = e.target.result;
 
-        return;
-    }
+    previewImage.style.display = "block";
 
-    const reader = new FileReader();
+    placeholder.style.display = "none";
 
-    reader.onload = function (e) {
+    logoActions.style.display = "flex";
 
-        previewImage.src = e.target.result;
+    removeLogoInput.value = "false";
+  };
 
-        previewImage.style.display = "block";
-
-        placeholder.style.display = "none";
-
-        logoActions.style.display = "flex";
-
-        removeLogoInput.value = "false";
-
-    };
-
-    reader.readAsDataURL(file);
-
+  reader.readAsDataURL(file);
 });
 
 removeLogoBtn.addEventListener("click", () => {
+  logoInput.value = "";
 
-    logoInput.value = "";
+  previewImage.src = "";
 
-    previewImage.src = "";
+  previewImage.style.display = "none";
 
-    previewImage.style.display = "none";
+  placeholder.style.display = "flex";
 
-    placeholder.style.display = "flex";
+  logoActions.style.display = "none";
 
-    logoActions.style.display = "none";
-
-    removeLogoInput.value = "true";
-
+  removeLogoInput.value = "true";
 });
 
 form.addEventListener("submit", function (e) {
+  clearErrors();
 
-    clearErrors();
+  const valid = validateName() & validateSlug() & validateDescription();
 
-    const valid =
-        validateName() &
-        validateSlug() &
-        validateDescription();
-
-    if (!valid) {
-        e.preventDefault();
-    }
-
+  if (!valid) {
+    e.preventDefault();
+  }
 });

@@ -4,66 +4,46 @@ import fs from "fs";
 
 const uploadPath = "src/public/admin/uploads/categories";
 
-
 if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
+  fs.mkdirSync(uploadPath, { recursive: true });
 }
 
 const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadPath);
+  },
 
-    destination: (req, file, cb) => {
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + path.extname(file.originalname);
 
-        cb(null, uploadPath);
-
-    },
-
-    filename: (req, file, cb) => {
-
-        const uniqueName =
-            Date.now() + path.extname(file.originalname);
-
-        cb(null, uniqueName);
-
-    }
-
+    cb(null, uniqueName);
+  },
 });
 
 const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpg|jpeg|png|webp/;
 
-    const allowedTypes = /jpg|jpeg|png|webp/;
+  const extension = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase(),
+  );
 
-    const extension =
-        allowedTypes.test(
-            path.extname(file.originalname).toLowerCase()
-        );
+  const mimeType = allowedTypes.test(file.mimetype);
 
-    const mimeType =
-        allowedTypes.test(file.mimetype);
-
-    if (extension && mimeType) {
-
-        cb(null, true);
-
-    } else {
-
-        cb(new Error("Only JPG, PNG and WEBP images are allowed"));
-
-    }
-
+  if (extension && mimeType) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only JPG, PNG and WEBP images are allowed"));
+  }
 };
 
 const uploadCategory = multer({
+  storage,
 
-    storage,
+  fileFilter,
 
-    fileFilter,
-
-    limits: {
-
-        fileSize: 2 * 1024 * 1024
-
-    }
-
+  limits: {
+    fileSize: 2 * 1024 * 1024,
+  },
 });
 
 export default uploadCategory;

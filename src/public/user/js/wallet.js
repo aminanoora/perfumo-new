@@ -1,44 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const rows = document.querySelectorAll(".wallet-table tbody tr");
 
-    const rows = document.querySelectorAll(".wallet-table tbody tr");
-
-    rows.forEach(row => {
-
-        row.addEventListener("mouseenter", () => {
-
-            row.style.cursor = "pointer";
-
-        });
-
-        row.addEventListener("click", () => {
-
-            rows.forEach(r => r.classList.remove("selected-row"));
-
-            row.classList.add("selected-row");
-
-        });
-
+  rows.forEach((row) => {
+    row.addEventListener("mouseenter", () => {
+      row.style.cursor = "pointer";
     });
 
+    row.addEventListener("click", () => {
+      rows.forEach((r) => r.classList.remove("selected-row"));
 
-    if(profileToggle){
+      row.classList.add("selected-row");
+    });
+  });
 
-    profileToggle.addEventListener('click', (e) => {
+  if (profileToggle) {
+    profileToggle.addEventListener("click", (e) => {
+      e.preventDefault();
 
-        e.preventDefault();
-
-        profileMenu.classList.toggle('show');
+      profileMenu.classList.toggle("show");
     });
 
-    document.addEventListener('click', (e) => {
-
-        if(
-            !profileToggle.contains(e.target) &&
-            !profileMenu.contains(e.target)
-        ){
-            profileMenu.classList.remove('show');
-        }
+    document.addEventListener("click", (e) => {
+      if (
+        !profileToggle.contains(e.target) &&
+        !profileMenu.contains(e.target)
+      ) {
+        profileMenu.classList.remove("show");
+      }
     });
-}
-
+  }
 });

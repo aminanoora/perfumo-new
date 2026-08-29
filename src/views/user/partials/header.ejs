@@ -8,75 +8,69 @@
 
         <a href="/">Home</a>
         <a href="/shop">Shop</a>
-     
+
 
     </nav>
 
     <div class="header-icons">
 
-       
+
         <% if(user && user.email){ %>
 
             <div class="profile-dropdown">
 
-    <button class="profile-btn" id="profileToggle">
-        <i class="fas fa-user"></i>
-    </button>
+                <button class="profile-btn" id="profileToggle">
+                    <i class="fas fa-user"></i>
+                </button>
 
-    <div class="dropdown-content" id="profileMenu">
+                <div class="dropdown-content" id="profileMenu">
 
-        <a href="/profile">My Profile</a>
+                    <a href="/profile">My Profile</a>
 
-        <a href="/profile/orders">My Orders</a>
+                    <a href="/profile/orders">My Orders</a>
 
-        <a href="/logout">Logout</a>
+                    <a href="/logout">Logout</a>
 
-    </div>
-
-</div>
-           <a href="/wishlist" class="icon-link wishlist-icon">
-    <i class="fas fa-heart"></i>
-
-    <span
-        id="wishlistBadge"
-        class="wishlist-badge"
-        style="<%= wishlistCount > 0 ? '' : 'display:none' %>">
-
-        <%= wishlistCount || 0 %>
-
-    </span>
-</a>
-
-           <a href="/cart" class="icon-link cart-icon">
-
-    <i class="fas fa-shopping-bag"></i>
-
-    <span
-    id="cartBadge"
-    class="cart-badge"
-    style="<%= cartCount > 0 ? '' : 'display:none' %>">
-
-    <%= cartCount || 0 %>
-
-</span>
-
-</a>
-
-        <% } else { %>
-
-            <div class="auth-buttons">
-
-                <a href="/signin" class="signin-btn">
-                    Sign In
-                </a>
-
-                <a href="/signup" class="signup-btn">
-                    Sign Up
-                </a>
+                </div>
 
             </div>
+            <a href="/wishlist" class="icon-link wishlist-icon">
+                <i class="fas fa-heart"></i>
 
-        <% } %>
+                <span id="wishlistBadge" class="wishlist-badge" style="<%= wishlistCount > 0 ? '' : 'display:none' %>">
+
+                    <%= wishlistCount || 0 %>
+
+                </span>
+            </a>
+
+            <a href="/cart" class="icon-link cart-icon">
+
+                <i class="fas fa-shopping-bag"></i>
+
+                <span id="cartBadge" class="cart-badge" style="<%= cartCount > 0 ? '' : 'display:none' %>">
+
+                    <%= cartCount || 0 %>
+
+                </span>
+
+            </a>
+
+            <% } else { %>
+
+                <div class="auth-buttons">
+
+                    <a href="/signin" class="signin-btn">
+                        Sign In
+                    </a>
+
+                    <a href="/signup" class="signup-btn">
+                        Sign Up
+                    </a>
+
+                </div>
+
+                <% } %>
 
     </div>
 

@@ -1,225 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-      <link rel="stylesheet" href="/user/css/order-document.css">
+    <link rel="stylesheet" href="/user/css/order-document.css">
     <style>
-@media print{
+        @media print {
 
-button,
-.no-print{
-    display:none;
-}
+            button,
+            .no-print {
+                display: none;
+            }
 
-}
-</style>
+        }
+    </style>
 
     <link rel="stylesheet" href="/user/css/order-document.css">
 </head>
+
 <body>
 
-<div class="document">
+    <div class="document">
 
-    <div class="header">
+        <div class="header">
 
-        <h1>Perfumo</h1>
+            <h1>Perfumo</h1>
 
-        <p>Premium Fragrances</p>
+            <p>Premium Fragrances</p>
 
-        <h2>
-            <%= documentType === "invoice"
-            ? "Invoice"
-            : "Order Summary" %>
-        </h2>
+            <h2>
+                <%= documentType==="invoice" ? "Invoice" : "Order Summary" %>
+            </h2>
 
-    </div>
-
-    <div class="details">
-
-        <div>
-            <strong>Order ID :</strong>
-            <%= order.orderId %>
         </div>
 
-        <div>
-            <strong>Date :</strong>
-            <%= new Date(order.createdAt).toLocaleDateString("en-IN") %>
+        <div class="details">
+
+            <div>
+                <strong>Order ID :</strong>
+                <%= order.orderId %>
+            </div>
+
+            <div>
+                <strong>Date :</strong>
+                <%= new Date(order.createdAt).toLocaleDateString("en-IN") %>
+            </div>
+
+            <div>
+                <strong>Order Status :</strong>
+                <%= order.orderStatus %>
+            </div>
+
+            <div>
+                <strong>Payment Method :</strong>
+                <%= order.paymentMethod %>
+            </div>
+
         </div>
 
-        <div>
-            <strong>Order Status :</strong>
-            <%= order.orderStatus %>
-        </div>
+        <table>
 
-        <div>
-            <strong>Payment Method :</strong>
-            <%= order.paymentMethod %>
-        </div>
-
-    </div>
-
-    <table>
-
-        <thead>
-
-            <tr>
-
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Status</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            <% items.forEach(item => { %>
+            <thead>
 
                 <tr>
 
-                    <td><%= item.product.name %></td>
-
-                    <td><%= item.quantity %></td>
-
-                    <td>₹<%= item.total %></td>
-
-                    <td><%= item.itemStatus %></td>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Status</th>
 
                 </tr>
 
-            <% }) %>
+            </thead>
 
-        </tbody>
+            <tbody>
 
-    </table>
+                <% items.forEach(item=> { %>
 
-    <div class="summary">
+                    <tr>
 
-        <p>
-            <strong>Subtotal :</strong>
-           ₹<%= Number(subtotal || 0).toLocaleString("en-IN", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-}) %>
-        </p>
+                        <td>
+                            <%= item.product.name %>
+                        </td>
 
-        <% if(documentType==="invoice"){ %>
+                        <td>
+                            <%= item.quantity %>
+                        </td>
 
-         <p>
-    <strong>Discount :</strong>
-    ₹<%= Number(order.discount || 0).toLocaleString("en-IN", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    }) %>
-</p>
-          <p>
-    <strong>Shipping :</strong>
-    ₹<%= Number(order.shippingCharge || 0).toLocaleString("en-IN", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    }) %>
-</p>
+                        <td>₹<%= item.total %>
+                        </td>
 
-            <p>
-    <strong>Tax :</strong>
-    ₹<%= Number(order.tax || 0).toLocaleString("en-IN", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    }) %>
-</p>
+                        <td>
+                            <%= item.itemStatus %>
+                        </td>
 
-           <p class="grand-total">
-    Grand Total :
-    ₹<%= Number(grandTotal || 0).toLocaleString("en-IN", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    }) %>
-</p>
+                    </tr>
 
-        <% } %>
+                    <% }) %>
 
-    </div>
+            </tbody>
 
-    <% if(documentType==="invoice"){ %>
+        </table>
 
-        <div class="section">
-
-            <h3>Payment Details</h3>
+        <div class="summary">
 
             <p>
-                <strong>Payment Method :</strong>
-                <%= order.paymentMethod %>
+                <strong>Subtotal :</strong>
+                ₹<%= Number(subtotal || 0).toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 2
+                    }) %>
             </p>
 
-            <p>
-                <strong>Payment Status :</strong>
-                <%= order.paymentStatus %>
-            </p>
-
-            <% if(order.razorpayPaymentId){ %>
+            <% if(documentType==="invoice" ){ %>
 
                 <p>
-                    <strong>Transaction ID :</strong>
-                    <%= order.razorpayPaymentId %>
+                    <strong>Discount :</strong>
+                    ₹<%= Number(order.discount || 0).toLocaleString("en-IN", { minimumFractionDigits: 0,
+                        maximumFractionDigits: 2 }) %>
                 </p>
+                <p>
+                    <strong>Shipping :</strong>
+                    ₹<%= Number(order.shippingCharge || 0).toLocaleString("en-IN", { minimumFractionDigits: 0,
+                        maximumFractionDigits: 2 }) %>
+                </p>
+
+                <p>
+                    <strong>Tax :</strong>
+                    ₹<%= Number(order.tax || 0).toLocaleString("en-IN", { minimumFractionDigits: 0,
+                        maximumFractionDigits: 2 }) %>
+                </p>
+
+                <p class="grand-total">
+                    Grand Total :
+                    ₹<%= Number(grandTotal || 0).toLocaleString("en-IN", { minimumFractionDigits: 0,
+                        maximumFractionDigits: 2 }) %>
+                </p>
+
+                <% } %>
+
+        </div>
+
+        <% if(documentType==="invoice" ){ %>
+
+            <div class="section">
+
+                <h3>Payment Details</h3>
+
+                <p>
+                    <strong>Payment Method :</strong>
+                    <%= order.paymentMethod %>
+                </p>
+
+                <p>
+                    <strong>Payment Status :</strong>
+                    <%= order.paymentStatus %>
+                </p>
+
+                <% if(order.razorpayPaymentId){ %>
+
+                    <p>
+                        <strong>Transaction ID :</strong>
+                        <%= order.razorpayPaymentId %>
+                    </p>
+
+                    <% } %>
+
+            </div>
 
             <% } %>
 
-        </div>
+                <% if(documentType==="summary" ){ %>
 
-    <% } %>
+                    <div class="section">
 
-    <% if(documentType==="summary"){ %>
+                        <h3>Order Summary</h3>
 
-        <div class="section">
+                        <p>
+                            <strong>Status :</strong>
+                            <%= order.orderStatus %>
+                        </p>
 
-            <h3>Order Summary</h3>
 
-            <p>
-                <strong>Status :</strong>
-                <%= order.orderStatus %>
-            </p>
+                    </div>
 
-           
-        </div>
+                    <% } %>
 
-    <% } %>
 
-   
 
-    <% if(order.paymentStatus==="Refunded"){ %>
+                        <% if(order.paymentStatus==="Refunded" ){ %>
 
-        <div class="section">
+                            <div class="section">
 
-            <h3>Refund Status</h3>
+                                <h3>Refund Status</h3>
 
-            <p>
-                Refund has been credited to your wallet.
-            </p>
+                                <p>
+                                    Refund has been credited to your wallet.
+                                </p>
 
-        </div>
+                            </div>
 
-    <% } %>
+                            <% } %>
 
-    <div class="footer">
+                                <div class="footer">
 
-        <button class="no-print" onclick="window.print()">
+                                    <button class="no-print" onclick="window.print()">
 
-            <%= documentType==="invoice"
+                                        <%= documentType==="invoice" ? "Print Invoice" : "Print Order Summary" %>
 
-            ? "Print Invoice"
+                                    </button>
 
-            : "Print Order Summary" %>
-
-        </button>
+                                </div>
 
     </div>
-
-</div>
 
 </body>
 

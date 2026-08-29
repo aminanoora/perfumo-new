@@ -1,233 +1,188 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const downloadInvoiceBtn = document.getElementById("downloadInvoiceBtn");
+  const buyAgainBtn = document.getElementById("buyAgainBtn");
+  const trackOrderBtn = document.getElementById("trackOrderBtn");
 
-    
-   
-    const downloadInvoiceBtn = document.getElementById("downloadInvoiceBtn");
-    const buyAgainBtn = document.getElementById("buyAgainBtn");
-    const trackOrderBtn = document.getElementById("trackOrderBtn");
-
-document.querySelectorAll(".cancel-item-btn").forEach(button => {
-
+  document.querySelectorAll(".cancel-item-btn").forEach((button) => {
     button.addEventListener("click", async () => {
+      const { value: reason } = await Swal.fire({
+        title: "Cancel Item",
+        input: "textarea",
+        inputLabel: "Reason",
+        showCancelButton: true,
+      });
 
-        const { value: reason } = await Swal.fire({
-            title: "Cancel Item",
-            input: "textarea",
-            inputLabel: "Reason",
-            showCancelButton: true
-        });
-
-        if (reason === undefined) return;
+      if (reason === undefined) return;
 
       const orderId = button.dataset.order;
-const variantId = button.dataset.item;
+      const variantId = button.dataset.item;
 
-        const response = await fetch(
-    `/orders/${orderId}/items/${variantId}/cancel`,
-    {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json"
+      const response = await fetch(
+        `/orders/${orderId}/items/${variantId}/cancel`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reason }),
         },
-        body: JSON.stringify({ reason })
-    }
-);
+      );
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (data.success) {
-            location.reload();
-        } else {
-            Swal.fire("Error", data.message, "error");
-        }
+      if (data.success) {
+        location.reload();
+      } else {
+        Swal.fire("Error", data.message, "error");
+      }
     });
+  });
 
-});
-
-   document.querySelectorAll(".return-item-btn").forEach(button => {
-
+  document.querySelectorAll(".return-item-btn").forEach((button) => {
     button.addEventListener("click", async () => {
-
-        const { value: reason } = await Swal.fire({
-            title: "Return Item",
-            input: "textarea",
-            inputValidator: value => {
-                if (!value) return "Reason required";
-            },
-            showCancelButton: true
-        });
-
-        if (!reason) return;
-
-       const orderId = button.dataset.order;
-const variantId = button.dataset.item;
-
-        const response =  await fetch(
-    `/orders/${orderId}/items/${variantId}/return`,
-    {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json"
+      const { value: reason } = await Swal.fire({
+        title: "Return Item",
+        input: "textarea",
+        inputValidator: (value) => {
+          if (!value) return "Reason required";
         },
-        body: JSON.stringify({ reason })
-    }
-);
+        showCancelButton: true,
+      });
+
+      if (!reason) return;
+
+      const orderId = button.dataset.order;
+      const variantId = button.dataset.item;
+
+      const response = await fetch(
+        `/orders/${orderId}/items/${variantId}/return`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reason }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        location.reload();
+      } else {
+        Swal.fire("Error", data.message, "error");
+      }
+    });
+  });
+  if (downloadInvoiceBtn) {
+    downloadInvoiceBtn.addEventListener("click", () => {
+      const orderId = downloadInvoiceBtn.dataset.order;
+
+      window.open(`/profile/orders/${orderId}/invoice`, "_blank");
+    });
+  }
+
+  if (buyAgainBtn) {
+    buyAgainBtn.addEventListener("click", async () => {
+      try {
+        const orderId = buyAgainBtn.dataset.order;
+
+        const response = await fetch(`/profile/orders/${orderId}/buy-again`, {
+          method: "POST",
+        });
 
         const data = await response.json();
 
         if (data.success) {
-            location.reload();
+          await Swal.fire({
+            icon: "success",
+            title: "Added to Cart",
+            text: data.message,
+            timer: 1500,
+            showConfirmButton: false,
+          });
+
+          window.location.href = "/cart";
         } else {
-            Swal.fire("Error", data.message, "error");
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: data.message,
+          });
         }
-
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Something went wrong",
+        });
+      }
     });
+  }
 
-});
-    if (downloadInvoiceBtn) {
+  if (trackOrderBtn) {
+    trackOrderBtn.addEventListener("click", () => {
+      Swal.fire({
+        icon: "info",
+        title: "Tracking",
+        text: "Tracking feature will be available soon.",
+        confirmButtonColor: "#000",
+      });
+    });
+  }
 
-        downloadInvoiceBtn.addEventListener("click", () => {
+  const cancelWholeBtn = document.getElementById("cancelWholeOrderBtn");
 
-            const orderId = downloadInvoiceBtn.dataset.order;
-
-            window.open(`/profile/orders/${orderId}/invoice`, "_blank");
-
-        });
-
-    }
-
-    if (buyAgainBtn) {
-
-        buyAgainBtn.addEventListener("click", async () => {
-
-            try {
-
-                const orderId = buyAgainBtn.dataset.order;
-
-                const response = await fetch(`/profile/orders/${orderId}/buy-again`, {
-                    method: "POST"
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-
-                    await Swal.fire({
-                        icon: "success",
-                        title: "Added to Cart",
-                        text: data.message,
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-
-                    window.location.href = "/cart";
-
-                } else {
-
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: data.message
-                    });
-
-                }
-
-            } catch (error) {
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Something went wrong"
-                });
-
-            }
-
-        });
-
-    }
-
-    if (trackOrderBtn) {
-
-        trackOrderBtn.addEventListener("click", () => {
-
-            Swal.fire({
-                icon: "info",
-                title: "Tracking",
-                text: "Tracking feature will be available soon.",
-                confirmButtonColor: "#000"
-            });
-
-        });
-
-    }
-
-    const cancelWholeBtn = document.getElementById("cancelWholeOrderBtn");
-
-if (cancelWholeBtn) {
-
+  if (cancelWholeBtn) {
     cancelWholeBtn.addEventListener("click", async () => {
+      const result = await Swal.fire({
+        title: "Cancel this order?",
+        text: "This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Cancel",
+      });
 
-        const result = await Swal.fire({
-            title: "Cancel this order?",
-            text: "This action cannot be undone.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes, Cancel"
+      if (!result.isConfirmed) return;
+
+      const response = await fetch(
+        `/orders/${cancelWholeBtn.dataset.order}/cancel`,
+        {
+          method: "PATCH",
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        await Swal.fire({
+          icon: "success",
+          title: data.message,
         });
 
-        if (!result.isConfirmed) return;
-
-        const response = await fetch(
-            `/orders/${cancelWholeBtn.dataset.order}/cancel`,
-            {
-                method: "PATCH"
-            }
-        );
-
-        const data = await response.json();
-
-        if (data.success) {
-
-            await Swal.fire({
-                icon: "success",
-                title: data.message
-            });
-
-            location.reload();
-
-        } else {
-
-            Swal.fire({
-                icon: "error",
-                title: data.message
-            });
-
-        }
-
+        location.reload();
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: data.message,
+        });
+      }
     });
+  }
 
-}
+  const returnWholeBtn = document.getElementById("returnWholeOrderBtn");
 
-const returnWholeBtn = document.getElementById("returnWholeOrderBtn");
-
-if (returnWholeBtn) {
-
+  if (returnWholeBtn) {
     returnWholeBtn.addEventListener("click", async () => {
+      const totalPaid = Number(returnWholeBtn.dataset.total);
 
-        const totalPaid = Number(
-            returnWholeBtn.dataset.total
-        );
+      const returnFee = 100;
 
-        const returnFee = 100;
+      const refund = Math.max(0, totalPaid - returnFee);
 
-        const refund = Math.max(
-            0,
-            totalPaid - returnFee
-        );
-
-        const confirm = await Swal.fire({
-            title: "Return Whole Order",
-            html: `
+      const confirm = await Swal.fire({
+        title: "Return Whole Order",
+        html: `
                 <div style="text-align:left">
                     <p>Total Paid : ₹${totalPaid}</p>
                     <p>Less Return Fee : -₹${returnFee}</p>
@@ -235,87 +190,73 @@ if (returnWholeBtn) {
                     <h3>Estimated Refund : ₹${refund}</h3>
                 </div>
             `,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Continue"
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Continue",
+      });
+
+      if (!confirm.isConfirmed) return;
+
+      const { value: reason } = await Swal.fire({
+        title: "Reason for Return",
+        input: "textarea",
+        inputLabel: "Reason",
+        inputValidator: (value) => {
+          if (!value || !value.trim()) {
+            return "Reason required";
+          }
+        },
+        showCancelButton: true,
+      });
+
+      if (!reason) return;
+
+      const response = await fetch(
+        `/orders/${returnWholeBtn.dataset.order}/return`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reason }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        await Swal.fire({
+          icon: "success",
+          title: data.message,
         });
 
-        if (!confirm.isConfirmed) return;
-
-        const { value: reason } = await Swal.fire({
-            title: "Reason for Return",
-            input: "textarea",
-            inputLabel: "Reason",
-            inputValidator: value => {
-                if (!value || !value.trim()) {
-                    return "Reason required";
-                }
-            },
-            showCancelButton: true
+        location.reload();
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: data.message,
         });
+      }
+    });
+  }
+  const profileToggle = document.getElementById("profileToggle");
 
-        if (!reason) return;
+  const profileMenu = document.getElementById("profileMenu");
 
-        const response = await fetch(
-            `/orders/${returnWholeBtn.dataset.order}/return`,
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ reason })
-            }
-        );
+  if (profileToggle) {
+    profileToggle.addEventListener("click", (e) => {
+      e.preventDefault();
 
-        const data = await response.json();
-
-        if (data.success) {
-
-            await Swal.fire({
-                icon: "success",
-                title: data.message
-            });
-
-            location.reload();
-
-        } else {
-
-            Swal.fire({
-                icon: "error",
-                title: data.message
-            });
-
-        }
-
+      profileMenu.classList.toggle("show");
     });
 
-}
-const profileToggle =
-document.getElementById('profileToggle');
-
-const profileMenu =
-document.getElementById('profileMenu');
-
-if(profileToggle){
-
-    profileToggle.addEventListener('click', (e) => {
-
-        e.preventDefault();
-
-        profileMenu.classList.toggle('show');
+    document.addEventListener("click", (e) => {
+      if (
+        !profileToggle.contains(e.target) &&
+        !profileMenu.contains(e.target)
+      ) {
+        profileMenu.classList.remove("show");
+      }
     });
-
-    document.addEventListener('click', (e) => {
-
-        if(
-            !profileToggle.contains(e.target) &&
-            !profileMenu.contains(e.target)
-        ){
-            profileMenu.classList.remove('show');
-        }
-    });
-}
-
-
-
+  }
 });

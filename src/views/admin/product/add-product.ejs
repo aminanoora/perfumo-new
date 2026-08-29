@@ -1,155 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Add Product</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<link rel="stylesheet" href="/admin/css/admin.css">
-<link rel="stylesheet" href="/admin/css/add-product.css">
-<link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/add-product.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
     <%- include('../partials/header') %>
 
-<div class="page">
-    
-<%- include('../partials/sidebar') %>
+        <div class="page">
+
+            <%- include('../partials/sidebar') %>
 
 
 
-<form id="productForm" action="/admin/product/add-product" method="POST">
+                <form id="productForm" action="/admin/product/add-product" method="POST">
 
-<div class="card">
-    <div class="page-header">
+                    <div class="card">
+                        <div class="page-header">
 
-<div class="page-title">
-<h1>Add Product</h1>
-<p>Create a perfume product with multiple variants</p>
-</div>
+                            <div class="page-title">
+                                <h1>Add Product</h1>
+                                <p>Create a perfume product with multiple variants</p>
+                            </div>
 
-<div class="btn-group">
-<button type="button" class="cancel-btn">Cancel</button>
+                            <div class="btn-group">
+                                <button type="button" class="cancel-btn">Cancel</button>
 
-<button form="productForm" class="save-btn">Save Product</button>
+                                <button form="productForm" class="save-btn">Save Product</button>
 
-</div>
+                            </div>
 
-</div>
+                        </div>
 
-<h2 class="section-title">Basic Information</h2>
+                        <h2 class="section-title">Basic Information</h2>
 
-<div class="form-grid">
+                        <div class="form-grid">
 
-<div class="form-group full">
-<label>Product Name</label>
-<input type="text" name="name" id="name">
-<span class="error" id="nameError"></span>
-</div>
+                            <div class="form-group full">
+                                <label>Product Name</label>
+                                <input type="text" name="name" id="name">
+                                <span class="error" id="nameError"></span>
+                            </div>
 
-<div class="form-group">
-<label>Brand</label>
-<select name="brand" id="brand">
-    <option value="">Select Brand</option>
+                            <div class="form-group">
+                                <label>Brand</label>
+                                <select name="brand" id="brand">
+                                    <option value="">Select Brand</option>
 
-    <% brands.forEach(brand => { %>
-        <option value="<%= brand._id %>">
-            <%= brand.name %>
-        </option>
-    <% }) %>
+                                    <% brands.forEach(brand=> { %>
+                                        <option value="<%= brand._id %>">
+                                            <%= brand.name %>
+                                        </option>
+                                        <% }) %>
 
-</select>
-<span class="error" id="brandError"></span>
-</div>
+                                </select>
+                                <span class="error" id="brandError"></span>
+                            </div>
 
-<div class="form-group">
-<label>Category</label>
-<select name="category" id="category">
-<option value="">Select Category</option>
-<% categories.forEach(category=>{ %>
-<option value="<%=category._id%>"><%=category.name%></option>
-<% }) %>
-</select>
-<span class="error" id="categoryError"></span>
-</div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select name="category" id="category">
+                                    <option value="">Select Category</option>
+                                    <% categories.forEach(category=>{ %>
+                                        <option value="<%=category._id%>">
+                                            <%=category.name%>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                                <span class="error" id="categoryError"></span>
+                            </div>
 
-<div class="form-group">
-<label>Featured Type</label>
+                            <div class="form-group">
+                                <label>Featured Type</label>
 
-<select name="featuredType">
-    <% featuredTypes.forEach(type => { %>
-        <option value="<%= type.value %>">
-            <%= type.label %>
-        </option>
-    <% }) %>
-</select>
+                                <select name="featuredType">
+                                    <% featuredTypes.forEach(type=> { %>
+                                        <option value="<%= type.value %>">
+                                            <%= type.label %>
+                                        </option>
+                                        <% }) %>
+                                </select>
 
-</div>
-<div class="form-group">
-<label>Occasion</label>
-<select name="occasion" id="occasion">
-<option value="">Select Occasion</option>
-<option value="Daily wear">Daily wear</option>
-<option value="Date night">Date night</option>
-<option value="formal/office">Formal/Office</option>
-<option value="Summer/Beach">Summer/Beach</option>
-<option value="Night Out">Night Out</option>
-</select>
-<span class="error" id="occasionError"></span>
-</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Occasion</label>
+                                <select name="occasion" id="occasion">
+                                    <option value="">Select Occasion</option>
+                                    <option value="Daily wear">Daily wear</option>
+                                    <option value="Date night">Date night</option>
+                                    <option value="formal/office">Formal/Office</option>
+                                    <option value="Summer/Beach">Summer/Beach</option>
+                                    <option value="Night Out">Night Out</option>
+                                </select>
+                                <span class="error" id="occasionError"></span>
+                            </div>
 
-<div class="form-group full">
-<label>Description</label>
-<textarea
-name="description"
-id="description"
-placeholder="Detailed description of the perfume..."></textarea>
-<span class="error" id="descriptionError"></span>
-</div>
+                            <div class="form-group full">
+                                <label>Description</label>
+                                <textarea name="description" id="description"
+                                    placeholder="Detailed description of the perfume..."></textarea>
+                                <span class="error" id="descriptionError"></span>
+                            </div>
 
-<div class="form-group">
-<label>Top Notes</label>
-<input
-type="text"
-name="topNotes"
-id="topNotes"
-placeholder="Comma separated">
-<span class="error" id="topNotesError"></span>
-</div>
+                            <div class="form-group">
+                                <label>Top Notes</label>
+                                <input type="text" name="topNotes" id="topNotes" placeholder="Comma separated">
+                                <span class="error" id="topNotesError"></span>
+                            </div>
 
-<div class="form-group">
-<label>Heart Notes</label>
-<input
-type="text"
-name="heartNotes"
-id="heartNotes"
-placeholder="Comma separated">
-<span class="error" id="heartNotesError"></span>
-</div>
+                            <div class="form-group">
+                                <label>Heart Notes</label>
+                                <input type="text" name="heartNotes" id="heartNotes" placeholder="Comma separated">
+                                <span class="error" id="heartNotesError"></span>
+                            </div>
 
-<div class="form-group full">
-<label>Base Notes</label>
-<input
-type="text"
-name="baseNotes"
-id="baseNotes"
-placeholder="Comma separated">
-<span class="error" id="baseNotesError"></span>
-</div>
+                            <div class="form-group full">
+                                <label>Base Notes</label>
+                                <input type="text" name="baseNotes" id="baseNotes" placeholder="Comma separated">
+                                <span class="error" id="baseNotesError"></span>
+                            </div>
 
-</div>
+                        </div>
 
 
-</div>
+                    </div>
 
 
 
@@ -159,29 +147,30 @@ placeholder="Comma separated">
 
 
 
-</form>
+                </form>
 
-</div>
+        </div>
 
-</main>
+        </main>
 
-</div>
+        </div>
 
-<script src="/admin/js/add-product.js"></script>
+        <script src="/admin/js/add-product.js"></script>
 
-<script>
-const message = <%- JSON.stringify(message || null) %>;
+        <script>
+            const message = <% - JSON.stringify(message || null) %>;
 
-if (message) {
+            if (message) {
 
-    Swal.fire({
-        icon: message.type,
-        title: message.text,
-        confirmButtonColor: "#096DB9"
-    });
+                Swal.fire({
+                    icon: message.type,
+                    title: message.text,
+                    confirmButtonColor: "#096DB9"
+                });
 
-}
-</script>
+            }
+        </script>
 
 </body>
+
 </html>

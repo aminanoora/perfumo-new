@@ -5,320 +5,294 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Brands</title>
 
     <link rel="stylesheet" href="/admin/css/admin.css">
     <link rel="stylesheet" href="/admin/css/brands.css">
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
 </head>
 
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<div class="page">
+        <div class="page">
 
-<%- include('../partials/sidebar') %>
+            <%- include('../partials/sidebar') %>
 
-<main class="content">
+                <main class="content">
 
-<div class="brand-topbar">
+                    <div class="brand-topbar">
 
-    <div class="page-title">
+                        <div class="page-title">
 
-        <h2>Brands</h2>
+                            <h2>Brands</h2>
 
-        <p>Manage perfume brands</p>
+                            <p>Manage perfume brands</p>
 
-    </div>
+                        </div>
 
-    <a
-        href="/admin/brand/add"
-        class="add-brand-btn">
+                        <a href="/admin/brand/add" class="add-brand-btn">
 
-        <i class="fa-solid fa-plus"></i>
+                            <i class="fa-solid fa-plus"></i>
 
-        Add Brand
+                            Add Brand
 
-    </a>
+                        </a>
 
-</div>
+                    </div>
 
 
 
-<div class="toolbar">
+                    <div class="toolbar">
 
-<form
-    action="/admin/brand"
-    method="GET"
-    id="searchForm">
+                        <form action="/admin/brand" method="GET" id="searchForm">
 
-<div class="search-box">
+                            <div class="search-box">
 
-    <button
-        type="submit"
-        class="search-btn">
+                                <button type="submit" class="search-btn">
 
-        <i class="fa-solid fa-magnifying-glass"></i>
+                                    <i class="fa-solid fa-magnifying-glass"></i>
 
-    </button>
+                                </button>
 
-    <input
-        type="text"
-        id="searchInput"
-        name="search"
-        placeholder="Search brand..."
-        value="<%= search || '' %>">
+                                <input type="text" id="searchInput" name="search" placeholder="Search brand..."
+                                    value="<%= search || '' %>">
 
-    <% if(search){ %>
+                                <% if(search){ %>
 
-    <button
-        type="button"
-        id="clearSearch"
-        class="clear-btn">
+                                    <button type="button" id="clearSearch" class="clear-btn">
 
-        <i class="fa-solid fa-xmark"></i>
+                                        <i class="fa-solid fa-xmark"></i>
 
-    </button>
+                                    </button>
 
-    <% } %>
+                                    <% } %>
 
-  <input type="hidden" name="sort" value="<%= sort %>">
-  <input type="hidden" name="status" value="<%= status %>">
+                                        <input type="hidden" name="sort" value="<%= sort %>">
+                                        <input type="hidden" name="status" value="<%= status %>">
 
-</div>
+                            </div>
 
-</form>
+                        </form>
 
 
 
-<select id="sortSelect" onchange="location=this.value">
+                        <select id="sortSelect" onchange="location=this.value">
 
-    <option
-        value="/admin/brand?sort=desc&status=<%= status || '' %>&search=<%= search %>"
-        <%= sort === "desc" ? "selected" : "" %>>
-        Latest First
-    </option>
+                            <option value="/admin/brand?sort=desc&status=<%= status || '' %>&search=<%= search %>"
+                                <%=sort==="desc" ? "selected" : "" %>>
+                                Latest First
+                            </option>
 
-    <option
-        value="/admin/brand?sort=asc&status=<%= status || '' %>&search=<%= search %>"
-        <%= sort === "asc" ? "selected" : "" %>>
-        Oldest First
-    </option>
+                            <option value="/admin/brand?sort=asc&status=<%= status || '' %>&search=<%= search %>"
+                                <%=sort==="asc" ? "selected" : "" %>>
+                                Oldest First
+                            </option>
 
-    <option
-        value="/admin/brand?sort=<%= sort %>&status=listed&search=<%= search %>"
-        <%= status === "listed" ? "selected" : "" %>>
-        Listed Brands
-    </option>
+                            <option value="/admin/brand?sort=<%= sort %>&status=listed&search=<%= search %>"
+                                <%=status==="listed" ? "selected" : "" %>>
+                                Listed Brands
+                            </option>
 
-    <option
-        value="/admin/brand?sort=<%= sort %>&status=unlisted&search=<%= search %>"
-        <%= status === "unlisted" ? "selected" : "" %>>
-        Unlisted Brands
-    </option>
+                            <option value="/admin/brand?sort=<%= sort %>&status=unlisted&search=<%= search %>"
+                                <%=status==="unlisted" ? "selected" : "" %>>
+                                Unlisted Brands
+                            </option>
 
-    <option
-        value="/admin/brand?sort=<%= sort %>&status=&search=<%= search %>"
-        <%= !status ? "selected" : "" %>>
-        All Brands
-    </option>
+                            <option value="/admin/brand?sort=<%= sort %>&status=&search=<%= search %>" <%=!status
+                                ? "selected" : "" %>>
+                                All Brands
+                            </option>
 
-</select>
-</div>
+                        </select>
+                    </div>
 
 
 
-<div class="table-wrapper">
+                    <div class="table-wrapper">
 
-<table class="brand-table">
+                        <table class="brand-table">
 
-<thead>
+                            <thead>
 
-<tr>
+                                <tr>
 
-<th>Brand</th>
+                                    <th>Brand</th>
 
-<th>Products</th>
+                                    <th>Products</th>
 
-<th>Status</th>
+                                    <th>Status</th>
 
-<th>Action</th>
+                                    <th>Action</th>
 
-</tr>
+                                </tr>
 
-</thead>
+                            </thead>
 
-<tbody>
+                            <tbody>
 
-<% if(brands.length){ %>
+                                <% if(brands.length){ %>
 
-<% brands.forEach(brand=>{ %>
+                                    <% brands.forEach(brand=>{ %>
 
-<tr>
+                                        <tr>
 
-<td>
+                                            <td>
 
-<div class="brand-cell">
+                                                <div class="brand-cell">
 
-<h4>
+                                                    <h4>
 
-<%= brand.name %>
+                                                        <%= brand.name %>
 
-</h4>
+                                                    </h4>
 
-</div>
+                                                </div>
 
-</td>
+                                            </td>
 
-<td>
+                                            <td>
 
-<%= brand.productCount %>
+                                                <%= brand.productCount %>
 
-</td>
+                                            </td>
 
-<td>
+                                            <td>
 
-<% if(brand.isListed){ %>
+                                                <% if(brand.isListed){ %>
 
-<span class="status active">
+                                                    <span class="status active">
 
-Listed
+                                                        Listed
 
-</span>
+                                                    </span>
 
-<% }else{ %>
+                                                    <% }else{ %>
 
-<span class="status blocked">
+                                                        <span class="status blocked">
 
-Hidden
+                                                            Hidden
 
-</span>
+                                                        </span>
 
-<% } %>
+                                                        <% } %>
 
-</td>
+                                            </td>
 
-<td>
+                                            <td>
 
-<div class="actions">
+                                                <div class="actions">
 
-<button class="dots">
+                                                    <button class="dots">
 
-<i class="fa-solid fa-ellipsis-vertical"></i>
+                                                        <i class="fa-solid fa-ellipsis-vertical"></i>
 
-</button>
+                                                    </button>
 
-<div class="dropdown">
+                                                    <div class="dropdown">
 
-<a href="/admin/brand/<%= brand._id %>">
+                                                        <a href="/admin/brand/<%= brand._id %>">
 
-View Details
+                                                            View Details
 
-</a>
+                                                        </a>
 
-</div>
+                                                    </div>
 
-</div>
+                                                </div>
 
-</td>
+                                            </td>
 
-</tr>
+                                        </tr>
 
-<% }) %>
+                                        <% }) %>
 
-<% }else{ %>
+                                            <% }else{ %>
 
-<tr>
+                                                <tr>
 
-<td
-    colspan="4"
-    class="empty">
+                                                    <td colspan="4" class="empty">
 
-No Brands Found
+                                                        No Brands Found
 
-</td>
+                                                    </td>
 
-</tr>
+                                                </tr>
 
-<% } %>
+                                                <% } %>
 
-</tbody>
+                            </tbody>
 
-</table>
+                        </table>
 
 
 
 
 
-<div class="pagination-wrapper">
+                        <div class="pagination-wrapper">
 
-<div class="pagination">
+                            <div class="pagination">
 
-<nav aria-label="Category pagination">
+                                <nav aria-label="Category pagination">
 
-<ul class="pagination">
+                                    <ul class="pagination">
 
-<% for(let i=1;i<=totalPages;i++){ %>
+                                        <% for(let i=1;i<=totalPages;i++){ %>
 
-<li class="<%= page===i ? 'active' : '' %>">
+                                            <li class="<%= page===i ? 'active' : '' %>">
 
-<a
-    href="/admin/brand?page=<%= i %>&search=<%= search %>&sort=<%= sort %>&status=<%= status %>">
-    <%= i %>
-</a>
+                                                <a
+                                                    href="/admin/brand?page=<%= i %>&search=<%= search %>&sort=<%= sort %>&status=<%= status %>">
+                                                    <%= i %>
+                                                </a>
 
-</li>
+                                            </li>
 
-<% } %>
+                                            <% } %>
 
-</ul>
+                                    </ul>
 
-</nav>
+                                </nav>
 
-</div>
+                            </div>
 
-</div>
-</div>
-</main>
+                        </div>
+                    </div>
+                </main>
 
-</div>
+        </div>
 
-<script src="/admin/js/brands.js"></script>
+        <script src="/admin/js/brands.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<% if(message){ %>
+        <% if(message){ %>
 
-<script>
+            <script>
 
-Swal.fire({
+                Swal.fire({
 
-icon:"<%= message.type %>",
+                    icon: "<%= message.type %>",
 
-title:"<%= message.type==='success' ? 'Success' : 'Error' %>",
+                    title: "<%= message.type==='success' ? 'Success' : 'Error' %>",
 
-text:"<%= message.text %>",
+                    text: "<%= message.text %>",
 
-confirmButtonText:"OK"
+                    confirmButtonText: "OK"
 
-});
+                });
 
-</script>
+            </script>
 
-<% } %>
+            <% } %>
 
 </body>
 

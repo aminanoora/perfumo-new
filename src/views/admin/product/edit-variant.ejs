@@ -1,25 +1,20 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Edit Variant</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="/admin/css/admin.css">
-<link rel="stylesheet" href="/admin/css/add-variant.css">
-<link rel="stylesheet" href="/admin/css/edit-variant.css">
+    <title>Edit Variant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/add-variant.css">
+    <link rel="stylesheet" href="/admin/css/edit-variant.css">
 
-<link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<link
-rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
 
 
 
@@ -29,472 +24,381 @@ href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
 
 <body>
 
-<%- include("../partials/header") %>
+    <%- include("../partials/header") %>
 
-<div class="page">
+        <div class="page">
 
-<%- include("../partials/sidebar") %>
+            <%- include("../partials/sidebar") %>
 
-<main class="content">
+                <main class="content">
 
-<div class="page-header">
+                    <div class="page-header">
 
-<div>
+                        <div>
 
-<h2>Edit Variant</h2>
+                            <h2>Edit Variant</h2>
 
-<p>Update the details of this product variant.</p>
+                            <p>Update the details of this product variant.</p>
 
-</div>
+                        </div>
 
-<div>
+                        <div>
 
-<button
-type="submit"
-form="editVariantForm"
-class="save-btn">
+                            <button type="submit" form="editVariantForm" class="save-btn">
 
-<i class="fa-solid fa-floppy-disk"></i>
+                                <i class="fa-solid fa-floppy-disk"></i>
 
-Save Variant
+                                Save Variant
 
-</button>
+                            </button>
 
-</div>
+                        </div>
 
-</div>
+                    </div>
 
 
 
-<form
+                    <form id="editVariantForm" action="/admin/variant/<%= variant._id %>/edit" method="POST"
+                        enctype="multipart/form-data">
 
-id="editVariantForm"
+                        <div class="form-card">
 
-action="/admin/variant/<%= variant._id %>/edit"
+                            <h4>
 
-method="POST"
+                                Variant Information
 
-enctype="multipart/form-data">
+                            </h4>
 
-<div class="form-card">
+                            <div class="form-grid">
 
-<h4>
+                                <div class="form-group">
 
-Variant Information
+                                    <label>
 
-</h4>
+                                        SKU
 
-<div class="form-grid">
+                                    </label>
 
-<div class="form-group">
+                                    <input type="text" name="sku" id="sku" value="<%= variant.sku %>">
 
-<label>
+                                    <span class="error" id="skuError">
 
-SKU
+                                    </span>
 
-</label>
+                                </div>
 
-<input
-type="text"
-name="sku"
-id="sku"
-value="<%= variant.sku %>">
+                                <div class="form-group">
 
-<span
-class="error"
-id="skuError">
+                                    <label>
 
-</span>
+                                        Bottle Size
 
-</div>
+                                    </label>
 
-<div class="form-group">
+                                    <select name="size" id="size">
 
-<label>
+                                        <option value="30" <%=variant.size===30 ? "selected" : "" %>>
 
-Bottle Size
+                                            30 ml
 
-</label>
+                                        </option>
 
-<select
-name="size"
-id="size">
+                                        <option value="50" <%=variant.size===50 ? "selected" : "" %>>
 
-<option
-value="30"
-<%= variant.size===30 ? "selected" : "" %>>
+                                            50 ml
 
-30 ml
+                                        </option>
 
-</option>
+                                        <option value="100" <%=variant.size===100 ? "selected" : "" %>>
 
-<option
-value="50"
-<%= variant.size===50 ? "selected" : "" %>>
+                                            100 ml
 
-50 ml
+                                        </option>
 
-</option>
+                                        <option value="150" <%=variant.size===150 ? "selected" : "" %>>
 
-<option
-value="100"
-<%= variant.size===100 ? "selected" : "" %>>
+                                            150 ml
 
-100 ml
+                                        </option>
 
-</option>
+                                        <option value="200" <%=variant.size===200 ? "selected" : "" %>>
 
-<option
-value="150"
-<%= variant.size===150 ? "selected" : "" %>>
+                                            200 ml
 
-150 ml
+                                        </option>
 
-</option>
+                                    </select>
 
-<option
-value="200"
-<%= variant.size===200 ? "selected" : "" %>>
+                                    <span class="error" id="sizeError">
 
-200 ml
+                                    </span>
 
-</option>
+                                </div>
 
-</select>
+                                <div class="form-group">
 
-<span
-class="error"
-id="sizeError">
+                                    <label>
 
-</span>
+                                        Concentration
 
-</div>
+                                    </label>
 
-<div class="form-group">
+                                    <select name="concentration" id="concentration">
 
-<label>
+                                        <option value="EDP" <%=variant.concentration==="EDP" ? "selected" : "" %>>
 
-Concentration
+                                            EDP
 
-</label>
+                                        </option>
 
-<select
-name="concentration"
-id="concentration">
+                                        <option value="EDT" <%=variant.concentration==="EDT" ? "selected" : "" %>>
 
-<option
-value="EDP"
-<%= variant.concentration==="EDP" ? "selected" : "" %>>
+                                            EDT
 
-EDP
+                                        </option>
 
-</option>
+                                        <option value="EDC" <%=variant.concentration==="EDC" ? "selected" : "" %>>
 
-<option
-value="EDT"
-<%= variant.concentration==="EDT" ? "selected" : "" %>>
+                                            EDC
 
-EDT
+                                        </option>
 
-</option>
+                                        <option value="Mist/Fraiche" <%=variant.concentration==="Mist/Fraiche"
+                                            ? "selected" : "" %>>
 
-<option
-value="EDC"
-<%= variant.concentration==="EDC" ? "selected" : "" %>>
+                                            Mist / Fraiche
 
-EDC
+                                        </option>
 
-</option>
+                                    </select>
 
-<option
-value="Mist/Fraiche"
-<%= variant.concentration==="Mist/Fraiche" ? "selected" : "" %>>
+                                    <span class="error" id="concentrationError">
 
-Mist / Fraiche
+                                    </span>
 
-</option>
+                                </div>
 
-</select>
+                                <div class="form-group">
 
-<span
-class="error"
-id="concentrationError">
+                                    <label>
 
-</span>
+                                        Stock
 
-</div>
+                                    </label>
 
-<div class="form-group">
+                                    <input type="number" name="stock" id="stock" value="<%= variant.stock %>">
 
-<label>
+                                    <span class="error" id="stockError">
 
-Stock
+                                    </span>
 
-</label>
+                                </div>
 
-<input
-type="number"
-name="stock"
-id="stock"
-value="<%= variant.stock %>">
+                                <div class="form-group">
 
-<span
-class="error"
-id="stockError">
+                                    <label>
 
-</span>
+                                        Weight (g)
 
-</div>
+                                    </label>
 
-<div class="form-group">
+                                    <input type="number" name="weight" id="weight" value="<%= variant.weight %>">
 
-<label>
+                                    <span class="error" id="weightError">
 
-Weight (g)
+                                    </span>
 
-</label>
+                                </div>
+                            </div>
 
-<input
-type="number"
-name="weight"
-id="weight"
-value="<%= variant.weight %>">
+                        </div>
 
-<span
-class="error"
-id="weightError">
+                        <div class="form-card">
 
-</span>
+                            <h4>Pricing</h4>
 
-</div>
- </div>
+                            <div class="form-grid">
 
-</div>
+                                <div class="form-group">
 
-<div class="form-card">
+                                    <label>Regular Price</label>
 
-    <h4>Pricing</h4>
+                                    <input type="number" name="price" id="price" value="<%= variant.price %>">
 
-    <div class="form-grid">
+                                    <span class="error" id="priceError"></span>
 
-        <div class="form-group">
+                                </div>
 
-            <label>Regular Price</label>
+                                <div class="form-group">
 
-            <input
-                type="number"
-                name="price"
-                id="price"
-                value="<%= variant.price %>">
+                                    <label>Sale Price</label>
 
-            <span class="error" id="priceError"></span>
+                                    <input type="number" name="salePrice" id="salePrice"
+                                        value="<%= variant.salePrice %>">
+
+                                    <span class="error" id="salePriceError"></span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="form-card">
+
+                            <h4>Product Images</h4>
+
+                            <p class="image-note">
+                                Minimum 3 images and maximum 5 images.
+                            </p>
+
+                            <div class="existing-images">
+
+                                <% variant.images.forEach((image,index)=>{ %>
+
+                                    <div class="image-box">
+                                        <img src="/admin/uploads/products/<%= image %>" alt="">
+
+                                        <button type="button" class="removeExistingImage" data-index="<%= index %>">
+
+                                            <i class="fa-solid fa-xmark"></i>
+
+                                        </button>
+
+                                        <input type="hidden" name="existingImages" value="<%= image %>">
+
+                                    </div>
+
+                                    <% }) %>
+
+                            </div>
+
+                            <div id="previewContainer" class="preview-grid">
+
+
+
+                            </div>
+
+
+
+
+
+                            <div class="upload-box">
+
+                                <label for="variantImages" class="upload-label">
+
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                                    <span>Select New Images</span>
+
+                                </label>
+
+                                <input type="file" id="variantImages" accept="image/*" name="images" multiple hidden>
+
+                            </div>
+
+                            <span class="error" id="imageError"></span>
+
+
+
+
+
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                    </form>
+
+
+
+                    <div class="modal fade" id="cropModal" tabindex="-1">
+
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+
+                                    <h5 class="modal-title">
+
+                                        Save Image
+
+                                    </h5>
+
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+
+                                    </button>
+
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <img id="cropImage" style="max-width:100%;">
+                                </div>
+
+                                <div class="modal-footer">
+
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+
+                                        Cancel
+
+                                    </button>
+
+                                    <button type="button" id="cropButton" class="btn btn-primary">
+
+
+                                        Save Image
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+
+
+
+                </main>
 
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <div class="form-group">
+        <script>
+            const message = <% - JSON.stringify(message || null) %>;
 
-            <label>Sale Price</label>
+            if (message) {
 
-            <input
-                type="number"
-                name="salePrice"
-                id="salePrice"
-                value="<%= variant.salePrice %>">
+                Swal.fire({
+                    icon: message.type,
+                    title: message.text,
+                    confirmButtonColor: "#096DB9",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
 
-            <span class="error" id="salePriceError"></span>
+            }
+        </script>
 
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<div class="form-card">
-
-    <h4>Product Images</h4>
-
-    <p class="image-note">
-        Minimum 3 images and maximum 5 images.
-    </p>
-
-    <div class="existing-images">
-
-        <% variant.images.forEach((image,index)=>{ %>
-
-        <div class="image-box">
-<img
-     src="/admin/uploads/products/<%= image %>"
-    alt="">
-
-            <button
-                type="button"
-                class="removeExistingImage"
-                data-index="<%= index %>">
-
-                <i class="fa-solid fa-xmark"></i>
-
-            </button>
-
-            <input
-                type="hidden"
-                name="existingImages"
-                value="<%= image %>">
-
-        </div>
-
-        <% }) %>
-
-    </div>
-
-<div
-        id="previewContainer"
-        class="preview-grid">
-
-
-
-    </div>
-
-    
-
-
-
-    <div class="upload-box">
-
-        <label
-            for="variantImages"
-            class="upload-label">
-
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-
-            <span>Select New Images</span>
-
-        </label>
-
-        <input
-            type="file"
-            id="variantImages"
-            accept="image/*"
-            name="images"
-            multiple
-            hidden>
-
-    </div>
-
-    <span class="error" id="imageError"></span>
-
-
-
-    
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-</form>
-
-
-
-<div
-    class="modal fade"
-    id="cropModal"
-    tabindex="-1">
-
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-
-                <h5 class="modal-title">
-
-                    Save Image
-
-                </h5>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal">
-
-                </button>
-
-            </div>
-
-            <div class="modal-body">
-
-                   <img id="cropImage" style="max-width:100%;">
-            </div>
-
-            <div class="modal-footer">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
-
-                    Cancel
-
-                </button>
-
-                <button
-                    type="button"
-                    id="cropButton"
-                    class="btn btn-primary">
-
-                   
-                    Save Image
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
-
-
-
-</main>
-
-</div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-const message = <%- JSON.stringify(message || null) %>;
-
-if (message) {
-
-    Swal.fire({
-        icon: message.type,
-        title: message.text,
-        confirmButtonColor: "#096DB9",
-        timer: 2000,
-        showConfirmButton: false
-    });
-
-}
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/admin/js/edit-variant.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/admin/js/edit-variant.js"></script>
 </body>
 
 </html>
-

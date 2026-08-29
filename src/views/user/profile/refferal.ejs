@@ -1,523 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-     <link rel="stylesheet" href="/user/css/headers.css">
-      <link rel="stylesheet" href="/user/css/refferel.css">
-       <link rel="stylesheet" href="/user/css/footer.css">
-           <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link rel="stylesheet" href="/user/css/headers.css">
+    <link rel="stylesheet" href="/user/css/refferel.css">
+    <link rel="stylesheet" href="/user/css/footer.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
+
 <body>
     <%- include('../partials/header') %>
 
-<link rel="stylesheet" href="/css/user/referral.css">
-
-<div class="profile-container">
-<div class="sidebar">
-
-            <div class="user-box">
-
-                <div class="user-avatar">
-                    <%= user.firstName.charAt(0) %>
-                </div>
-
-                <div class="user-info">
-                    <h3>
-                        <%= user.firstName %> <%= user.lastName %>
-                    </h3>
-                </div>
-
-            </div>
-
-            <div class="sidebar-menu">
-
-                <a href="/profile/orders">
-                    <i class="fa-solid fa-cube"></i>
-                    My Orders
-                </a>
-
-                <a href="/wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    Wishlist
-                </a>
-
-                <a href="/profile/address">
-                    <i class="fa-solid fa-location-dot"></i>
-                    Addresses
-                </a>
-
-                <a href="/coupons">
-                    <i class="fa-solid fa-ticket"></i>
-                    Coupons
-                </a>
-
-                <a href="/wallet" >
-                    <i class="fa-solid fa-wallet"></i>
-                    My Wallet
-                </a>
-
-                <a href="/refer" class="active">
-                    <i class="fa-solid fa-gift"></i>
-                    Refer & Earn
-                </a>
-
-                <a href="/profile" >
-                    <i class="fa-regular fa-user"></i>
-                    Profile Settings
-                </a>
-
-            </div>
-
-            <a href="/logout" class="logout-btn">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                Logout
-            </a>
-
-        </div>
-<div class="container referral-page">
-
-    
-
-    <div class="referral-header">
-        <h1>Refer & Earn</h1>
-        <p>Invite your friends to PERFUMO and both of you receive ₹50 instantly when they use your referral code.</p>
-    </div>
-
-    <% if(message){ %>
-        <div class="alert alert-<%= message.type %>">
-            <%= message.text %>
-        </div>
-    <% } %>
-
-    <div class="how-card">
-
-        <div class="icon">
-            <i class="fa-regular fa-circle-question"></i>
-        </div>
-
-        <div class="content">
-
-            <h5>How it works?</h5>
-
-            <ul>
-                <li>Share your referral code with friends.</li>
-                <li>Your friend enters the code while joining PERFUMO.</li>
-                <li>You receive <strong>₹50</strong> instantly.</li>
-                <li>Your friend also receives <strong>₹50</strong> instantly.</li>
-            </ul>
-
-        </div>
-
-    </div>
-
-
-    <div class="reward-card">
-
-        <div class="reward-left">
-
-            <h2>"Sharing luxury deserves rewards."</h2>
-
-            <p>
-                Invite your friends to PERFUMO.
-                Both of you receive
-                <span>₹50 Wallet Credit</span>
-                instantly.
-            </p>
-
-            <label>Your Referral Code</label>
-
-            <div class="code-box">
-
-                <input
-                    id="referralCode"
-                    type="text"
-                    readonly
-                    value="<%= user.referralCode %>"
-                >
-
-                <button
-                    type="button"
-                    class="copy-btn"
-                    onclick="copyReferralCode()"
-                >
-                    <i class="fa-regular fa-copy"></i>
-                    Copy Code
-                </button>
-
-            </div>
-
-        </div>
-
-        <div class="reward-right">
-
-            <div class="reward-circle">
-
-                <h1>₹50</h1>
-
-                <p>Reward</p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-        <div class="referral-grid">
-
-        <div class="referral-card">
-
-            <h4>Referral Link</h4>
-
-            <p>Share this link with your friends.</p>
-
-            <div class="link-box">
-
-                <input
-                    id="referralLink"
-                    type="text"
-                    readonly
-                  value="<%= referralLink %>"
-                >
-
-                <button
-                    type="button"
-                    class="copy-btn"
-                    onclick="copyReferralLink()"
-                >
-                    <i class="fa-regular fa-copy"></i>
-                    Copy Link
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <% if(!user.referredBy){ %>
-
-        <div class="referral-card">
-
-            <h4>Have a Referral Code?</h4>
-
-            <p>Enter a friend's referral code to receive ₹50.</p>
-
-       <form id="applyReferralForm">
-
-                <div class="apply-box">
-
-                    <input
-                        type="text"
-                         id="referralInput"
-                        name="referralCode"
-                        placeholder="Enter Referral Code"
-                        required
-                    >
-
-                    <button type="submit">
-
-                        Apply
-
-                    </button>
+        <link rel="stylesheet" href="/css/user/referral.css">
+
+        <div class="profile-container">
+            <div class="sidebar">
+
+                <div class="user-box">
+
+                    <div class="user-avatar">
+                        <%= user.firstName.charAt(0) %>
+                    </div>
+
+                    <div class="user-info">
+                        <h3>
+                            <%= user.firstName %>
+                                <%= user.lastName %>
+                        </h3>
+                    </div>
 
                 </div>
 
-            </form>
+                <div class="sidebar-menu">
 
-        </div>
+                    <a href="/profile/orders">
+                        <i class="fa-solid fa-cube"></i>
+                        My Orders
+                    </a>
 
-        <% } else { %>
+                    <a href="/wishlist">
+                        <i class="fa-regular fa-heart"></i>
+                        Wishlist
+                    </a>
 
-        <div class="referral-card applied-card">
+                    <a href="/profile/address">
+                        <i class="fa-solid fa-location-dot"></i>
+                        Addresses
+                    </a>
 
-            <h4>Referral Applied</h4>
+                    <a href="/coupons">
+                        <i class="fa-solid fa-ticket"></i>
+                        Coupons
+                    </a>
 
-            <p>
-                You joined using referral code
-                <strong><%= user.referredBy %></strong>
-            </p>
+                    <a href="/wallet">
+                        <i class="fa-solid fa-wallet"></i>
+                        My Wallet
+                    </a>
 
-            <div class="badge-success">
+                    <a href="/refer" class="active">
+                        <i class="fa-solid fa-gift"></i>
+                        Refer & Earn
+                    </a>
 
-                <i class="fa-solid fa-circle-check"></i>
+                    <a href="/profile">
+                        <i class="fa-regular fa-user"></i>
+                        Profile Settings
+                    </a>
 
-                ₹50 Reward Added
+                </div>
 
-            </div>
-
-        </div>
-
-        <% } %>
-
-    </div>
-
-
-
-    <div class="stats-grid">
-
-        <div class="stat-card">
-
-            <span>Total Referrals</span>
-
-            <h2><%= referralCount || 0 %></h2>
-
-        </div>
-
-        <div class="stat-card">
-
-            <span>Total Rewards</span>
-
-            <h2>₹<%= totalRewards || 0 %></h2>
-
-        </div>
-
-        <div class="stat-card">
-
-            <span>Wallet Balance</span>
-
-            <h2>₹<%= wallet ? wallet.balance : 0 %></h2>
-
-        </div>
-
-    </div>
-
-        <div class="history-card">
-
-        <div class="history-header">
-
-            <h3>Referral History</h3>
-
-            <span><%= referralCount || 0 %> Successful Referrals</span>
-
-        </div>
-
-        <% if(referrals && referrals.length > 0){ %>
-
-        <table class="history-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>Name</th>
-
-                    <th>Email</th>
-
-                    <th>Reward</th>
-
-                    <th>Date</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                <% referrals.forEach(referral => { %>
-
-                    <tr>
-
-                        <td>
-    <%= referral.referredUser.firstName %>
-    <%= referral.referredUser.lastName %>
-</td>
-                       <td>
-    <%= referral.referredUser.email %>
-</td>
-
-
-                        <td>
-
-                            ₹50
-
-                        </td>
-
-                       <td>
-    <%= new Date(referral.createdAt).toLocaleDateString("en-IN") %>
-</td>
-
-                    </tr>
-
-                <% }) %>
-
-            </tbody>
-
-        </table>
-
-        <% } else { %>
-
-            <div class="empty-history">
-
-                <i class="fa-solid fa-users"></i>
-
-                <h4>No referrals yet</h4>
-
-                <p>Share your referral code to start earning rewards.</p>
+                <a href="/logout" class="logout-btn">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Logout
+                </a>
 
             </div>
+            <div class="container referral-page">
 
-        <% } %>
 
-    </div>
 
-</div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
+                <div class="referral-header">
+                    <h1>Refer & Earn</h1>
+                    <p>Invite your friends to PERFUMO and both of you receive ₹50 instantly when they use your referral
+                        code.</p>
+                </div>
 
-function copyReferralCode(){
+                <% if(message){ %>
+                    <div class="alert alert-<%= message.type %>">
+                        <%= message.text %>
+                    </div>
+                    <% } %>
 
-    const input=document.getElementById("referralCode");
+                        <div class="how-card">
 
-    navigator.clipboard.writeText(input.value);
+                            <div class="icon">
+                                <i class="fa-regular fa-circle-question"></i>
+                            </div>
 
-    const btn=document.querySelector("#referralCode + button");
+                            <div class="content">
 
-    btn.innerHTML='<i class="fa-solid fa-check"></i> Copied';
+                                <h5>How it works?</h5>
 
-    setTimeout(()=>{
+                                <ul>
+                                    <li>Share your referral code with friends.</li>
+                                    <li>Your friend enters the code while joining PERFUMO.</li>
+                                    <li>You receive <strong>₹50</strong> instantly.</li>
+                                    <li>Your friend also receives <strong>₹50</strong> instantly.</li>
+                                </ul>
 
-        btn.innerHTML='<i class="fa-regular fa-copy"></i> Copy Code';
+                            </div>
 
-    },2000);
+                        </div>
 
-}
-const referralForm = document.getElementById("applyReferralForm");
 
-if (referralForm) {
+                        <div class="reward-card">
 
-    referralForm.addEventListener("submit", async function (e) {
+                            <div class="reward-left">
 
-        e.preventDefault();
+                                <h2>"Sharing luxury deserves rewards."</h2>
 
-        const referralCode =
-            document.getElementById("referralInput").value.trim();
+                                <p>
+                                    Invite your friends to PERFUMO.
+                                    Both of you receive
+                                    <span>₹50 Wallet Credit</span>
+                                    instantly.
+                                </p>
 
-        try {
+                                <label>Your Referral Code</label>
 
-            const response = await fetch("/refer/apply", {
+                                <div class="code-box">
 
-                method: "POST",
+                                    <input id="referralCode" type="text" readonly value="<%= user.referralCode %>">
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                                    <button type="button" class="copy-btn" onclick="copyReferralCode()">
+                                        <i class="fa-regular fa-copy"></i>
+                                        Copy Code
+                                    </button>
 
-                body: JSON.stringify({
-                    referralCode
-                })
+                                </div>
 
-            });
+                            </div>
 
-            const data = await response.json();
+                            <div class="reward-right">
 
-            if (data.success) {
+                                <div class="reward-circle">
 
-                await Swal.fire({
+                                    <h1>₹50</h1>
 
-                    icon: "success",
-                    title: "Success",
-                    text: data.message,
-                    confirmButtonColor: "#111"
+                                    <p>Reward</p>
 
-                });
+                                </div>
 
-                location.reload();
+                            </div>
 
-            } else {
+                        </div>
 
-                Swal.fire({
+                        <div class="referral-grid">
 
-                    icon: "error",
-                    title: "Oops...",
-                    text: data.message,
-                    confirmButtonColor: "#111"
+                            <div class="referral-card">
+
+                                <h4>Referral Link</h4>
+
+                                <p>Share this link with your friends.</p>
+
+                                <div class="link-box">
+
+                                    <input id="referralLink" type="text" readonly value="<%= referralLink %>">
+
+                                    <button type="button" class="copy-btn" onclick="copyReferralLink()">
+                                        <i class="fa-regular fa-copy"></i>
+                                        Copy Link
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <% if(!user.referredBy){ %>
+
+                                <div class="referral-card">
+
+                                    <h4>Have a Referral Code?</h4>
+
+                                    <p>Enter a friend's referral code to receive ₹50.</p>
+
+                                    <form id="applyReferralForm">
+
+                                        <div class="apply-box">
+
+                                            <input type="text" id="referralInput" name="referralCode"
+                                                placeholder="Enter Referral Code" required>
+
+                                            <button type="submit">
+
+                                                Apply
+
+                                            </button>
+
+                                        </div>
+
+                                    </form>
+
+                                </div>
+
+                                <% } else { %>
+
+                                    <div class="referral-card applied-card">
+
+                                        <h4>Referral Applied</h4>
+
+                                        <p>
+                                            You joined using referral code
+                                            <strong>
+                                                <%= user.referredBy %>
+                                            </strong>
+                                        </p>
+
+                                        <div class="badge-success">
+
+                                            <i class="fa-solid fa-circle-check"></i>
+
+                                            ₹50 Reward Added
+
+                                        </div>
+
+                                    </div>
+
+                                    <% } %>
+
+                        </div>
+
+
+
+                        <div class="stats-grid">
+
+                            <div class="stat-card">
+
+                                <span>Total Referrals</span>
+
+                                <h2>
+                                    <%= referralCount || 0 %>
+                                </h2>
+
+                            </div>
+
+                            <div class="stat-card">
+
+                                <span>Total Rewards</span>
+
+                                <h2>₹<%= totalRewards || 0 %>
+                                </h2>
+
+                            </div>
+
+                            <div class="stat-card">
+
+                                <span>Wallet Balance</span>
+
+                                <h2>₹<%= wallet ? wallet.balance : 0 %>
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+                        <div class="history-card">
+
+                            <div class="history-header">
+
+                                <h3>Referral History</h3>
+
+                                <span>
+                                    <%= referralCount || 0 %> Successful Referrals
+                                </span>
+
+                            </div>
+
+                            <% if(referrals && referrals.length> 0){ %>
+
+                                <table class="history-table">
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>Name</th>
+
+                                            <th>Email</th>
+
+                                            <th>Reward</th>
+
+                                            <th>Date</th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        <% referrals.forEach(referral=> { %>
+
+                                            <tr>
+
+                                                <td>
+                                                    <%= referral.referredUser.firstName %>
+                                                        <%= referral.referredUser.lastName %>
+                                                </td>
+                                                <td>
+                                                    <%= referral.referredUser.email %>
+                                                </td>
+
+
+                                                <td>
+
+                                                    ₹50
+
+                                                </td>
+
+                                                <td>
+                                                    <%= new Date(referral.createdAt).toLocaleDateString("en-IN") %>
+                                                </td>
+
+                                            </tr>
+
+                                            <% }) %>
+
+                                    </tbody>
+
+                                </table>
+
+                                <% } else { %>
+
+                                    <div class="empty-history">
+
+                                        <i class="fa-solid fa-users"></i>
+
+                                        <h4>No referrals yet</h4>
+
+                                        <p>Share your referral code to start earning rewards.</p>
+
+                                    </div>
+
+                                    <% } %>
+
+                        </div>
+
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+
+            function copyReferralCode() {
+
+                const input = document.getElementById("referralCode");
+
+                navigator.clipboard.writeText(input.value);
+
+                const btn = document.querySelector("#referralCode + button");
+
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+
+                setTimeout(() => {
+
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Code';
+
+                }, 2000);
+
+            }
+            const referralForm = document.getElementById("applyReferralForm");
+
+            if (referralForm) {
+
+                referralForm.addEventListener("submit", async function (e) {
+
+                    e.preventDefault();
+
+                    const referralCode =
+                        document.getElementById("referralInput").value.trim();
+
+                    try {
+
+                        const response = await fetch("/refer/apply", {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                referralCode
+                            })
+
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+
+                            await Swal.fire({
+
+                                icon: "success",
+                                title: "Success",
+                                text: data.message,
+                                confirmButtonColor: "#111"
+
+                            });
+
+                            location.reload();
+
+                        } else {
+
+                            Swal.fire({
+
+                                icon: "error",
+                                title: "Oops...",
+                                text: data.message,
+                                confirmButtonColor: "#111"
+
+                            });
+
+                        }
+
+                    } catch (err) {
+
+                        Swal.fire({
+
+                            icon: "error",
+                            title: "Error",
+                            text: "Something went wrong.",
+                            confirmButtonColor: "#111"
+
+                        });
+
+                    }
 
                 });
 
             }
+            function copyReferralLink() {
 
-        } catch (err) {
+                const input = document.getElementById("referralLink");
 
-            Swal.fire({
+                navigator.clipboard.writeText(input.value);
 
-                icon: "error",
-                title: "Error",
-                text: "Something went wrong.",
-                confirmButtonColor: "#111"
+                const btn = document.querySelector("#referralLink + button");
 
-            });
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
 
-        }
+                setTimeout(() => {
 
-    });
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Link';
 
-}
-function copyReferralLink(){
+                }, 2000);
 
-    const input=document.getElementById("referralLink");
+            }
 
-    navigator.clipboard.writeText(input.value);
+            if (profileToggle) {
 
-    const btn=document.querySelector("#referralLink + button");
+                profileToggle.addEventListener('click', (e) => {
 
-    btn.innerHTML='<i class="fa-solid fa-check"></i> Copied';
+                    e.preventDefault();
 
-    setTimeout(()=>{
+                    profileMenu.classList.toggle('show');
+                });
 
-        btn.innerHTML='<i class="fa-regular fa-copy"></i> Copy Link';
+                document.addEventListener('click', (e) => {
 
-    },2000);
-
-}
-
-if(profileToggle){
-
-    profileToggle.addEventListener('click', (e) => {
-
-        e.preventDefault();
-
-        profileMenu.classList.toggle('show');
-    });
-
-    document.addEventListener('click', (e) => {
-
-        if(
-            !profileToggle.contains(e.target) &&
-            !profileMenu.contains(e.target)
-        ){
-            profileMenu.classList.remove('show');
-        }
-    });
-}
+                    if (
+                        !profileToggle.contains(e.target) &&
+                        !profileMenu.contains(e.target)
+                    ) {
+                        profileMenu.classList.remove('show');
+                    }
+                });
+            }
 
 
-</script>
+        </script>
 
 
-<footer class="profile-footer">
+        <footer class="profile-footer">
 
-    <div class="footer-logo">
-        PERFUMO
-    </div>
+            <div class="footer-logo">
+                PERFUMO
+            </div>
 
-    <div class="footer-links">
+            <div class="footer-links">
 
-        <a href="/">Home</a>
-        <a href="/shop">Shop</a>
-        <a href="/products">Products</a>
-        <a href="/pages">Pages</a>
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="/products">Products</a>
+                <a href="/pages">Pages</a>
 
-    </div>
+            </div>
 
-    <p>
-        Copyright © 2025 PERFUMO . All Rights Reserved.
-    </p>
+            <p>
+                Copyright © 2025 PERFUMO . All Rights Reserved.
+            </p>
 
 
 </body>
+
 </html>

@@ -1,347 +1,264 @@
 import Coupon from "../../models/Coupon.js";
 
 export const getCoupons = async (query) => {
+  const page = Number(query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  const search = query.search?.trim() || "";
+  const status = query.status || "all";
+  const sort = query.sort || "newest";
+
+  const filter = {};
+
+  await Coupon.updateMany(
+    {
+      validUntil: {
+        $lt: new Date(),
+      },
+
+      isActive: true,
+    },
+
+    {
+      $set: {
+        isActive: false,
+      },
+    },
+  );
+
+  if (search) {
+    filter.$or = [
+      {
+        code: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+
+      {
+        description: {
+          $regex: search,
+          $options: "i",
+        },
+      },
+    ];
+  }
+
+  if (status === "active") {
+    filter.isActive = true;
+
+    filter.validUntil = {
+      $gte: new Date(),
+    };
+  }
+  if (status === "expired") {
+    filter.validUntil = {
+      $lt: new Date(),
+    };
+  }
 
-    const page = Number(query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
+  if (status === "inactive") {
+    filter.isActive = false;
+  }
 
-    const search = query.search?.trim() || "";
-    const status = query.status || "all";
-    const sort = query.sort || "newest";
+  let sortOption = {};
 
-    const filter = {};
+  switch (sort) {
+    case "oldest":
+      sortOption = {
+        createdAt: 1,
+      };
 
-    await Coupon.updateMany(
+      break;
 
-{
+    case "a-z":
+      sortOption = {
+        code: 1,
+      };
 
-validUntil:{
+      break;
 
-$lt:new Date()
+    case "z-a":
+      sortOption = {
+        code: -1,
+      };
 
-},
+      break;
 
-isActive:true
+    case "expiry":
+      sortOption = {
+        validUntil: 1,
+      };
 
-},
+      break;
 
-{
+    case "discountHigh":
+      sortOption = {
+        discount: -1,
+      };
 
-$set:{
+      break;
 
-isActive:false
+    case "discountLow":
+      sortOption = {
+        discount: 1,
+      };
 
-}
+      break;
 
-}
+    default:
+      sortOption = {
+        createdAt: -1,
+      };
+  }
 
-);
+  const totalCoupons = await Coupon.countDocuments();
 
-    if (search) {
+  const activeCoupons = await Coupon.countDocuments({
+    isActive: true,
 
-        filter.$or = [
+    validUntil: {
+      $gte: new Date(),
+    },
+  });
 
-            {
-                code: {
-                    $regex: search,
-                    $options: "i"
-                }
-            },
+  const expiredCoupons = await Coupon.countDocuments({
+    validUntil: {
+      $lt: new Date(),
+    },
+  });
 
-            {
-                description: {
-                    $regex: search,
-                    $options: "i"
-                }
-            }
+  const disabledCoupons = await Coupon.countDocuments({
+    isActive: false,
+  });
 
-        ];
+  const filteredCoupons = await Coupon.countDocuments(filter);
+  const coupons = await Coupon.find(filter)
 
-    }
+    .sort(sortOption)
 
-    if(status==="active"){
+    .skip(skip)
 
-filter.isActive=true;
+    .limit(limit);
 
-filter.validUntil={
+  return {
+    coupons,
 
-$gte:new Date()
+    currentPage: page,
 
-};
+    totalPages: Math.ceil(filteredCoupons / limit),
 
-}
-if(status==="expired"){
+    totalCoupons,
 
-filter.validUntil={
-
-$lt:new Date()
-
-};
-
-}
-
-    if (status === "inactive") {
-
-        filter.isActive = false;
-
-    }
-
-    let sortOption = {};
-
-    switch (sort) {
-
-        case "oldest":
-
-            sortOption = {
-                createdAt: 1
-            };
-
-            break;
-
-        case "a-z":
-
-            sortOption = {
-                code: 1
-            };
-
-            break;
-
-        case "z-a":
-
-            sortOption = {
-                code: -1
-            };
-
-            break;
-
-        case "expiry":
-
-            sortOption = {
-                validUntil: 1
-            };
-
-            break;
-
-        case "discountHigh":
-
-            sortOption = {
-                discount: -1
-            };
-
-            break;
-
-        case "discountLow":
-
-            sortOption = {
-                discount: 1
-            };
-
-            break;
-
-        default:
-
-            sortOption = {
-                createdAt: -1
-            };
-
-    }
-
-    const totalCoupons = await Coupon.countDocuments();
-
-    const activeCoupons = await Coupon.countDocuments({
-
-isActive:true,
-
-validUntil:{
-
-$gte:new Date()
-
-}
-
-});
-
-const expiredCoupons = await Coupon.countDocuments({
-
-validUntil:{
-
-$lt:new Date()
-
-}
-
-});
-
-const disabledCoupons = await Coupon.countDocuments({
-
-isActive:false
-
-});
-
-const filteredCoupons = await Coupon.countDocuments(filter);
-    const coupons = await Coupon.find(filter)
-
-        .sort(sortOption)
-
-        .skip(skip)
-
-        .limit(limit);
-
-    return {
-
-        coupons,
-
-        currentPage: page,
-
-       totalPages: Math.ceil(filteredCoupons / limit),
-
-        totalCoupons,
-
-       activeCoupons,
+    activeCoupons,
 
     expiredCoupons,
 
     disabledCoupons,
 
-        search,
+    search,
 
-        status,
+    status,
 
-        sort
-
-    };
-
+    sort,
+  };
 };
-
-
 
 export const createCoupon = async (data) => {
+  const existing = await Coupon.findOne({
+    code: data.code.toUpperCase(),
+  });
 
-    const existing = await Coupon.findOne({
+  if (existing) {
+    throw new Error("Coupon code already exists");
+  }
 
-        code: data.code.toUpperCase()
+  const coupon = new Coupon({
+    code: data.code.trim().toUpperCase(),
 
-    });
+    description: data.description.trim(),
 
-    if (existing) {
+    discountType: data.discountType,
 
-        throw new Error("Coupon code already exists");
+    discount: data.discount,
 
-    }
+    minimumPurchase: data.minimumPurchase,
 
-    const coupon = new Coupon({
+    maximumDiscount: data.maximumDiscount,
 
-           code: data.code.trim().toUpperCase(),
+    usageLimit: data.usageLimit,
 
-       description: data.description.trim(),
+    validFrom: data.validFrom,
 
-        discountType: data.discountType,
+    validUntil: data.validUntil,
 
-        discount: data.discount,
+    isActive: data.isActive === "true",
+  });
 
-        minimumPurchase: data.minimumPurchase,
-
-        maximumDiscount: data.maximumDiscount,
-
-        usageLimit: data.usageLimit,
-
-        validFrom: data.validFrom,
-
-        validUntil: data.validUntil,
-
-        isActive: data.isActive === "true"
-
-    });
-
-    return await coupon.save();
-
+  return await coupon.save();
 };
-
-
 
 export const getCouponById = async (id) => {
-
-    return await Coupon.findById(id);
-
+  return await Coupon.findById(id);
 };
-
-
 
 export const updateCoupon = async (id, data) => {
+  const duplicate = await Coupon.findOne({
+    code: data.code.toUpperCase(),
 
-    const duplicate = await Coupon.findOne({
+    _id: {
+      $ne: id,
+    },
+  });
 
-        code: data.code.toUpperCase(),
+  if (duplicate) {
+    throw new Error("Coupon code already exists");
+  }
 
-        _id: {
+  return await Coupon.findByIdAndUpdate(
+    id,
 
-            $ne: id
+    {
+      code: data.code.trim().toUpperCase(),
 
-        }
+      description: data.description.trim(),
 
-    });
+      discountType: data.discountType,
 
-    if (duplicate) {
+      discount: data.discount,
 
-        throw new Error("Coupon code already exists");
+      minimumPurchase: data.minimumPurchase,
 
-    }
+      maximumDiscount: data.maximumDiscount,
 
-    return await Coupon.findByIdAndUpdate(
+      usageLimit: data.usageLimit,
 
-        id,
+      validFrom: data.validFrom,
 
-        {
+      validUntil: data.validUntil,
 
-           code: data.code.trim().toUpperCase(),
+      isActive: data.isActive === "true",
+    },
 
-            description: data.description.trim(),
+    {
+      new: true,
 
-            discountType: data.discountType,
-
-            discount: data.discount,
-
-            minimumPurchase: data.minimumPurchase,
-
-            maximumDiscount: data.maximumDiscount,
-
-            usageLimit: data.usageLimit,
-
-            validFrom: data.validFrom,
-
-            validUntil: data.validUntil,
-
-            isActive: data.isActive === "true"
-
-        },
-
-        {
-
-            new: true,
-
-            runValidators: true
-
-        }
-
-    );
-
+      runValidators: true,
+    },
+  );
 };
 
-
-
 export const toggleCouponStatus = async (id) => {
+  const coupon = await Coupon.findById(id);
 
-    const coupon = await Coupon.findById(id);
+  if (!coupon) {
+    throw new Error("Coupon not found");
+  }
 
-    if (!coupon) {
+  coupon.isActive = !coupon.isActive;
 
-        throw new Error("Coupon not found");
+  await coupon.save();
 
-    }
-
-    coupon.isActive = !coupon.isActive;
-
-    await coupon.save();
-
-    return coupon;
-
+  return coupon;
 };

@@ -1,476 +1,444 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-     <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="/admin/css/admin.css">
     <link rel="stylesheet" href="/admin/css/coupons.css">
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
 </head>
+
 <body>
-     <%- include('../partials/header') %>  
+    <%- include('../partials/header') %>
 
-     <div class="page">
-         <%- include('../partials/sidebar') %>
-    <div class="content">
-        
- 
-
-    <div class="page-header">
-
-        <h3>Coupons</h3>
-
-        <a href="/admin/coupons/add" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i>
-            Add Coupon
-        </a>
-
-    </div>
+        <div class="page">
+            <%- include('../partials/sidebar') %>
+                <div class="content">
 
 
-   
-    <form
-        action="/admin/coupons"
-        method="GET"
-        class="table-toolbar"
-    >
 
-       <div class="toolbar-left">
+                    <div class="page-header">
 
-    <input
-        type="text"
-        name="search"
-        placeholder="Search coupon code..."
-        value="<%= search || '' %>"
-        class="search-box"
-    >
+                        <h3>Coupons</h3>
 
-    <button type="submit" class="btn btn-dark">
-        Search
-    </button>
+                        <a href="/admin/coupons/add" class="btn btn-primary">
+                            <i class="fa-solid fa-plus"></i>
+                            Add Coupon
+                        </a>
 
-    <% if(search){ %>
+                    </div>
 
-        <a
-            href="/admin/coupons"
-            class="btn btn-secondary"
-        >
-            Clear
-        </a>
 
-    <% } %>
 
-</div>
+                    <form action="/admin/coupons" method="GET" class="table-toolbar">
 
-        <div class="toolbar-right">
+                        <div class="toolbar-left">
 
-            <select
-                name="status"
-                onchange="this.form.submit()"
-            >
+                            <input type="text" name="search" placeholder="Search coupon code..."
+                                value="<%= search || '' %>" class="search-box">
 
-                <option value="">All</option>
+                            <button type="submit" class="btn btn-dark">
+                                Search
+                            </button>
 
-                <option
-                    value="active"
-                    <%= status==="active" ? "selected" : "" %>>
-                    Active
-                </option>
+                            <% if(search){ %>
 
-                <option
-                    value="expired"
-                    <%= status==="expired" ? "selected" : "" %>>
-                    Expired
-                </option>
+                                <a href="/admin/coupons" class="btn btn-secondary">
+                                    Clear
+                                </a>
 
-                <option
-                    value="inactive"
-                    <%= status==="inactive" ? "selected" : "" %>>
-                    Disabled
-                </option>
+                                <% } %>
 
-            </select>
+                        </div>
 
-            <select
-                name="sort"
-                onchange="this.form.submit()"
-            >
+                        <div class="toolbar-right">
 
-                <option value="latest"
-                    <%= sort==="latest"?"selected":"" %>>
-                    Latest
-                </option>
+                            <select name="status" onchange="this.form.submit()">
 
-                <option value="oldest"
-                    <%= sort==="oldest"?"selected":"" %>>
-                    Oldest
-                </option>
+                                <option value="">All</option>
 
-                <option value="discountHigh"
-                    <%= sort==="discountHigh"?"selected":"" %>>
-                    Discount High
-                </option>
+                                <option value="active" <%=status==="active" ? "selected" : "" %>>
+                                    Active
+                                </option>
 
-                <option value="discountLow"
-                    <%= sort==="discountLow"?"selected":"" %>>
-                    Discount Low
-                </option>
+                                <option value="expired" <%=status==="expired" ? "selected" : "" %>>
+                                    Expired
+                                </option>
 
-            </select>
+                                <option value="inactive" <%=status==="inactive" ? "selected" : "" %>>
+                                    Disabled
+                                </option>
 
+                            </select>
+
+                            <select name="sort" onchange="this.form.submit()">
+
+                                <option value="latest" <%=sort==="latest" ?"selected":"" %>>
+                                    Latest
+                                </option>
+
+                                <option value="oldest" <%=sort==="oldest" ?"selected":"" %>>
+                                    Oldest
+                                </option>
+
+                                <option value="discountHigh" <%=sort==="discountHigh" ?"selected":"" %>>
+                                    Discount High
+                                </option>
+
+                                <option value="discountLow" <%=sort==="discountLow" ?"selected":"" %>>
+                                    Discount Low
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </form>
+
+
+
+                    <div class="table-responsive">
+
+                        <table class="table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Coupon</th>
+
+                                    <th>Discount</th>
+
+                                    <th>Minimum</th>
+
+                                    <th>Maximum</th>
+
+                                    <th>Usage</th>
+
+                                    <th>Validity</th>
+
+                                    <th>Status</th>
+
+                                    <th>Action</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <% if(coupons.length>0){ %>
+
+                                    <% coupons.forEach(coupon=>{ %>
+
+                                        <tr>
+
+                                            <td>
+
+                                                <strong>
+
+                                                    <%= coupon.code %>
+
+                                                </strong>
+
+                                                <br>
+
+                                                <small>
+
+                                                    <%= coupon.description %>
+
+                                                </small>
+
+                                            </td>
+
+                                            <td>
+
+                                                <% if(coupon.discountType==="percentage" ){ %>
+
+                                                    <%= coupon.discount %>%
+
+                                                        <% }else{ %>
+
+                                                            ₹<%= coupon.discount %>
+
+                                                                <% } %>
+
+                                            </td>
+
+                                            <td>
+
+                                                ₹<%= coupon.minimumPurchase %>
+
+                                            </td>
+
+                                            <td>
+
+                                                <% if(coupon.maximumDiscount>0){ %>
+
+                                                    ₹<%= coupon.maximumDiscount %>
+
+                                                        <% }else{ %>
+
+                                                            -
+
+                                                            <% } %>
+
+                                            </td>
+
+                                            <td>
+
+                                                <%= coupon.usedCount %>
+
+                                                    /
+
+                                                    <% if(coupon.usageLimit>0){ %>
+
+                                                        <%= coupon.usageLimit %>
+
+                                                            <% }else{ %>
+
+                                                                Unlimited
+
+                                                                <% } %>
+
+                                            </td>
+
+                                            <td>
+
+                                                <%= coupon.validFrom.toLocaleDateString("en-IN") %>
+
+                                                    <br>
+
+                                                    -
+
+                                                    <br>
+
+                                                    <%= coupon.validUntil.toLocaleDateString("en-IN") %>
+
+                                            </td>
+
+                                            <td>
+
+                                                <% const expired=new Date()> coupon.validUntil; %>
+
+                                                    <% if(!coupon.isActive){ %>
+
+                                                        <span class="badge bg-secondary">
+
+                                                            Disabled
+
+                                                        </span>
+
+                                                        <% }else if(expired){ %>
+
+                                                            <span class="badge bg-danger">
+
+                                                                Expired
+
+                                                            </span>
+
+                                                            <% }else{ %>
+
+                                                                <span class="badge bg-success">
+
+                                                                    Active
+
+                                                                </span>
+
+                                                                <% } %>
+
+                                            </td>
+
+                                            <td>
+                                                <div class="action-dropdown">
+
+                                                    <button class="action-btn">
+                                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                    </button>
+
+                                                    <div class="action-menu">
+
+                                                        <a href="/admin/coupons/view/<%= coupon._id %>">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                            View Details
+                                                        </a>
+
+
+
+
+                                                    </div>
+
+                                                </div>
+                                            </td>
+
+                                        </tr>
+
+                                        <% }) %>
+
+                                            <% }else{ %>
+
+                                                <tr>
+
+                                                    <td colspan="8" class="text-center">
+
+                                                        No Coupons Found
+
+                                                    </td>
+
+                                                </tr>
+
+                                                <% } %>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+
+
+                    <% if(totalPages>1){ %>
+
+                        <div class="pagination">
+
+                            <% if(currentPage>1){ %>
+
+                                <a
+                                    href="?page=<%= currentPage-1 %>&search=<%= search %>&status=<%= status %>&sort=<%= sort %>">
+                                    Prev
+                                </a>
+
+                                <% } %>
+
+                                    <% for(let i=1;i<=totalPages;i++){ %>
+
+                                        <a href="?page=<%= i %>&search=<%= search %>&status=<%= status %>&sort=<%= sort %>"
+                                            class="<%= currentPage===i?'active':'' %>">
+
+                                            <%= i %>
+
+                                        </a>
+
+                                        <% } %>
+
+                                            <% if(currentPage<totalPages){ %>
+
+                                                <a
+                                                    href="?page=<%= currentPage+1 %>&search=<%= search %>&status=<%= status %>&sort=<%= sort %>">
+                                                    Next
+                                                </a>
+
+                                                <% } %>
+
+                        </div>
+
+                        <% } %>
+
+                </div>
         </div>
+        <script>
 
-    </form>
+            document.querySelectorAll(".toggleCoupon").forEach(button => {
 
+                button.addEventListener("click", async () => {
 
+                    const id = button.dataset.id;
 
-    <div class="table-responsive">
+                    const result = await Swal.fire({
 
-        <table class="table">
+                        title: "Are you sure?",
 
-            <thead>
+                        icon: "warning",
 
-                <tr>
+                        showCancelButton: true,
 
-                    <th>Coupon</th>
+                        confirmButtonText: "Yes"
 
-                    <th>Discount</th>
+                    });
 
-                    <th>Minimum</th>
+                    if (!result.isConfirmed) return;
 
-                    <th>Maximum</th>
+                    const response = await fetch(`/admin/coupons/toggle/${id}`, {
 
-                    <th>Usage</th>
+                        method: "PATCH"
 
-                    <th>Validity</th>
+                    });
 
-                    <th>Status</th>
+                    const data = await response.json();
 
-                    <th>Action</th>
+                    if (data.success) {
 
-                </tr>
+                        Swal.fire({
 
-            </thead>
+                            icon: "success",
 
-            <tbody>
+                            title: data.message,
 
-                <% if(coupons.length>0){ %>
+                            timer: 1200,
 
-                <% coupons.forEach(coupon=>{ %>
+                            showConfirmButton: false
 
-                <tr>
+                        }).then(() => {
 
-                    <td>
+                            location.reload();
 
-                        <strong>
+                        });
 
-                            <%= coupon.code %>
+                    } else {
 
-                        </strong>
+                        Swal.fire({
 
-                        <br>
+                            icon: "error",
 
-                        <small>
+                            title: data.message
 
-                            <%= coupon.description %>
+                        });
 
-                        </small>
+                    }
 
-                    </td>
+                });
 
-                    <td>
+            });
 
-                        <% if(coupon.discountType==="percentage"){ %>
+        </script>
+        <script>document.querySelectorAll(".action-btn").forEach(button => {
 
-                            <%= coupon.discount %>%
+                button.addEventListener("click", (e) => {
 
-                        <% }else{ %>
+                    e.stopPropagation();
 
-                            ₹<%= coupon.discount %>
+                    document.querySelectorAll(".action-dropdown").forEach(drop => {
 
-                        <% } %>
+                        if (drop !== button.parentElement) {
+                            drop.classList.remove("active");
+                        }
 
-                    </td>
+                    });
 
-                    <td>
+                    button.parentElement.classList.toggle("active");
 
-                        ₹<%= coupon.minimumPurchase %>
+                });
 
-                    </td>
+            });
 
-                    <td>
+            document.addEventListener("click", () => {
 
-                        <% if(coupon.maximumDiscount>0){ %>
+                document.querySelectorAll(".action-dropdown").forEach(drop => {
 
-                            ₹<%= coupon.maximumDiscount %>
+                    drop.classList.remove("active");
 
-                        <% }else{ %>
+                });
 
-                            -
-
-                        <% } %>
-
-                    </td>
-
-                    <td>
-
-                        <%= coupon.usedCount %>
-
-                        /
-
-                        <% if(coupon.usageLimit>0){ %>
-
-                            <%= coupon.usageLimit %>
-
-                        <% }else{ %>
-
-                            Unlimited
-
-                        <% } %>
-
-                    </td>
-
-                    <td>
-
-                        <%= coupon.validFrom.toLocaleDateString("en-IN") %>
-
-                        <br>
-
-                        -
-
-                        <br>
-
-                        <%= coupon.validUntil.toLocaleDateString("en-IN") %>
-
-                    </td>
-
-                    <td>
-
-                        <% const expired = new Date() > coupon.validUntil; %>
-
-                        <% if(!coupon.isActive){ %>
-
-                            <span class="badge bg-secondary">
-
-                                Disabled
-
-                            </span>
-
-                        <% }else if(expired){ %>
-
-                            <span class="badge bg-danger">
-
-                                Expired
-
-                            </span>
-
-                        <% }else{ %>
-
-                            <span class="badge bg-success">
-
-                                Active
-
-                            </span>
-
-                        <% } %>
-
-                    </td>
-
-                    <td>
-    <div class="action-dropdown">
-
-        <button class="action-btn">
-            <i class="fa-solid fa-ellipsis-vertical"></i>
-        </button>
-
-        <div class="action-menu">
-
-            <a href="/admin/coupons/view/<%= coupon._id %>">
-                <i class="fa-solid fa-eye"></i>
-                View Details
-            </a>
-
-            
-
-
-        </div>
-
-    </div>
-</td>
-
-                </tr>
-
-                <% }) %>
-
-                <% }else{ %>
-
-                <tr>
-
-                    <td colspan="8" class="text-center">
-
-                        No Coupons Found
-
-                    </td>
-
-                </tr>
-
-                <% } %>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-
-    
-
-    <% if(totalPages>1){ %>
-
-    <div class="pagination">
-
-        <% if(currentPage>1){ %>
-
-            <a
-                href="?page=<%= currentPage-1 %>&search=<%= search %>&status=<%= status %>&sort=<%= sort %>"
-            >
-                Prev
-            </a>
-
-        <% } %>
-
-        <% for(let i=1;i<=totalPages;i++){ %>
-
-            <a
-                href="?page=<%= i %>&search=<%= search %>&status=<%= status %>&sort=<%= sort %>"
-                class="<%= currentPage===i?'active':'' %>"
-            >
-
-                <%= i %>
-
-            </a>
-
-        <% } %>
-
-        <% if(currentPage<totalPages){ %>
-
-            <a
-                href="?page=<%= currentPage+1 %>&search=<%= search %>&status=<%= status %>&sort=<%= sort %>"
-            >
-                Next
-            </a>
-
-        <% } %>
-
-    </div>
-
-    <% } %>
-
-</div>
-</div>
-<script>
-
-document.querySelectorAll(".toggleCoupon").forEach(button=>{
-
-button.addEventListener("click",async()=>{
-
-const id=button.dataset.id;
-
-const result=await Swal.fire({
-
-title:"Are you sure?",
-
-icon:"warning",
-
-showCancelButton:true,
-
-confirmButtonText:"Yes"
-
-});
-
-if(!result.isConfirmed) return;
-
-const response=await fetch(`/admin/coupons/toggle/${id}`,{
-
-method:"PATCH"
-
-});
-
-const data=await response.json();
-
-if(data.success){
-
-Swal.fire({
-
-icon:"success",
-
-title:data.message,
-
-timer:1200,
-
-showConfirmButton:false
-
-}).then(()=>{
-
-location.reload();
-
-});
-
-}else{
-
-Swal.fire({
-
-icon:"error",
-
-title:data.message
-
-});
-
-}
-
-});
-
-});
-
-</script>
-<script>document.querySelectorAll(".action-btn").forEach(button=>{
-
-    button.addEventListener("click",(e)=>{
-
-        e.stopPropagation();
-
-        document.querySelectorAll(".action-dropdown").forEach(drop=>{
-
-            if(drop!==button.parentElement){
-                drop.classList.remove("active");
-            }
-
-        });
-
-        button.parentElement.classList.toggle("active");
-
-    });
-
-});
-
-document.addEventListener("click",()=>{
-
-    document.querySelectorAll(".action-dropdown").forEach(drop=>{
-
-        drop.classList.remove("active");
-
-    });
-
-});
-</script>
+            });
+        </script>
 </body>
+
 </html>

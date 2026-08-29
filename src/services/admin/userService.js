@@ -14,25 +14,11 @@ const getUserById = async (id) => {
 };
 
 const blockUser = async (id) => {
-  return await User.findByIdAndUpdate(
-    id,
-    { status: "blocked" },
-    { new: true }
-  );
+  return await User.findByIdAndUpdate(id, { status: "blocked" }, { new: true });
 };
 
 const unblockUser = async (id) => {
-  return await User.findByIdAndUpdate(
-    id,
-    { status: "active" },
-    { new: true }
-  );
+  return await User.findByIdAndUpdate(id, { status: "active" }, { new: true });
 };
 
-export {
-  createUser,
-  getAllUsers,
-  getUserById,
-  blockUser,
-  unblockUser,
-};
+export { createUser, getAllUsers, getUserById, blockUser, unblockUser };

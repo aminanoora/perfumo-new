@@ -1,108 +1,88 @@
 import mongoose from "mongoose";
 
 const walletTransactionSchema = new mongoose.Schema({
+  type: {
+    type: String,
 
-    type:{
+    enum: ["credit", "debit"],
 
-        type:String,
+    required: true,
+  },
 
-        enum:["credit","debit"],
+  amount: {
+    type: Number,
 
-        required:true
+    required: true,
 
-    },
+    min: 0,
+  },
 
-    amount:{
+  reason: {
+    type: String,
 
-        type:Number,
+    enum: [
+      "Order Refund",
+      "Order Payment",
+      "Referral Bonus",
+      "Wallet Recharge",
+      "Admin Credit",
+      "Admin Debit",
+      "Order Cancelled",
+      "Return Refund",
+    ],
 
-        required:true,
+    required: true,
+  },
 
-        min:0
+  order: {
+    type: mongoose.Schema.Types.ObjectId,
 
-    },
+    ref: "Order",
 
-    reason:{
+    default: null,
+  },
 
-        type:String,
+  description: {
+    type: String,
 
-        enum:[
-            "Order Refund",
-            "Order Payment",
-            "Referral Bonus",
-            "Wallet Recharge",
-            "Admin Credit",
-            "Admin Debit",
-            "Order Cancelled",
-            "Return Refund" 
-        ],
+    trim: true,
 
-        required:true
+    default: "",
+  },
 
-    },
+  createdAt: {
+    type: Date,
 
-    order:{
-
-        type:mongoose.Schema.Types.ObjectId,
-
-        ref:"Order",
-
-        default:null
-
-    },
-
-    description:{
-
-        type:String,
-
-        trim:true,
-
-        default:""
-
-    },
-
-    createdAt:{
-
-        type:Date,
-
-        default:Date.now
-
-    }
-
+    default: Date.now,
+  },
 });
 
-const walletSchema = new mongoose.Schema({
+const walletSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
 
-    user:{
+      ref: "User",
 
-        type:mongoose.Schema.Types.ObjectId,
+      required: true,
 
-        ref:"User",
-
-        required:true,
-
-        unique:true
-
+      unique: true,
     },
 
-    balance:{
+    balance: {
+      type: Number,
 
-        type:Number,
+      default: 0,
 
-        default:0,
-
-        min:0
-
+      min: 0,
     },
 
-    transactions:[walletTransactionSchema]
+    transactions: [walletTransactionSchema],
+  },
 
-},
+  {
+    timestamps: true,
+  },
+);
 
-{
-
-    timestamps:true
-
-});
-
-export default mongoose.model("Wallet",walletSchema);
+export default mongoose.model("Wallet", walletSchema);

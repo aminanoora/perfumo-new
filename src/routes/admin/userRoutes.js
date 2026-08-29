@@ -4,8 +4,6 @@ import noCache from "../../middleware/noCache.js";
 import adminAuth from "../../middleware/adminAuth.js";
 const router = express.Router();
 
-
-router.get("/users", adminAuth,
-    noCache, getUsersPage);
+router.get("/users", adminAuth, noCache, getUsersPage);
 
 export default router;

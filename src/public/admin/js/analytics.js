@@ -14,44 +14,40 @@ const table = document.getElementById("salesTable");
 const pagination = document.getElementById("pagination");
 
 function toggleClearButton() {
-    clearBtn.style.display =
-        searchInput.value.trim() ? "flex" : "none";
+  clearBtn.style.display = searchInput.value.trim() ? "flex" : "none";
 }
 
 async function loadSales() {
+  const params = new URLSearchParams();
 
-    const params = new URLSearchParams();
+  params.append("page", page);
+  params.append("limit", limit);
+  params.append("search", searchInput.value.trim());
+  params.append("datePreset", filter.value);
 
-    params.append("page", page);
-    params.append("limit", limit);
-    params.append("search", searchInput.value.trim());
-    params.append("datePreset", filter.value);
+  if (filter.value === "custom") {
+    params.append("fromDate", fromDate.value);
+    params.append("toDate", toDate.value);
+  }
 
-    if (filter.value === "custom") {
-        params.append("fromDate", fromDate.value);
-        params.append("toDate", toDate.value);
-    }
+  const response = await fetch(`/admin/analytics/data?${params.toString()}`);
 
-    const response = await fetch(`/admin/analytics/data?${params.toString()}`);
+  const data = await response.json();
 
-    const data = await response.json();
+  if (!data.success) {
+    Swal.fire("Error", data.message, "error");
+    return;
+  }
 
-    if (!data.success) {
-        Swal.fire("Error", data.message, "error");
-        return;
-    }
-
-    renderTable(data.sales);
-    renderPagination(data.totalPages);
+  renderTable(data.sales);
+  renderPagination(data.totalPages);
 }
 
 function renderTable(rows) {
+  table.innerHTML = "";
 
-    table.innerHTML = "";
-
-    if (!rows.length) {
-
-        table.innerHTML = `
+  if (!rows.length) {
+    table.innerHTML = `
         <tr>
             <td colspan="5" class="empty-data">
                 No Sales Found
@@ -59,21 +55,21 @@ function renderTable(rows) {
         </tr>
         `;
 
-        return;
+    return;
+  }
 
-    }
-
-    rows.forEach(order => {
-
-       const products = order.products
-    .map(name => `
+  rows.forEach((order) => {
+    const products = order.products
+      .map(
+        (name) => `
         <div class="ordered-product">
             ${name}
         </div>
-    `)
-    .join("");
+    `,
+      )
+      .join("");
 
-        table.innerHTML += `
+    table.innerHTML += `
 
         <tr>
 
@@ -101,102 +97,85 @@ function renderTable(rows) {
         </tr>
 
         `;
-
-    });
-
+  });
 }
 function renderPagination(totalPages) {
+  pagination.innerHTML = "";
 
-    pagination.innerHTML = "";
-
-    for (let i = 1; i <= totalPages; i++) {
-
-        pagination.innerHTML += `
+  for (let i = 1; i <= totalPages; i++) {
+    pagination.innerHTML += `
         <button
             class="${page === i ? "active" : ""}"
             onclick="changePage(${i})">
             ${i}
         </button>
         `;
-    }
+  }
 }
 
 window.changePage = function (current) {
-
-    page = current;
-    loadSales();
+  page = current;
+  loadSales();
 };
 
 searchInput.addEventListener("input", () => {
+  toggleClearButton();
 
-    toggleClearButton();
+  clearTimeout(timer);
 
-    clearTimeout(timer);
-
-    timer = setTimeout(() => {
-
-        page = 1;
-        loadSales();
-
-    }, 300);
+  timer = setTimeout(() => {
+    page = 1;
+    loadSales();
+  }, 300);
 });
 
 clearBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  searchInput.focus();
 
-    searchInput.value = "";
-    searchInput.focus();
+  toggleClearButton();
 
-    toggleClearButton();
-
-    page = 1;
-    loadSales();
+  page = 1;
+  loadSales();
 });
 
 filter.addEventListener("change", () => {
+  customDate.style.display = filter.value === "custom" ? "flex" : "none";
 
-    customDate.style.display =
-        filter.value === "custom" ? "flex" : "none";
-
-    page = 1;
-    loadSales();
+  page = 1;
+  loadSales();
 });
 
 fromDate.addEventListener("change", () => {
-
-    page = 1;
-    loadSales();
+  page = 1;
+  loadSales();
 });
 
 toDate.addEventListener("change", () => {
-
-    page = 1;
-    loadSales();
+  page = 1;
+  loadSales();
 });
 
 document.getElementById("pdfBtn").addEventListener("click", () => {
+  const params = new URLSearchParams({
+    search: searchInput.value.trim(),
+    datePreset: filter.value,
+    fromDate: fromDate.value,
+    toDate: toDate.value,
+  });
 
-    const params = new URLSearchParams({
-        search: searchInput.value.trim(),
-        datePreset: filter.value,
-        fromDate: fromDate.value,
-        toDate: toDate.value
-    });
-
-    window.location =
-        `/admin/analytics/export/pdf?${params.toString()}`;
+  window.location = `/admin/analytics/export/pdf?${params.toString()}`;
 });
 
 document.getElementById("excelBtn").addEventListener("click", () => {
+  const params = new URLSearchParams({
+    search: searchInput.value.trim(),
+    datePreset: filter.value,
+    fromDate: fromDate.value,
+    toDate: toDate.value,
+  });
 
-    const params = new URLSearchParams({
-        search: searchInput.value.trim(),
-        datePreset: filter.value,
-        fromDate: fromDate.value,
-        toDate: toDate.value
-    });
-
-    window.location =
-        `/admin/analytics/export/excel?${params.toString()}`;
+  window.location = `/admin/analytics/export/excel?${params.toString()}`;
 });
 
 toggleClearButton();

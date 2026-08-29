@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,305 +9,307 @@
 
     <link rel="stylesheet" href="/user/css/orders.css">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="/user/css/headers.css">
     <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
- <link rel="stylesheet" href="/user/css/headers.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap" rel="stylesheet">
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Volkhov:wght@700&display=swap"
+        rel="stylesheet">
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<section class="profile-section">
+        <section class="profile-section">
 
-    <div class="profile-container">
+            <div class="profile-container">
 
-        <div class="sidebar">
+                <div class="sidebar">
 
-            <div class="user-box">
+                    <div class="user-box">
 
-                <div class="user-avatar">
-                    <%= user.firstName.charAt(0) %>
-                </div>
+                        <div class="user-avatar">
+                            <%= user.firstName.charAt(0) %>
+                        </div>
 
-                <div class="user-info">
-                    <h3>
-                        <%= user.firstName %> <%= user.lastName %>
-                    </h3>
-                </div>
-
-            </div>
-
-            <div class="sidebar-menu">
-
-                <a href="/profile/orders" class="active">
-                  <i class="fa-solid fa-cube"></i>
-                    My Orders
-                </a>
-
-                <a href="/wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    Wishlist
-                </a>
-
-                <a href="/profile/address">
-                    <i class="fa-solid fa-location-dot"></i>
-                    Addresses
-                </a>
-
-                <a href="/coupons">
-                    <i class="fa-solid fa-ticket"></i>
-                    Coupons
-                </a>
-
-                <a href="/wallet">
-                    <i class="fa-solid fa-wallet"></i>
-                    My Wallet
-                </a>
-
-                <a href="/refer">
-                    <i class="fa-solid fa-gift"></i>
-                    Refer & Earn
-                </a>
-
-                <a href="/profile" >
-                    <i class="fa-regular fa-user"></i>
-                    Profile Settings
-                </a>
-
-            </div>
-
-            <a href="/logout" class="logout-btn">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                Logout
-            </a>
-
-        </div>
-
-    <section class="profile-orders">
-
-    <div class="orders-header">
-
-        <h2>My Orders</h2>
-
-        <div class="order-sort">
-
-           
- <form action="/profile/orders" method="GET">
- <label>Sort By</label>
-    <select name="sort" onchange="this.form.submit()">
-        <option value="newest" <%= sort==="newest" ? "selected" : "" %>>Newest</option>
-        <option value="oldest" <%= sort==="oldest" ? "selected" : "" %>>Oldest</option>
-        <option value="high" <%= sort==="high" ? "selected" : "" %>>Price High-Low</option>
-        <option value="low" <%= sort==="low" ? "selected" : "" %>>Price Low-High</option>
-    </select>
-
-</form>
-
-        </div>
-
-    </div>
-
-    <% if(orders.length){ %>
-
-        <% orders.forEach(order => { %>
-
-        <div class="order-card">
-
-            <div class="order-top">
-
-                <div>
-
-                    <p class="label">Order ID</p>
-
-                    <h4>#<%= order.orderId %></h4>
-
-                </div>
-
-                <div>
-
-                    <p class="label">Placed On</p>
-
-                    <h4>
-                        <%= new Date(order.createdAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) %>
-                    </h4>
-
-                </div>
-
-                <div>
-
-                    <p class="label">Payment</p>
-
-                    <h4><%= order.paymentMethod %></h4>
-
-                </div>
-
-                <div>
-
-                    <p class="label">Payment Status</p>
-
-                    <span class="payment-badge <%= order.paymentStatus.toLowerCase() %>">
-                        <%= order.paymentStatus %>
-                    </span>
-
-                </div>
-
-                <div>
-
-                    <p class="label">Order Status</p>
-
-                    <span class="status-badge <%= order.orderStatus.toLowerCase() %>">
-                        <%= order.orderStatus %>
-                    </span>
-
-                </div>
-
-            </div>
-
-            <hr>
-
-            <div class="order-middle">
-
-                <div class="product-preview">
-
-                    <img
-                        src="/admin/uploads/products/<%= order.items[0].variant.images[0] %>"
-                        alt="Product">
-
-                    <div>
-
-                        <h4>
-                            <%= order.items[0].product.name %>
-                        </h4>
-
-                        <% if(order.items.length>1){ %>
-
-                        <p>
-                            + <%= order.items.length-1 %> more item(s)
-                        </p>
-
-                        <% } %>
+                        <div class="user-info">
+                            <h3>
+                                <%= user.firstName %>
+                                    <%= user.lastName %>
+                            </h3>
+                        </div>
 
                     </div>
 
-                </div>
+                    <div class="sidebar-menu">
 
-                <div class="order-summary">
+                        <a href="/profile/orders" class="active">
+                            <i class="fa-solid fa-cube"></i>
+                            My Orders
+                        </a>
 
-                    <div>
+                        <a href="/wishlist">
+                            <i class="fa-regular fa-heart"></i>
+                            Wishlist
+                        </a>
 
-                        <span>Total</span>
+                        <a href="/profile/address">
+                            <i class="fa-solid fa-location-dot"></i>
+                            Addresses
+                        </a>
 
-                        <h3>
-                            ₹<%= order.grandTotal.toLocaleString() %>
-                        </h3>
+                        <a href="/coupons">
+                            <i class="fa-solid fa-ticket"></i>
+                            Coupons
+                        </a>
+
+                        <a href="/wallet">
+                            <i class="fa-solid fa-wallet"></i>
+                            My Wallet
+                        </a>
+
+                        <a href="/refer">
+                            <i class="fa-solid fa-gift"></i>
+                            Refer & Earn
+                        </a>
+
+                        <a href="/profile">
+                            <i class="fa-regular fa-user"></i>
+                            Profile Settings
+                        </a>
 
                     </div>
 
-                    <div>
-
-                        <span>Items</span>
-
-                        <h3>
-                            <%= order.items.length %>
-                        </h3>
-
-                    </div>
+                    <a href="/logout" class="logout-btn">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        Logout
+                    </a>
 
                 </div>
 
+                <section class="profile-orders">
+
+                    <div class="orders-header">
+
+                        <h2>My Orders</h2>
+
+                        <div class="order-sort">
+
+
+                            <form action="/profile/orders" method="GET">
+                                <label>Sort By</label>
+                                <select name="sort" onchange="this.form.submit()">
+                                    <option value="newest" <%=sort==="newest" ? "selected" : "" %>>Newest</option>
+                                    <option value="oldest" <%=sort==="oldest" ? "selected" : "" %>>Oldest</option>
+                                    <option value="high" <%=sort==="high" ? "selected" : "" %>>Price High-Low</option>
+                                    <option value="low" <%=sort==="low" ? "selected" : "" %>>Price Low-High</option>
+                                </select>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                    <% if(orders.length){ %>
+
+                        <% orders.forEach(order=> { %>
+
+                            <div class="order-card">
+
+                                <div class="order-top">
+
+                                    <div>
+
+                                        <p class="label">Order ID</p>
+
+                                        <h4>#<%= order.orderId %>
+                                        </h4>
+
+                                    </div>
+
+                                    <div>
+
+                                        <p class="label">Placed On</p>
+
+                                        <h4>
+                                            <%= new
+                                                Date(order.createdAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})
+                                                %>
+                                        </h4>
+
+                                    </div>
+
+                                    <div>
+
+                                        <p class="label">Payment</p>
+
+                                        <h4>
+                                            <%= order.paymentMethod %>
+                                        </h4>
+
+                                    </div>
+
+                                    <div>
+
+                                        <p class="label">Payment Status</p>
+
+                                        <span class="payment-badge <%= order.paymentStatus.toLowerCase() %>">
+                                            <%= order.paymentStatus %>
+                                        </span>
+
+                                    </div>
+
+                                    <div>
+
+                                        <p class="label">Order Status</p>
+
+                                        <span class="status-badge <%= order.orderStatus.toLowerCase() %>">
+                                            <%= order.orderStatus %>
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                                <hr>
+
+                                <div class="order-middle">
+
+                                    <div class="product-preview">
+
+                                        <img src="/admin/uploads/products/<%= order.items[0].variant.images[0] %>"
+                                            alt="Product">
+
+                                        <div>
+
+                                            <h4>
+                                                <%= order.items[0].product.name %>
+                                            </h4>
+
+                                            <% if(order.items.length>1){ %>
+
+                                                <p>
+                                                    + <%= order.items.length-1 %> more item(s)
+                                                </p>
+
+                                                <% } %>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="order-summary">
+
+                                        <div>
+
+                                            <span>Total</span>
+
+                                            <h3>
+                                                ₹<%= order.grandTotal.toLocaleString() %>
+                                            </h3>
+
+                                        </div>
+
+                                        <div>
+
+                                            <span>Items</span>
+
+                                            <h3>
+                                                <%= order.items.length %>
+                                            </h3>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="order-actions">
+
+                                    <a href="/profile/orders/<%= order._id %>" class="btn-primary">
+
+                                        View Details
+
+                                    </a>
+
+
+
+                                    <% if(order.orderStatus==="Shipped" ){ %>
+
+                                        <button class="btn-secondary">
+
+                                            Track Order
+
+                                        </button>
+
+                                        <% } %>
+
+                                            <% if(order.orderStatus==="Cancelled" ){ %>
+
+                                                <span class="status-badge cancelled">
+
+                                                    Order Cancelled
+
+                                                </span>
+
+                                                <% } %>
+
+
+
+                                </div>
+
+                            </div>
+
+                            <% }) %>
+
+                                <% } else { %>
+
+                                    <div class="empty-orders">
+
+                                        <h3>No Orders Yet</h3>
+
+
+                                        <a href="/shop" class="btn-primary">
+
+                                            Continue Shopping
+
+                                        </a>
+
+                                    </div>
+
+                                    <% } %>
+
+                </section>
+
             </div>
 
-            <div class="order-actions">
+        </section>
 
-                <a
-                    href="/profile/orders/<%= order._id %>"
-                    class="btn-primary">
+        <footer class="profile-footer">
 
-                    View Details
+            <div class="footer-logo">
+                PERFUMO
+            </div>
 
-                </a>
+            <div class="footer-links">
 
-              
-
-                <% if(order.orderStatus==="Shipped"){ %>
-
-                <button
-                    class="btn-secondary">
-
-                    Track Order
-
-                </button>
-
-                <% } %>
-
-                <% if(order.orderStatus==="Cancelled"){ %>
-
-<span class="status-badge cancelled">
-
-Order Cancelled
-
-</span>
-
-<% } %>
-
-               
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="/products">Products</a>
+                <a href="/pages">Pages</a>
 
             </div>
 
-        </div>
+            <p>
+                Copyright © 2025 PERFUMO . All Rights Reserved.
+            </p>
 
-        <% }) %>
+        </footer>
 
-    <% } else { %>
-
-    <div class="empty-orders">
-
-        <h3>No Orders Yet</h3>
-
-
-        <a
-            href="/shop"
-            class="btn-primary">
-
-            Continue Shopping
-
-        </a>
-
-    </div>
-
-    <% } %>
-
-</section>
-
-    </div>
-
-</section>
-
-<footer class="profile-footer">
-
-    <div class="footer-logo">
-        PERFUMO
-    </div>
-
-    <div class="footer-links">
-
-        <a href="/">Home</a>
-        <a href="/shop">Shop</a>
-        <a href="/products">Products</a>
-        <a href="/pages">Pages</a>
-
-    </div>
-
-    <p>
-        Copyright © 2025 PERFUMO . All Rights Reserved.
-    </p>
-
-</footer>
-
-<script src="/user/js/block-check.js"></script>
-<script src="/user/js/orders.js"></script>
+        <script src="/user/js/block-check.js"></script>
+        <script src="/user/js/orders.js"></script>
 </body>
+
 </html>

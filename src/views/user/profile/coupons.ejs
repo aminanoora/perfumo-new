@@ -1,305 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>My Coupons</title>
+    <title>My Coupons</title>
 
- <link rel="stylesheet" href="/user/css/headers.css">
-<link rel="stylesheet" href="/user/css/coupons.css">
+    <link rel="stylesheet" href="/user/css/headers.css">
+    <link rel="stylesheet" href="/user/css/coupons.css">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<div class="profile-page">
+        <div class="profile-page">
 
-   <div class="sidebar">
+            <div class="sidebar">
 
-            <div class="user-box">
+                <div class="user-box">
 
-                <div class="user-avatar">
-                    <%= user.firstName.charAt(0) %>
+                    <div class="user-avatar">
+                        <%= user.firstName.charAt(0) %>
+                    </div>
+
+                    <div class="user-info">
+                        <h3>
+                            <%= user.firstName %>
+                                <%= user.lastName %>
+                        </h3>
+                    </div>
+
                 </div>
 
-                <div class="user-info">
-                    <h3>
-                        <%= user.firstName %> <%= user.lastName %>
-                    </h3>
+                <div class="sidebar-menu">
+
+                    <a href="/profile/orders">
+                        <i class="fa-solid fa-cube"></i>
+                        My Orders
+                    </a>
+
+                    <a href="/wishlist">
+                        <i class="fa-regular fa-heart"></i>
+                        Wishlist
+                    </a>
+
+                    <a href="/profile/address">
+                        <i class="fa-solid fa-location-dot"></i>
+                        Addresses
+                    </a>
+
+                    <a href="/coupons" class="active">
+                        <i class="fa-solid fa-ticket"></i>
+                        Coupons
+                    </a>
+
+                    <a href="/wallet">
+                        <i class="fa-solid fa-wallet"></i>
+                        My Wallet
+                    </a>
+
+                    <a href="/refer">
+                        <i class="fa-solid fa-gift"></i>
+                        Refer & Earn
+                    </a>
+
+                    <a href="/profile">
+                        <i class="fa-regular fa-user"></i>
+                        Profile Settings
+                    </a>
+
                 </div>
 
-            </div>
-
-            <div class="sidebar-menu">
-
-                <a href="/profile/orders">
-                    <i class="fa-solid fa-cube"></i>
-                    My Orders
-                </a>
-
-                <a href="/wishlist">
-                    <i class="fa-regular fa-heart"></i>
-                    Wishlist
-                </a>
-
-                <a href="/profile/address">
-                    <i class="fa-solid fa-location-dot"></i>
-                    Addresses
-                </a>
-
-                <a href="/coupons" class="active">
-                    <i class="fa-solid fa-ticket"></i>
-                    Coupons
-                </a>
-
-                <a href="/wallet">
-                    <i class="fa-solid fa-wallet"></i>
-                    My Wallet
-                </a>
-
-                <a href="/refer">
-                    <i class="fa-solid fa-gift"></i>
-                    Refer & Earn
-                </a>
-
-                <a href="/profile" >
-                    <i class="fa-regular fa-user"></i>
-                    Profile Settings
+                <a href="/logout" class="logout-btn">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Logout
                 </a>
 
             </div>
 
-            <a href="/logout" class="logout-btn">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                Logout
-            </a>
+            <div class="profile-content">
 
-        </div>
+                <div class="page-header">
 
-    <div class="profile-content">
+                    <div>
 
-        <div class="page-header">
+                        <h2>Available Coupons</h2>
 
-            <div>
-
-                <h2>Available Coupons</h2>
-
-                <p>Use these coupons while placing your order.</p>
-
-            </div>
-
-        </div>
-
-        <% if(coupons.length === 0){ %>
-
-            <div class="empty-state">
-
-                <i class="fa-solid fa-ticket"></i>
-
-                <h3>No Coupons Available</h3>
-
-                <p>There are no active coupons at the moment.</p>
-
-                <a href="/shop" class="shop-btn">
-                    Continue Shopping
-                </a>
-
-            </div>
-
-        <% }else{ %>
-
-        <div class="coupon-grid">
-
-            <% coupons.forEach(coupon=>{ %>
-
-                <div class="coupon-card">
-
-                    <div class="coupon-top">
-
-                        <div>
-
-                            <span class="coupon-label">
-                                Coupon Code
-                            </span>
-
-                            <h3 class="coupon-code">
-                                <%= coupon.code %>
-                            </h3>
-
-                        </div>
-
-                        <span class="coupon-status">
-                            Available
-                        </span>
+                        <p>Use these coupons while placing your order.</p>
 
                     </div>
 
-                    <p class="coupon-description">
-                        <%= coupon.description %>
-                    </p>
+                </div>
 
-                    <div class="discount-box">
+                <% if(coupons.length===0){ %>
 
-                        <% if(coupon.discountType==="percentage"){ %>
+                    <div class="empty-state">
 
-                            <h2>
-                                <%= coupon.discount %>% OFF
-                            </h2>
+                        <i class="fa-solid fa-ticket"></i>
 
-                            <p>
-                                Max Discount ₹<%= coupon.maximumDiscount %>
-                            </p>
+                        <h3>No Coupons Available</h3>
 
-                        <% }else{ %>
-
-                            <h2>
-                                ₹<%= coupon.discount %> OFF
-                            </h2>
-
-                        <% } %>
-
-                    </div>
-
-                    <div class="coupon-details">
-
-                        <div class="detail">
-
-                            <span>Minimum Purchase</span>
-
-                            <strong>
-                                ₹<%= coupon.minimumPurchase %>
-                            </strong>
-
-                        </div>
-
-                        <div class="detail">
-
-                            <span>Expires On</span>
-
-                            <strong>
-
-                                <%= new Date(coupon.validUntil).toLocaleDateString("en-IN",{
-                                    day:"2-digit",
-                                    month:"short",
-                                    year:"numeric"
-                                }) %>
-
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                    <div class="coupon-actions">
-
-                        <button
-                            class="copy-btn"
-                            data-code="<%= coupon.code %>">
-
-                            <i class="fa-regular fa-copy"></i>
-
-                            Copy Code
-
-                        </button>
+                        <p>There are no active coupons at the moment.</p>
 
                         <a href="/shop" class="shop-btn">
-
-                            Shop Now
-
+                            Continue Shopping
                         </a>
 
                     </div>
 
-                </div>
+                    <% }else{ %>
 
-            <% }) %>
+                        <div class="coupon-grid">
+
+                            <% coupons.forEach(coupon=>{ %>
+
+                                <div class="coupon-card">
+
+                                    <div class="coupon-top">
+
+                                        <div>
+
+                                            <span class="coupon-label">
+                                                Coupon Code
+                                            </span>
+
+                                            <h3 class="coupon-code">
+                                                <%= coupon.code %>
+                                            </h3>
+
+                                        </div>
+
+                                        <span class="coupon-status">
+                                            Available
+                                        </span>
+
+                                    </div>
+
+                                    <p class="coupon-description">
+                                        <%= coupon.description %>
+                                    </p>
+
+                                    <div class="discount-box">
+
+                                        <% if(coupon.discountType==="percentage" ){ %>
+
+                                            <h2>
+                                                <%= coupon.discount %>% OFF
+                                            </h2>
+
+                                            <p>
+                                                Max Discount ₹<%= coupon.maximumDiscount %>
+                                            </p>
+
+                                            <% }else{ %>
+
+                                                <h2>
+                                                    ₹<%= coupon.discount %> OFF
+                                                </h2>
+
+                                                <% } %>
+
+                                    </div>
+
+                                    <div class="coupon-details">
+
+                                        <div class="detail">
+
+                                            <span>Minimum Purchase</span>
+
+                                            <strong>
+                                                ₹<%= coupon.minimumPurchase %>
+                                            </strong>
+
+                                        </div>
+
+                                        <div class="detail">
+
+                                            <span>Expires On</span>
+
+                                            <strong>
+
+                                                <%= new Date(coupon.validUntil).toLocaleDateString("en-IN",{
+                                                    day:"2-digit", month:"short", year:"numeric" }) %>
+
+                                            </strong>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="coupon-actions">
+
+                                        <button class="copy-btn" data-code="<%= coupon.code %>">
+
+                                            <i class="fa-regular fa-copy"></i>
+
+                                            Copy Code
+
+                                        </button>
+
+                                        <a href="/shop" class="shop-btn">
+
+                                            Shop Now
+
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                                <% }) %>
+
+                        </div>
+
+                        <% } %>
+
+            </div>
 
         </div>
+        <footer class="profile-footer">
 
-        <% } %>
+            <div class="footer-logo">
+                PERFUMO
+            </div>
 
-    </div>
+            <div class="footer-links">
 
-</div>
-<footer class="profile-footer">
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="/products">Products</a>
+                <a href="/pages">Pages</a>
 
-    <div class="footer-logo">
-        PERFUMO
-    </div>
+            </div>
 
-    <div class="footer-links">
+            <p>
+                Copyright © 2025 PERFUMO . All Rights Reserved.
+            </p>
 
-        <a href="/">Home</a>
-        <a href="/shop">Shop</a>
-        <a href="/products">Products</a>
-        <a href="/pages">Pages</a>
+        </footer>
 
-    </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <p>
-        Copyright © 2025 PERFUMO . All Rights Reserved.
-    </p>
+        <script>
 
-</footer>
+            document.querySelectorAll(".copy-btn").forEach(button => {
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                button.addEventListener("click", async () => {
 
-<script>
+                    const code = button.dataset.code;
 
-document.querySelectorAll(".copy-btn").forEach(button=>{
+                    await navigator.clipboard.writeText(code);
 
-    button.addEventListener("click",async()=>{
+                    Swal.fire({
 
-        const code=button.dataset.code;
+                        icon: "success",
 
-        await navigator.clipboard.writeText(code);
+                        title: "Copied",
 
-        Swal.fire({
+                        text: `${code} copied to clipboard.`,
 
-            icon:"success",
+                        timer: 1500,
 
-            title:"Copied",
+                        showConfirmButton: false
 
-            text:`${code} copied to clipboard.`,
+                    });
 
-            timer:1500,
+                });
 
-            showConfirmButton:false
+            });
 
-        });
+            if (profileToggle) {
 
-    });
+                profileToggle.addEventListener('click', (e) => {
 
-});
+                    e.preventDefault();
 
-if(profileToggle){
+                    profileMenu.classList.toggle('show');
+                });
 
-    profileToggle.addEventListener('click', (e) => {
+                document.addEventListener('click', (e) => {
 
-        e.preventDefault();
-
-        profileMenu.classList.toggle('show');
-    });
-
-    document.addEventListener('click', (e) => {
-
-        if(
-            !profileToggle.contains(e.target) &&
-            !profileMenu.contains(e.target)
-        ){
-            profileMenu.classList.remove('show');
-        }
-    });
-}
+                    if (
+                        !profileToggle.contains(e.target) &&
+                        !profileMenu.contains(e.target)
+                    ) {
+                        profileMenu.classList.remove('show');
+                    }
+                });
+            }
 
 
-</script>
+        </script>
 
 </body>
+
 </html>
