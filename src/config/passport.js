@@ -11,7 +11,7 @@ passport.use(
 
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 
-      callbackURL: "/auth/google/callback",
+      callbackURL: "https://aminanoora.online/auth/google/callback",
     },
 
     async (accessToken, refreshToken, profile, done) => {
