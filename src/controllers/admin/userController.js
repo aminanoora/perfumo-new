@@ -66,6 +66,7 @@ export const getUsersPage = async (req, res) => {
     for (const user of users) {
       user.ordersCount = await Order.countDocuments({
         user: user._id,
+        itemStatus:"cancelled"
       });
     }
 
