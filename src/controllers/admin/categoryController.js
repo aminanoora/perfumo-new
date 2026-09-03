@@ -2,47 +2,15 @@ import Category from "../../models/Category.js";
 import Order from "../../models/Order.js";
 import Product from "../../models/Product.js";
 import mongoose from "mongoose";
+import * as categoryService from "../../services/admin/categoryService.js";
 
 export const getCategoriesPage = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 5;
-    const skip = (page - 1) * limit;
-
-    const search = req.query.search?.trim() || "";
-    const sort = req.query.sort || "desc";
-
-    const query = { isDeleted: false };
-
-    if (search) {
-      query.name = {
-        $regex: search,
-        $options: "i",
-      };
-    }
-
-    const sortOption = {
-      createdAt: sort === "asc" ? 1 : -1,
-    };
-
-    const totalCategories = await Category.countDocuments(query);
-
-    const categories = await Category.find(query)
-      .sort(sortOption)
-      .skip(skip)
-      .limit(limit);
-
-    for (const category of categories) {
-      category.productCount = await Product.countDocuments({
-        category: category._id,
-      });
-
-      const brands = await Product.distinct("brand", {
-        category: category._id,
-      });
-
-      category.brandCount = brands.length;
-    }
+   const { categories, totalPages, page, search, sort } = await categoryService.getCategoriesService({
+      page: req.query.page,
+      search: req.query.search,
+      sort: req.query.sort,
+    });
 
     const message = req.session.message;
 
@@ -51,7 +19,7 @@ export const getCategoriesPage = async (req, res) => {
     res.render("admin/categories/categories", {
       categories,
       page,
-      totalPages: Math.ceil(totalCategories / limit),
+      totalPages,
       search,
       sort,
       active: "category",
