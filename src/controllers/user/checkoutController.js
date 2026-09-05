@@ -1,7 +1,7 @@
 import Address from "../../models/Address.js";
 import Cart from "../../models/Cart.js";
 import Coupon from "../../models/Coupon.js";
-import Product from "../../models/Product.js";
+
 import Variant from "../../models/Variant.js";
 import Order from "../../models/Order.js";
 import Wallet from "../../models/Wallet.js";
@@ -367,6 +367,7 @@ export const removeCoupon = async (req, res) => {
 };
 
 export const placeOrder = async (req, res) => {
+  const updatedVariants = [];
   try {
     const userId = req.session.user.id;
 
@@ -432,8 +433,6 @@ export const placeOrder = async (req, res) => {
 
       return res.redirect("/checkout");
     }
-
-    const updatedVariants = [];
 
     for (const item of cart.items) {
       const updatedVariant = await Variant.findOneAndUpdate(
@@ -898,21 +897,7 @@ export const verifyPayment = async (req, res) => {
   }
 };
 
-export const applyReferral = async (req, res) => {
-  try {
-    const { code } = req.body;
 
-    res.json({
-      success: true,
-
-      message: "Referral Applied",
-    });
-  } catch (error) {
-    res.json({
-      success: false,
-    });
-  }
-};
 
 export const loadOrderSuccess = async (req, res) => {
   try {

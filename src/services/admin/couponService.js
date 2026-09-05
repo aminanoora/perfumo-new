@@ -62,7 +62,7 @@ export const getCoupons = async (query) => {
     filter.isActive = false;
   }
 
-  let sortOption = {};
+  let sortOption ;
 
   switch (sort) {
     case "oldest":

@@ -3,6 +3,7 @@ import User from "../../models/User.js";
 import { sendOTP } from "../../services/mailService.js";
 import Wallet from "../../models/Wallet.js";
 import generateReferralCode from "../../util/generateReferralCode.js";
+import Referral from "../../models/Refferal.js";
 
 export const loadSignup = (req, res) => {
   res.render("user/auth/signup", {

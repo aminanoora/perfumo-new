@@ -53,7 +53,7 @@ export const getBrandsPage = async ({
 };
 
 
-export const addBrand  = async({name ,slug , description})=>{
+export const addBrand  = async({name ,slug , description,file})=>{
   const brandName = name.trim();
   const brandSlug = slug.trim().toLowerCase();
   const nameRegex =  /^[A-Za-z\s.'&-]+$/;
@@ -91,7 +91,7 @@ export const addBrand  = async({name ,slug , description})=>{
       throw new Error("Slug already exists.")
     }
 
-    const logo = file?  "/admin/uploads/brands/"+ req.file.filename : "";
+    const logo = file?  "/admin/uploads/brands/"+ file.filename : "";
 
     const brand = new Brand({
           name: brandName,

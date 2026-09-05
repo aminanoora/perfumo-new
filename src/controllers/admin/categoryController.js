@@ -1,7 +1,7 @@
 import Category from "../../models/Category.js";
-import Order from "../../models/Order.js";
+
 import Product from "../../models/Product.js";
-import mongoose from "mongoose";
+
 import * as categoryService from "../../services/admin/categoryService.js";
 
 export const getCategoriesPage = async (req, res) => {
@@ -192,7 +192,7 @@ export const updateCategory = async (req, res) => {
       image,
     });
 
-    const updated = await Category.findById(categoryId);
+   
 
     req.session.message = {
       type: "success",
@@ -366,7 +366,7 @@ export const deleteCategory = async (req, res) => {
         success: false,
         message: "Cannot delete category because products exist under it.",
       });
-      return res.redirect(`/admin/categories/${categoryId}`);
+   
     }
 
     await Category.findByIdAndUpdate(categoryId, {
@@ -379,13 +379,13 @@ export const deleteCategory = async (req, res) => {
       message: "Category deleted successfully.",
     });
 
-    res.redirect("/admin/categories");
+  
   } catch (error) {
     console.log(error);
     return res.json({
       success: false,
       message: "Something went wrong.",
     });
-    res.redirect("/admin/categories");
+   
   }
 };

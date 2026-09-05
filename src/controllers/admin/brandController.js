@@ -105,7 +105,7 @@ export const loadEditBrand = async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    return res.redirect(`/admin/brand/${brandId}`);
+    return res.redirect(`/admin/brand/${req.params.id}`);
   }
 };
 
@@ -114,7 +114,7 @@ export const updateBrand = async (req, res) => {
     const { name, slug, description, removeLogo } = req.body;
 
        await brandService.updateBrandBrand({
-      id: brandId,
+      id:req.params.id,
       name,
       slug,
       description,
@@ -127,13 +127,13 @@ export const updateBrand = async (req, res) => {
       text: "Brand updated successfully.",
     };
 
-    return res.redirect(`/admin/brand/edit/${brandId}`);
+    return res.redirect(`/admin/brand/edit/${req.params.id}`);
   } catch (error) {
     console.log(error);
 
     req.session.message = {
       type: "error",
-      text: "Unable to update brand."||error.message,
+      text: error.message||"Unable to update brand.",
     };
 
     return res.redirect(`/admin/brand/edit/${req.params.id}`);

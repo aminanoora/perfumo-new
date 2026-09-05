@@ -1,6 +1,4 @@
-import bcrypt from "bcryptjs";
 
-import Admin from "../../models/Admin.js";
 
 import * as  adminService from "../../services/admin/adminService.js";
 import * as dashboardService from "../../services/admin/dashboardService.js";

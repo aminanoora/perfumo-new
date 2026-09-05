@@ -4,7 +4,7 @@ dotenv.config();
 import express from "express";
 import path from "path";
 import session from "express-session";
-
+import logger from "./src/util/logger.js";
 import { fileURLToPath } from "url";
 
 import connectDB from "./src/config/db.js";
@@ -116,7 +116,7 @@ app.use((req, res) => {
   res.status(404).render("user/error/404");
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error("SERVER ERROR:", err);
 
   res.status(500).render("user/error/500");
@@ -137,3 +137,4 @@ const startServer = async () => {
 };
 
 startServer();
+

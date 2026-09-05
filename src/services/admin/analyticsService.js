@@ -8,7 +8,7 @@ function getDateFilter(datePreset, fromDate, toDate) {
   const today = new Date();
 
   switch (datePreset) {
-    case "today":
+    case "today": {
       const startToday = new Date();
       startToday.setHours(0, 0, 0, 0);
 
@@ -21,6 +21,7 @@ function getDateFilter(datePreset, fromDate, toDate) {
       };
 
       break;
+    }
 
     case "month":
       filter = {
@@ -42,8 +43,9 @@ function getDateFilter(datePreset, fromDate, toDate) {
       if (fromDate && toDate) {
         filter = {
           $gte: new Date(fromDate),
-
-          $lte: new Date(new Date(toDate).setHours(23, 59, 59, 999)),
+          $lte: new Date(
+            new Date(toDate).setHours(23, 59, 59, 999),
+          ),
         };
       }
 

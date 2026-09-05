@@ -1,7 +1,5 @@
 import User from "../../models/User.js";
 import Order from "../../models/Order.js";
-import Product from "../../models/Product.js";
-import Category from "../../models/Category.js";
 
 const loadDashboard = async () => {
   const totalUsers = await User.countDocuments();
@@ -452,7 +450,7 @@ async function getRevenueChart(filter = "month", start, end) {
     },
   ]);
 
-  let labels = [];
+  let labels ;
 
   if (filter === "today") {
     labels = revenue.map((r) => `${r._id.hour}:00`);
