@@ -1,5 +1,5 @@
 import Order from "../../models/Order.js";
-import User from "../../models/User.js";
+
 import Wallet from "../../models/Wallet.js";
 import Variant from "../../models/Variant.js";
 
@@ -503,10 +503,7 @@ export const approveReturn = async (req, res) => {
         i.itemStatus !== "Returned",
     );
 
-    const cancelledItems = order.items.filter(
-      (i) => i.itemStatus === "Cancelled",
-    );
-
+    
     const returnedItems = order.items.filter(
       (i) => i.itemStatus === "Returned",
     );

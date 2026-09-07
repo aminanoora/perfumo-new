@@ -22,7 +22,7 @@ router.post("/create-order", userAuth, checkoutController.createRazorpayOrder);
 
 router.post("/verify-payment", userAuth, checkoutController.verifyPayment);
 
-router.post("/apply-referral", userAuth, checkoutController.applyReferral);
+
 
 router.get(
   "/address/add-address",

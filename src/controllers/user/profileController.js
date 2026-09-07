@@ -11,7 +11,6 @@ import Cart from "../../models/Cart.js";
 
 import Order from "../../models/Order.js";
 
-import Product from "../../models/Product.js";
 
 import Variant from "../../models/Variant.js";
 
@@ -504,9 +503,7 @@ export const addAddress = async (req, res) => {
       });
     }
 
-    const addressCount = await Address.countDocuments({
-      userId: user._id,
-    });
+    
 
     const defaultValue = isDefault === "on";
 
@@ -815,7 +812,7 @@ export const loadOrderDetails = async (req, res) => {
         ["Shipped", "Out For Delivery", "Delivered"].includes(item.itemStatus),
       );
 
-    const hasCoupon = !!order.coupon;
+   
 
     const canReturnWholeOrder =
       activeItems.length > 0 &&
@@ -899,7 +896,7 @@ export const cancelItem = async (req, res) => {
     }
 
     const previousGrandTotal = roundMoney(order.grandTotal);
-    const originalShippingCharge = roundMoney(order.shippingCharge);
+
 
     item.itemStatus = "Cancelled";
     item.cancelReason = reason || "";

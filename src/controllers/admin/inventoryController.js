@@ -1,5 +1,8 @@
 import Variant from "../../models/Variant.js";
 import Product from "../../models/Product.js";
+import fs from "fs";
+import path from "path";
+
 
 export const loadInventory = async (req, res) => {
   try {

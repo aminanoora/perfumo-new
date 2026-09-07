@@ -1,6 +1,6 @@
-import cartCount from "../../middleware/cartCount.js";
+
 import Cart from "../../models/Cart.js";
-import Product from "../../models/Product.js";
+
 import Variant from "../../models/Variant.js";
 import Wishlist from "../../models/Wishlist.js";
 

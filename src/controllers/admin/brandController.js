@@ -1,87 +1,42 @@
 import Brand from "../../models/Brand.js";
 import Product from "../../models/Product.js";
+import * as brandService from "../../services/admin/brandService.js"
 
 export const getBrandsPage = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-
     const limit = 5;
-
-    const skip = (page - 1) * limit;
-
     const search = req.query.search?.trim() || "";
-
     const sort = req.query.sort || "desc";
-
     const status = req.query.status || "";
 
-    const query = {
-      isDeleted: false,
-    };
-
-    if (search) {
-      query.name = {
-        $regex: search,
-
-        $options: "i",
-      };
-    }
-
-    if (status === "listed") {
-      query.isListed = true;
-    }
-
-    if (status === "unlisted") {
-      query.isListed = false;
-    }
-
-    const sortOption = {
-      createdAt: sort === "asc" ? 1 : -1,
-    };
-
-    const totalBrands = await Brand.countDocuments(query);
-
-    const brands = await Brand.find(query)
-
-      .sort(sortOption)
-
-      .skip(skip)
-
-      .limit(limit);
-
-    for (const brand of brands) {
-      brand.productCount = await Product.countDocuments({
-        brand: brand._id,
-      });
-    }
+    const result = await brandService.getBrandsPage({
+      page,
+      limit,
+      search,
+      sort,
+      status,
+    });
 
     const message = req.session.message;
-
     req.session.message = null;
 
-    res.render("admin/brand/brand", {
-      brands,
-
+    return res.render("admin/brand/brand", {
+      brands: result.brands,
       page,
-
-      totalPages: Math.ceil(totalBrands / limit),
-
+      totalPages: Math.ceil(result.totalBrands / limit),
       search,
-
       sort,
-
       status,
-
       active: "brand",
-
       message,
     });
   } catch (error) {
     console.log(error);
-
-    res.redirect("/admin/brand/brand");
+    return res.redirect("/admin/brand/brand");
   }
 };
+
 export const loadAddBrand = async (req, res) => {
   try {
     const message = req.session.message;
@@ -102,83 +57,12 @@ export const loadAddBrand = async (req, res) => {
 
 export const addBrand = async (req, res) => {
   try {
-    const { name, slug, description } = req.body;
-
-    const brandName = name.trim();
-    const brandSlug = slug.trim().toLowerCase();
-
-    const nameRegex = /^[A-Za-z\s.'&-]+$/;
-
-    if (!brandName || brandName.length < 4) {
-      req.session.message = {
-        type: "error",
-        text: "Brand name must contain at least 4 characters.",
-      };
-      return res.redirect("/admin/brand/add");
-    }
-
-    if (!nameRegex.test(brandName)) {
-      req.session.message = {
-        type: "error",
-        text: "Brand name can contain only letters.",
-      };
-      return res.redirect("/admin/brand/add");
-    }
-
-    if (!brandSlug || brandSlug.length < 4) {
-      req.session.message = {
-        type: "error",
-        text: "Slug must contain at least 4 characters.",
-      };
-      return res.redirect("/admin/brand/add");
-    }
-
-    if (!description || description.trim().length < 4) {
-      req.session.message = {
-        type: "error",
-        text: "Description must contain at least 4 characters.",
-      };
-      return res.redirect("/admin/brand/add");
-    }
-
-    const existingName = await Brand.findOne({
-      name: { $regex: new RegExp("^" + brandName + "$", "i") },
-      isDeleted: false,
-    });
-
-    if (existingName) {
-      req.session.message = {
-        type: "error",
-        text: "Brand already exists.",
-      };
-      return res.redirect("/admin/brand/add");
-    }
-
-    const existingSlug = await Brand.findOne({
-      slug: brandSlug,
-      isDeleted: false,
-    });
-
-    if (existingSlug) {
-      req.session.message = {
-        type: "error",
-        text: "Slug already exists.",
-      };
-      return res.redirect("/admin/brand/add");
-    }
-
-    const logo = req.file ? "/admin/uploads/brands/" + req.file.filename : "";
-
-    const brand = new Brand({
-      name: brandName,
-      slug: brandSlug,
-      description,
-      logo,
-      isListed: true,
-      isDeleted: false,
-    });
-
-    await brand.save();
+    await brandService.addBrand({
+      name: req.body.name,
+      slug: req.body.slug,
+      description: req.body.description,
+      file: req.file,
+    })
 
     req.session.message = {
       type: "success",
@@ -191,7 +75,7 @@ export const addBrand = async (req, res) => {
 
     req.session.message = {
       type: "error",
-      text: "Unable to add brand.",
+      text: error.message||"Unable to add brand.",
     };
 
     return res.redirect("/admin/brand/add");
@@ -221,7 +105,7 @@ export const loadEditBrand = async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    return res.redirect(`/admin/brand/${brandId}`);
+    return res.redirect(`/admin/brand/${req.params.id}`);
   }
 };
 
@@ -229,149 +113,34 @@ export const updateBrand = async (req, res) => {
   try {
     const { name, slug, description, removeLogo } = req.body;
 
-    const brandId = req.params.id;
-
-    const brand = await Brand.findById(brandId);
-
-    if (!brand) {
-      req.session.message = {
-        type: "error",
-        text: "Brand not found.",
-      };
-
-      return res.redirect("/admin/brand");
-    }
-
-    const brandName = name.trim();
-    const brandSlug = slug.trim().toLowerCase();
-    const brandDescription = description.trim();
-
-    const nameRegex = /^[A-Za-z\s.'&-]+$/;
-    const slugRegex = /^[a-z0-9-]+$/;
-
-    if (!brandName || brandName.length < 4) {
-      req.session.message = {
-        type: "error",
-        text: "Brand name must contain at least 4 characters.",
-      };
-
-      return res.redirect(`/admin/brand/edit/${brandId}`);
-    }
-
-    if (!nameRegex.test(brandName)) {
-      req.session.message = {
-        type: "error",
-        text: "Brand name can contain only letters.",
-      };
-
-      return res.redirect(`/admin/brand/edit/${brandId}`);
-    }
-
-    if (!brandSlug || brandSlug.length < 4) {
-      req.session.message = {
-        type: "error",
-        text: "Slug must contain at least 4 characters.",
-      };
-
-      return res.redirect(`/admin/brand/edit/${brandId}`);
-    }
-
-    if (!slugRegex.test(brandSlug)) {
-      req.session.message = {
-        type: "error",
-        text: "Slug can contain only lowercase letters, numbers and hyphens.",
-      };
-
-      return res.redirect(`/admin/brand/edit/${brandId}`);
-    }
-
-    if (!brandDescription || brandDescription.length < 4) {
-      req.session.message = {
-        type: "error",
-        text: "Description must contain at least 4 characters.",
-      };
-
-      return res.redirect(`/admin/brand/edit/${brandId}`);
-    }
-
-    const existingBrand = await Brand.findOne({
-      name: {
-        $regex: new RegExp("^" + brandName + "$", "i"),
-      },
-
-      _id: {
-        $ne: brandId,
-      },
-
-      isDeleted: false,
+       await brandService.updateBrandBrand({
+      id:req.params.id,
+      name,
+      slug,
+      description,
+      removeLogo,
+      file: req.file 
     });
-
-    if (existingBrand) {
-      req.session.message = {
-        type: "warning",
-        text: "Brand name already exists.",
-      };
-
-      return res.redirect(`/admin/brand/edit/${brandId}`);
-    }
-
-    const existingSlug = await Brand.findOne({
-      slug: brandSlug,
-
-      _id: {
-        $ne: brandId,
-      },
-
-      isDeleted: false,
-    });
-
-    if (existingSlug) {
-      req.session.message = {
-        type: "warning",
-        text: "Slug already exists.",
-      };
-
-      return res.redirect(`/admin/brand/edit/${brandId}`);
-    }
-
-    let logo = brand.logo;
-
-    if (removeLogo === "true") {
-      logo = "";
-    }
-
-    if (req.file) {
-      logo = "/admin/uploads/brands/" + req.file.filename;
-    }
-
-    await Brand.findByIdAndUpdate(
-      brandId,
-
-      {
-        name: brandName,
-        slug: brandSlug,
-        description: brandDescription,
-        logo,
-      },
-    );
 
     req.session.message = {
       type: "success",
       text: "Brand updated successfully.",
     };
 
-    return res.redirect(`/admin/brand/edit/${brandId}`);
+    return res.redirect(`/admin/brand/edit/${req.params.id}`);
   } catch (error) {
     console.log(error);
 
     req.session.message = {
       type: "error",
-      text: "Unable to update brand.",
+      text: error.message||"Unable to update brand.",
     };
 
     return res.redirect(`/admin/brand/edit/${req.params.id}`);
   }
 };
+
+
 export const brandDetails = async (req, res) => {
   try {
     const brandId = req.params.id;

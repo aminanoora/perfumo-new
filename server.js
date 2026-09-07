@@ -4,7 +4,7 @@ dotenv.config();
 import express from "express";
 import path from "path";
 import session from "express-session";
-
+import logger from "./src/util/logger.js";
 import { fileURLToPath } from "url";
 
 import connectDB from "./src/config/db.js";
@@ -36,7 +36,7 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-connectDB();
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -116,13 +116,25 @@ app.use((req, res) => {
   res.status(404).render("user/error/404");
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error("SERVER ERROR:", err);
 
   res.status(500).render("user/error/500");
 });
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
+

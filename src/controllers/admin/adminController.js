@@ -1,7 +1,6 @@
-import bcrypt from "bcryptjs";
 
-import Admin from "../../models/Admin.js";
 
+import * as  adminService from "../../services/admin/adminService.js";
 import * as dashboardService from "../../services/admin/dashboardService.js";
 
 export const loadAdminLogin = (req, res) => {
@@ -11,38 +10,10 @@ export const loadAdminLogin = (req, res) => {
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
-      return res.json({
-        success: false,
-
-        message: "All fields are required",
-      });
-    } else if (!email.includes("@")) {
-      return res.json({
-        success: false,
-        message: "Given email is not valid",
-      });
-    }
-    const admin = await Admin.findOne({ email });
-
-    if (!admin) {
-      return res.json({
-        success: false,
-
-        message: "Admin not found",
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, admin.password);
-
-    if (!isMatch) {
-      return res.json({
-        success: false,
-
-        message: "Invalid password",
-      });
-    }
-
+    const admin = await adminService.adminLogin({
+      email,
+      password
+    })
     req.session.admin = {
       id: admin._id,
 
@@ -60,7 +31,7 @@ export const adminLogin = async (req, res) => {
     return res.json({
       success: false,
 
-      message: "Something went wrong",
+      message: error.message,
     });
   }
 };
