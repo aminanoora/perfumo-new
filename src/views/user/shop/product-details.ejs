@@ -72,8 +72,8 @@
 
                                         <div class="thumbnail <%= index===0 ? 'active' : '' %>">
 
-                                            <img src="/admin/uploads/products/<%= image %>" class="thumb-image"
-                                                data-image="/admin/uploads/products/<%= image %>">
+                                            <img src="<%= image %>" class="thumb-image"
+                                                data-image="<%= image %>">
 
                                         </div>
 
@@ -93,7 +93,7 @@
 
                                         <% } %>
 
-                                            <img src="/admin/uploads/products/<%= selectedVariant.images[0] %>"
+                                            <img src="<%= selectedVariant.images[0] %>"
                                                 id="mainProductImage" alt="<%= product.name %>">
 
                                 </div>
@@ -611,7 +611,7 @@
 
                             <a href="/shop/product-details/<%= item.product._id %>">
 
-                                <img src="/admin/uploads/products/<%= item.variant.images[0]%>" alt="<%= item.name %>">
+                                <img src="<%= item.variant.images[0]%>" alt="<%= item.name %>">
 
                             </a>
 

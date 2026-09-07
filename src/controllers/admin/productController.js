@@ -1,6 +1,6 @@
 import Brand from "../../models/Brand.js";
 import Product from "../../models/Product.js";
-
+import { uploadProductImage } from "../../services/admin/cloudinaryService.js";
 import Category from "../../models/Category.js";
 import Variant from "../../models/Variant.js";
 import fs from "fs";
@@ -419,7 +419,13 @@ export const addVariant = async (req, res) => {
       return res.redirect(`/admin/product/${productId}/add-variant`);
     }
 
-    const images = req.files.map((file) => file.filename);
+    const images =await Promise.all(
+  req.files.map(async (file) => {
+    const result = await uploadProductImage(file.buffer);
+
+    return result.secure_url;
+  }),
+);
 
     await Variant.create({
       product: productId,
@@ -537,19 +543,12 @@ export const updateVariant = async (req, res) => {
 
     const {
       sku,
-
       size,
-
       concentration,
-
       stock,
-
       price,
-
       salePrice,
-
       weight,
-
       existingImages,
     } = req.body;
 
@@ -558,99 +557,148 @@ export const updateVariant = async (req, res) => {
     if (!variant || variant.isDeleted) {
       req.session.adminMessage = {
         type: "error",
-
         text: "Variant not found.",
       };
 
       return res.redirect("/admin/product");
     }
 
-    const skuExists = await Variant.findOne({
-      sku: sku.toUpperCase(),
+    if (!sku || sku.trim().length < 3) {
+      req.session.adminMessage = {
+        type: "error",
+        text: "SKU must contain at least 3 characters.",
+      };
 
+      return res.redirect(`/admin/variant/${variantId}/edit`);
+    }
+
+    const skuExists = await Variant.findOne({
+      sku: sku.trim().toUpperCase(),
       _id: { $ne: variantId },
     });
 
     if (skuExists) {
       req.session.adminMessage = {
         type: "error",
-
         text: "SKU already exists.",
       };
 
       return res.redirect(`/admin/variant/${variantId}/edit`);
     }
 
+    if (Number(size) <= 0) {
+      req.session.adminMessage = {
+        type: "error",
+        text: "Invalid size.",
+      };
+
+      return res.redirect(`/admin/variant/${variantId}/edit`);
+    }
+
+    if (Number(stock) < 0) {
+      req.session.adminMessage = {
+        type: "error",
+        text: "Stock cannot be negative.",
+      };
+
+      return res.redirect(`/admin/variant/${variantId}/edit`);
+    }
+
+    if (Number(price) <= 0) {
+      req.session.adminMessage = {
+        type: "error",
+        text: "Price must be greater than zero.",
+      };
+
+      return res.redirect(`/admin/variant/${variantId}/edit`);
+    }
+
+    if (salePrice && Number(salePrice) > Number(price)) {
+      req.session.adminMessage = {
+        type: "error",
+        text: "Sale price cannot exceed regular price.",
+      };
+
+      return res.redirect(`/admin/variant/${variantId}/edit`);
+    }
+
+    if (Number(weight) <= 0) {
+      req.session.adminMessage = {
+        type: "error",
+        text: "Weight must be greater than zero.",
+      };
+
+      return res.redirect(`/admin/variant/${variantId}/edit`);
+    }
+
+
     let images = [];
 
     if (existingImages) {
       images = Array.isArray(existingImages)
-        ? existingImages
-        : [existingImages];
+        ? existingImages.filter(Boolean)
+        : [existingImages].filter(Boolean);
     }
+
 
     if (req.files && req.files.length > 0) {
-      req.files.forEach((file) => {
-        images.push(file.filename);
-      });
+      const newImages = await Promise.all(
+        req.files.map(async (file) => {
+          const result = await uploadProductImage(file.buffer);
+
+          return result.secure_url;
+        })
+      );
+
+      images.push(...newImages);
     }
-    const removedImages = variant.images.filter((img) => !images.includes(img));
 
-    removedImages.forEach((img) => {
-      const filePath = path.join("public", "uploads", "products", img);
+    images = images.filter(Boolean);
 
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    });
+    
 
     if (images.length < 3 || images.length > 5) {
       req.session.adminMessage = {
         type: "error",
-
         text: "Variant must have between 3 and 5 images.",
       };
 
       return res.redirect(`/admin/variant/${variantId}/edit`);
     }
 
-    variant.sku = sku.toUpperCase();
+   
 
+    variant.sku = sku.trim().toUpperCase();
     variant.size = Number(size);
-
     variant.concentration = concentration;
-
     variant.stock = Number(stock);
-
     variant.price = Number(price);
-
     variant.salePrice = Number(salePrice) || 0;
-
     variant.weight = Number(weight);
-
     variant.images = images;
 
     await variant.save();
 
     req.session.adminMessage = {
       type: "success",
-
       text: "Variant updated successfully.",
     };
 
-    res.redirect(`/admin/product/${variant.product}/add-variant`);
+    return res.redirect(
+      `/admin/product/${variant.product}/add-variant`
+    );
   } catch (error) {
-    console.log(error);
+    console.log("UPDATE VARIANT ERROR:", error);
 
     req.session.adminMessage = {
       type: "error",
-
       text: "Unable to update variant.",
     };
 
-    res.redirect(`/admin/variant/${req.params.variantId}/edit`);
+    return res.redirect(`/admin/variant/${req.params.variantId}/edit`);
   }
 };
+
 export const loadProductDetails = async (req, res) => {
   try {
     const { productId } = req.params;
